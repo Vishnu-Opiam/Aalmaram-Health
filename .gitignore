@@ -19,3 +19,10 @@ blob-report/
 *.tsbuildinfo
 next-env.d.ts
 /src/generated/
+
+.vercel
+
+# Vercel
+.vercel
+
+.env*

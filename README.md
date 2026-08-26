@@ -1,5 +1,7 @@
 # Aalmaram Health — Pre-Journey MVP
 
+**Live:** https://aalmaram-health.vercel.app
+
 A working product for the **Pre-Journey** half of Aalmaram Health: an internal team
 member records a client's intake, curates Kerala health, wellness and heritage
 components into a dated itinerary, generates a What-to-Expect report, and
@@ -285,6 +287,13 @@ suite truncates the development database — re-run `npm run db:seed` afterwards
 ---
 
 ## Deployment
+
+**Currently deployed on Vercel** at https://aalmaram-health.vercel.app, with a
+Neon Postgres database provisioned through the Vercel Marketplace and
+`DATABASE_URL` injected automatically. Pushing to `main` redeploys.
+
+Production admin credentials are **not** in this repository — the demo password
+below is for local development only.
 
 The app is a standard Next.js server application; anywhere that runs Node 20+
 works (Vercel, Fly, Render, a container).
