@@ -1,0 +1,181 @@
+"use server";
+
+import { prisma } from "@/lib/db";
+import { requireUser } from "@/lib/auth/guards";
+import { notFound } from "@/lib/errors";
+import { clientSchema } from "@/lib/validation/schemas";
+import { daysBetweenInclusive, parseDateInput } from "@/domain/shared/dates";
+import {
+  parseForm,
+  runAction,
+  successState,
+  type FormState,
+} from "@/lib/validation/form";
+import { ACTIVITY_ACTIONS, logActivity } from "@/lib/services/activity-log";
+import {
+  accessTokenExpiry,
+  buildInviteUrl,
+  generateAccessToken,
+  hashAccessToken,
+} from "@/lib/auth/access-token";
+import { env } from "@/lib/env";
+import { sendClientInviteEmail } from "@/lib/services/notifications";
+import { refreshUrl } from "@/lib/refresh-url";
+
+type ClientInput = ReturnType<typeof parseForm<typeof clientSchema>>;
+
+/**
+ * tripDuration is derived, never entered. Keeping it stored (rather than
+ * computed on read) means list views can sort and filter on it cheaply.
+ */
+function toData(input: ClientInput) {
+  const tripStartDate = input.tripStartDate
+    ? parseDateInput(input.tripStartDate)
+    : null;
+  const tripEndDate = input.tripEndDate
+    ? parseDateInput(input.tripEndDate)
+    : null;
+
+  return {
+    name: input.name,
+    email: input.email,
+    phone: input.phone,
+    country: input.country,
+    status: input.status,
+    tripStartDate,
+    tripEndDate,
+    tripDuration:
+      tripStartDate && tripEndDate
+        ? daysBetweenInclusive(tripStartDate, tripEndDate)
+        : null,
+    healthInterests: input.healthInterests,
+    wellnessInterests: input.wellnessInterests,
+    culturalInterests: input.culturalInterests,
+    intakeNotes: input.intakeNotes,
+    generalPreferences: input.generalPreferences,
+  };
+}
+
+export async function createClientAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const result = await runAction("client.create", formData, async () => {
+    const user = await requireUser();
+    const input = parseForm(clientSchema, formData);
+
+    const client = await prisma.$transaction(async (tx) => {
+      const created = await tx.client.create({ data: toData(input) });
+      await logActivity(
+        {
+          action: ACTIVITY_ACTIONS.CLIENT_CREATED,
+          entityType: "Client",
+          entityId: created.id,
+          actorUserId: user.id,
+          actorLabel: user.name,
+          // Deliberately no intake text in the audit metadata.
+          metadata: { status: created.status },
+        },
+        tx,
+      );
+      return created;
+    });
+
+    return successState("Client created.", `/admin/clients/${client.id}`);
+  });
+
+  return result;
+}
+
+export async function updateClientAction(
+  clientId: string,
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return runAction("client.update", formData, async () => {
+    const user = await requireUser();
+    const input = parseForm(clientSchema, formData);
+
+    const existing = await prisma.client.findUnique({
+      where: { id: clientId },
+      select: { id: true },
+    });
+    if (!existing) throw notFound("That client");
+
+    await prisma.$transaction(async (tx) => {
+      await tx.client.update({ where: { id: clientId }, data: toData(input) });
+      await logActivity(
+        {
+          action: ACTIVITY_ACTIONS.CLIENT_UPDATED,
+          entityType: "Client",
+          entityId: clientId,
+          actorUserId: user.id,
+          actorLabel: user.name,
+          metadata: { status: input.status },
+        },
+        tx,
+      );
+    });
+    return successState(
+      "Client updated.",
+      refreshUrl(`/admin/clients/${clientId}`),
+    );
+  });
+}
+
+/**
+ * Issues a fresh portal invitation link.
+ *
+ * Rotating the token invalidates any previous link, which is the intended
+ * behaviour if a link is thought to have leaked.
+ */
+export async function issueClientInviteAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return runAction("client.invite", formData, async () => {
+    const user = await requireUser();
+    const clientId = String(formData.get("clientId") ?? "");
+
+    const client = await prisma.client.findUnique({
+      where: { id: clientId },
+      select: { id: true, name: true, email: true },
+    });
+    if (!client) throw notFound("That client");
+
+    const token = generateAccessToken();
+    const now = new Date();
+
+    await prisma.$transaction(async (tx) => {
+      await tx.client.update({
+        where: { id: clientId },
+        data: {
+          accessTokenHash: hashAccessToken(token),
+          accessTokenIssuedAt: now,
+          accessTokenExpiresAt: accessTokenExpiry(now),
+        },
+      });
+      await logActivity(
+        {
+          action: ACTIVITY_ACTIONS.CLIENT_INVITED,
+          entityType: "Client",
+          entityId: clientId,
+          actorUserId: user.id,
+          actorLabel: user.name,
+        },
+        tx,
+      );
+    });
+
+    const inviteUrl = buildInviteUrl(env().APP_URL, token);
+    await sendClientInviteEmail({
+      to: client.email,
+      clientName: client.name,
+      inviteUrl,
+    });
+    return successState(
+      `Invitation link sent to ${client.email}. Any previous link is now invalid.`,
+      refreshUrl(`/admin/clients/${clientId}`),
+    );
+  });
+}

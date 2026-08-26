@@ -1,0 +1,316 @@
+// Aalmaram Health - canonical data model (Pre-Journey MVP)
+//
+// Design notes:
+//  * Component.moduleId is deliberately NOT stored. Module is derived through
+//    Catalogue so there is a single source of truth for the hierarchy.
+//  * ItineraryItem means "proposed to the client". It is NOT a vendor-confirmed
+//    appointment. A future Booking/Appointment domain will sit beside it rather
+//    than overload this model.
+//  * ItineraryItemStatus intentionally leaves room for future journey states
+//    (COMPLETED / CANCELLED / RESCHEDULED) without changing the meaning of
+//    existing rows.
+
+generator client {
+  provider = "prisma-client-js"
+  // "native" for local development; the RHEL target is what Vercel's Linux
+  // runtime needs, and generating both keeps one lockfile working in both places.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  ADMIN
+}
+
+enum RecordStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ClientStatus {
+  LEAD
+  INTAKE
+  PLANNING
+  PROPOSAL_SENT
+  CONFIRMED
+  ARCHIVED
+}
+
+enum ItineraryStatus {
+  DRAFT
+  READY_FOR_REVIEW
+  PUBLISHED
+  CHANGES_REQUESTED
+  APPROVED
+  ARCHIVED
+}
+
+enum ItineraryItemStatus {
+  PLANNED
+  CONFIRMED
+  REMOVED
+}
+
+enum ReportStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ChangeRequestStatus {
+  OPEN
+  RESOLVED
+}
+
+enum CostStatus {
+  ESTIMATED
+  CONFIRMED
+  ON_REQUEST
+}
+
+// ---------------------------------------------------------------------------
+// Identity
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  passwordHash String
+  role         UserRole     @default(ADMIN)
+  status       RecordStatus @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  activityLogs ActivityLog[]
+}
+
+// ---------------------------------------------------------------------------
+// Inventory: Vendor -> Component, Module -> Catalogue -> Component
+// ---------------------------------------------------------------------------
+
+model Vendor {
+  id            String       @id @default(cuid())
+  name          String       @unique
+  contactName   String?
+  email         String?
+  phone         String?
+  location      String?
+  accreditation String?
+  status        RecordStatus @default(ACTIVE)
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  components Component[]
+
+  @@index([status])
+}
+
+model Module {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  sortOrder   Int          @default(0)
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  catalogues Catalogue[]
+
+  @@index([sortOrder])
+}
+
+model Catalogue {
+  id          String       @id @default(cuid())
+  moduleId    String
+  name        String
+  description String?
+  sortOrder   Int          @default(0)
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  module     Module      @relation(fields: [moduleId], references: [id], onDelete: Restrict)
+  components Component[]
+
+  @@unique([moduleId, name])
+  @@index([moduleId])
+  @@index([status])
+}
+
+model Component {
+  id                      String       @id @default(cuid())
+  vendorId                String
+  catalogueId             String
+  name                    String
+  tags                    String[]     @default([])
+  price                   Decimal      @db.Decimal(10, 2)
+  currency                String       @default("EUR")
+  unit                    String       @default("per person")
+  costStatus              CostStatus   @default(ESTIMATED)
+  clientFacingDescription String
+  whatsIncluded           String?
+  clientDeliverable       String?
+  source                  String?
+  sourceDate              DateTime?
+  status                  RecordStatus @default(ACTIVE)
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  vendor         Vendor          @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  catalogue      Catalogue       @relation(fields: [catalogueId], references: [id], onDelete: Restrict)
+  itineraryItems ItineraryItem[]
+
+  @@unique([vendorId, name])
+  @@index([catalogueId])
+  @@index([vendorId])
+  @@index([status])
+  @@index([name])
+}
+
+// ---------------------------------------------------------------------------
+// Clients
+// ---------------------------------------------------------------------------
+
+model Client {
+  id      String       @id @default(cuid())
+  name    String
+  email   String       @unique
+  phone   String?
+  country String?
+  status  ClientStatus @default(LEAD)
+
+  tripStartDate DateTime?
+  tripEndDate   DateTime?
+  tripDuration  Int?
+
+  healthInterests    String?
+  wellnessInterests  String?
+  culturalInterests  String?
+  intakeNotes        String?
+  generalPreferences String?
+
+  // Secure, non-guessable portal access. Only the SHA-256 hash of the
+  // invitation token is stored; the raw token lives only in the invite link.
+  accessTokenHash      String?   @unique
+  accessTokenIssuedAt  DateTime?
+  accessTokenExpiresAt DateTime?
+  lastPortalLoginAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itineraries Itinerary[]
+
+  @@index([status])
+  @@index([name])
+}
+
+// ---------------------------------------------------------------------------
+// Itineraries
+// ---------------------------------------------------------------------------
+
+model Itinerary {
+  id          String          @id @default(cuid())
+  clientId    String
+  title       String
+  startDate   DateTime?
+  endDate     DateTime?
+  status      ItineraryStatus @default(DRAFT)
+  adminNotes  String?
+  clientNotes String?
+  publishedAt DateTime?
+  approvedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  client         Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  items          ItineraryItem[]
+  report         Report?
+  changeRequests ChangeRequest[]
+
+  @@index([clientId])
+  @@index([status])
+}
+
+model ItineraryItem {
+  id                String              @id @default(cuid())
+  itineraryId       String
+  componentId       String
+  scheduledDate     DateTime?
+  dayNumber         Int?
+  sequence          Int                 @default(0)
+  customTitle       String?
+  clientFacingNotes String?
+  internalNotes     String?
+  priceOverride     Decimal?            @db.Decimal(10, 2)
+  status            ItineraryItemStatus @default(PLANNED)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  itinerary      Itinerary       @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  component      Component       @relation(fields: [componentId], references: [id], onDelete: Restrict)
+  changeRequests ChangeRequest[]
+
+  @@index([itineraryId])
+  @@index([componentId])
+  @@index([itineraryId, dayNumber, sequence])
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  itineraryId String       @unique
+  title       String
+  content     String
+  status      ReportStatus @default(DRAFT)
+  generatedAt DateTime?
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  itinerary Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+}
+
+model ChangeRequest {
+  id              String              @id @default(cuid())
+  itineraryId     String
+  itineraryItemId String?
+  message         String
+  status          ChangeRequestStatus @default(OPEN)
+  createdAt       DateTime            @default(now())
+  resolvedAt      DateTime?
+
+  itinerary     Itinerary      @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  itineraryItem ItineraryItem? @relation(fields: [itineraryItemId], references: [id], onDelete: SetNull)
+
+  @@index([itineraryId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Audit
+// ---------------------------------------------------------------------------
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  actorLabel  String
+  entityType  String
+  entityId    String
+  action      String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
