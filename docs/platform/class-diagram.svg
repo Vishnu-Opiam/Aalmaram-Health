@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1860 1390" width="1860" height="1390" role="img" aria-label="UML class diagram of Aalmaram Health in two packages. What we offer: a Module groups Catalogues, a Catalogue classifies Components, a Vendor offers Components and has Branches and Practitioners, Components are delivered by Practitioners, and Vendors post FeedPosts. The client&#x27;s journey: a Client takes Trips, has Conversations and builds up ClientPreferences, with a Staff relationship manager; a Trip has TripRequirements, exactly one Itinerary and a HealthDossier; the Itinerary is paid by Payments and made of ItineraryItems, each placing one Component at an optional Branch and booked through one Booking that logs BookingEvents." xmlns="http://www.w3.org/2000/svg">
+<style>
+.cd-frame{fill:none;stroke-width:1.2}
+.cd-frame-a{fill:#f0f6f2;stroke:#7fa58e}.cd-frame-b{fill:#eef3f9;stroke:#7d98b8}.cd-frame-t{fill:#f6f6f3;stroke:#b4b8b0}
+.cd-pkg{font:600 13px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#1b2420}
+.cd-pkg-sub{font:italic 12px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#56645c}
+.cd-box{fill:#ffffff;stroke:#5d6b63;stroke-width:1.1}
+.cd-key{fill:#ffffff;stroke:#b4b8b0;stroke-dasharray:4 3}
+.cd-head-a{fill:#dcebe1}.cd-head-b{fill:#dbe6f2}
+.cd-rule{stroke:#5d6b63;stroke-width:1}
+.cd-name{font:600 14px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#1b2420}
+.cd-sub{font:italic 10.5px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#4c5a52}
+.cd-attr{font:12px 'IBM Plex Mono',Consolas,monospace;fill:#1b2420}
+.cd-derived{font-style:italic}
+.cd-type{fill:#56645c}.cd-mult-in{fill:#8a5a12}
+.cd-mvp{fill:#ffffff;stroke:#2f6b4f;stroke-width:1}
+.cd-mvp-t{font:600 9px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#2f6b4f;letter-spacing:.06em}
+.cd-edge{fill:none;stroke:#34403a;stroke-width:1.4}
+.cd-diamond,.cd-dir{fill:#34403a}
+.cd-mult{font:11.5px 'IBM Plex Mono',Consolas,monospace;fill:#1b2420;paint-order:stroke;stroke-width:4px}
+.cd-assoc{font:italic 11.5px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#1b2420;paint-order:stroke;stroke-width:4px}
+.cd-on-a{stroke:#f0f6f2}.cd-on-b{stroke:#eef3f9}.cd-on-t{stroke:#f6f6f3}.cd-on-k{stroke:#ffffff}
+.cd-note{fill:#fbf6e3;stroke:#b9a565;stroke-width:1}.cd-note-fold{fill:none;stroke:#b9a565}
+.cd-note-t{font:11.5px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#2e2a1c}.cd-note-h{font-weight:600}
+.cd-note-link{stroke:#b9a565;stroke-dasharray:4 3}
+.cd-stereo{font:italic 10.5px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#56645c}
+.cd-tname{font:600 13px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#1b2420}
+.cd-lit{font:10.5px 'IBM Plex Mono',Consolas,monospace;fill:#1b2420}
+.cd-key-t{font:11.5px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#1b2420}
+.cd-title{font:600 20px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#1b2420}
+.cd-title-sub{font:12.5px 'IBM Plex Sans','Segoe UI',sans-serif;fill:#56645c}
+</style>
+<rect width="1860" height="1390" fill="#fbfcfa"/>
+<text class="cd-title" x="20" y="34">Aalmaram Health · class diagram</text>
+<text class="cd-title-sub" x="1840" y="34" text-anchor="end">v1 · 15 Oct 2026 · from the 14 and 15 Oct sessions with Nivedith</text>
+<g transform="translate(0 54)">
+<rect class="cd-frame cd-frame-a" x="20" y="36" width="750" height="984" rx="2"/>
+<path class="cd-frame cd-frame-a" d="M20 36V12a2 2 0 0 1 2-2H178.2a2 2 0 0 1 2 2V36"/>
+<text class="cd-pkg" x="30" y="28">A · What we offer</text>
+<text class="cd-pkg-sub" x="190.2" y="28">master data kept by the team · built first</text>
+<rect class="cd-frame cd-frame-b" x="800" y="36" width="1040" height="984" rx="2"/>
+<path class="cd-frame cd-frame-b" d="M800 36V12a2 2 0 0 1 2-2H1018.4a2 2 0 0 1 2 2V36"/>
+<text class="cd-pkg" x="810" y="28">B · The client’s journey</text>
+<text class="cd-pkg-sub" x="1030.4" y="28">one client, many trips · one itinerary per trip</text>
+<rect class="cd-frame cd-frame-t" x="20" y="1076" width="1820" height="244" rx="2"/>
+<path class="cd-frame cd-frame-t" d="M20 1076V1052a2 2 0 0 1 2-2H75.0a2 2 0 0 1 2 2V1076"/>
+<text class="cd-pkg" x="30" y="1068">Types</text>
+<text class="cd-pkg-sub" x="87.0" y="1068">datatypes and enumerations used above</text>
+<g class="cd-class" id="cd-Module">
+<rect class="cd-box" x="50" y="70" width="290" height="98" rx="3"/>
+<path class="cd-head cd-head-a" d="M50 120V73a3 3 0 0 1 3-3H337a3 3 0 0 1 3 3V120Z"/>
+<line class="cd-rule" x1="50" y1="120" x2="340" y2="120"/>
+<text class="cd-name" x="195.0" y="92" text-anchor="middle">Module</text>
+<text class="cd-sub" x="195.0" y="109" text-anchor="middle">Health · Wellness · Culture</text>
+<rect class="cd-mvp" x="302" y="77" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="317.5" y="88" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="62" y="140">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="62" y="157">name<tspan class="cd-type"> : String</tspan></text>
+</g>
+<g class="cd-class" id="cd-Catalogue">
+<rect class="cd-box" x="50" y="218" width="290" height="98" rx="3"/>
+<path class="cd-head cd-head-a" d="M50 268V221a3 3 0 0 1 3-3H337a3 3 0 0 1 3 3V268Z"/>
+<line class="cd-rule" x1="50" y1="268" x2="340" y2="268"/>
+<text class="cd-name" x="195.0" y="240" text-anchor="middle">Catalogue</text>
+<text class="cd-sub" x="195.0" y="257" text-anchor="middle">shown to clients as a category</text>
+<rect class="cd-mvp" x="302" y="225" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="317.5" y="236" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="62" y="288">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="62" y="305">name<tspan class="cd-type"> : String</tspan></text>
+</g>
+<g class="cd-class" id="cd-Vendor">
+<rect class="cd-box" x="50" y="400" width="290" height="319" rx="3"/>
+<path class="cd-head cd-head-a" d="M50 450V403a3 3 0 0 1 3-3H337a3 3 0 0 1 3 3V450Z"/>
+<line class="cd-rule" x1="50" y1="450" x2="340" y2="450"/>
+<text class="cd-name" x="195.0" y="422" text-anchor="middle">Vendor</text>
+<text class="cd-sub" x="195.0" y="439" text-anchor="middle">the vendor profile</text>
+<rect class="cd-mvp" x="302" y="407" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="317.5" y="418" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="62" y="470">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="62" y="487">name<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="62" y="504">description<tspan class="cd-type"> : Text</tspan></text>
+<text class="cd-attr" x="62" y="521">hqAddress<tspan class="cd-type"> : Address</tspan></text>
+<text class="cd-attr" x="62" y="538">contactPerson<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="62" y="555">email<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="62" y="572">phone<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="62" y="589">website<tspan class="cd-type"> : URL</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="62" y="606">socialLinks<tspan class="cd-type"> : URL</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="62" y="623">accreditations<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="62" y="640">languages<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="62" y="657">yearEstablished<tspan class="cd-type"> : Year</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="62" y="674">staffCount<tspan class="cd-type"> : Integer</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="62" y="691">equipment<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="62" y="708">owners<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+</g>
+<g class="cd-class" id="cd-FeedPost">
+<rect class="cd-box" x="50" y="790" width="290" height="166" rx="3"/>
+<path class="cd-head cd-head-a" d="M50 840V793a3 3 0 0 1 3-3H337a3 3 0 0 1 3 3V840Z"/>
+<line class="cd-rule" x1="50" y1="840" x2="340" y2="840"/>
+<text class="cd-name" x="195.0" y="812" text-anchor="middle">FeedPost</text>
+<text class="cd-sub" x="195.0" y="829" text-anchor="middle">a post in the client app feed</text>
+<rect class="cd-mvp" x="302" y="797" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="317.5" y="808" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="62" y="860">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="62" y="877">source<tspan class="cd-type"> : FeedSource</tspan></text>
+<text class="cd-attr" x="62" y="894">caption<tspan class="cd-type"> : Text</tspan></text>
+<text class="cd-attr" x="62" y="911">mediaUrl<tspan class="cd-type"> : URL</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="62" y="928">link<tspan class="cd-type"> : URL</tspan></text>
+<text class="cd-attr" x="62" y="945">publishedAt<tspan class="cd-type"> : DateTime</tspan></text>
+</g>
+<g class="cd-class" id="cd-Component">
+<rect class="cd-box" x="440" y="70" width="300" height="217" rx="3"/>
+<path class="cd-head cd-head-a" d="M440 120V73a3 3 0 0 1 3-3H737a3 3 0 0 1 3 3V120Z"/>
+<line class="cd-rule" x1="440" y1="120" x2="740" y2="120"/>
+<text class="cd-name" x="590.0" y="92" text-anchor="middle">Component</text>
+<text class="cd-sub" x="590.0" y="109" text-anchor="middle">a bookable service or experience</text>
+<rect class="cd-mvp" x="702" y="77" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="717.5" y="88" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="452" y="140">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="452" y="157">name<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="452" y="174">description<tspan class="cd-type"> : Text</tspan></text>
+<text class="cd-attr" x="452" y="191">price<tspan class="cd-type"> : Money</tspan></text>
+<text class="cd-attr" x="452" y="208">priceUnit<tspan class="cd-type"> : PriceUnit</tspan></text>
+<text class="cd-attr" x="452" y="225">duration<tspan class="cd-type"> : Duration</tspan></text>
+<text class="cd-attr" x="452" y="242">deliverable<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="452" y="259">recoveryTime<tspan class="cd-type"> : Duration</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr cd-derived" x="452" y="276">/module<tspan class="cd-type"> : Module</tspan></text>
+</g>
+<g class="cd-class" id="cd-Practitioner">
+<rect class="cd-box" x="440" y="380" width="300" height="183" rx="3"/>
+<path class="cd-head cd-head-a" d="M440 430V383a3 3 0 0 1 3-3H737a3 3 0 0 1 3 3V430Z"/>
+<line class="cd-rule" x1="440" y1="430" x2="740" y2="430"/>
+<text class="cd-name" x="590.0" y="402" text-anchor="middle">Practitioner</text>
+<text class="cd-sub" x="590.0" y="419" text-anchor="middle">doctor · therapist · instructor · guide</text>
+<rect class="cd-mvp" x="702" y="387" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="717.5" y="398" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="452" y="450">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="452" y="467">name<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="452" y="484">role<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="452" y="501">qualifications<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="452" y="518">achievements<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="452" y="535">yearsOfExperience<tspan class="cd-type"> : Integer</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="452" y="552">languages<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+</g>
+<g class="cd-class" id="cd-Branch">
+<rect class="cd-box" x="440" y="630" width="300" height="115" rx="3"/>
+<path class="cd-head cd-head-a" d="M440 680V633a3 3 0 0 1 3-3H737a3 3 0 0 1 3 3V680Z"/>
+<line class="cd-rule" x1="440" y1="680" x2="740" y2="680"/>
+<text class="cd-name" x="590.0" y="652" text-anchor="middle">Branch</text>
+<text class="cd-sub" x="590.0" y="669" text-anchor="middle">a location the client can pick</text>
+<rect class="cd-mvp" x="702" y="637" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="717.5" y="648" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="452" y="700">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="452" y="717">name<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="452" y="734">address<tspan class="cd-type"> : Address</tspan></text>
+</g>
+<g class="cd-class" id="cd-Payment">
+<rect class="cd-box" x="860" y="70" width="260" height="149" rx="3"/>
+<path class="cd-head cd-head-b" d="M860 120V73a3 3 0 0 1 3-3H1117a3 3 0 0 1 3 3V120Z"/>
+<line class="cd-rule" x1="860" y1="120" x2="1120" y2="120"/>
+<text class="cd-name" x="990.0" y="92" text-anchor="middle">Payment</text>
+<text class="cd-sub" x="990.0" y="109" text-anchor="middle">collected after confirm, before booking</text>
+<text class="cd-attr" x="872" y="140">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="872" y="157">amount<tspan class="cd-type"> : Money</tspan></text>
+<text class="cd-attr" x="872" y="174">status<tspan class="cd-type"> : PaymentStatus</tspan></text>
+<text class="cd-attr" x="872" y="191">method<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="872" y="208">paidAt<tspan class="cd-type"> : DateTime</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+</g>
+<g class="cd-class" id="cd-Itinerary">
+<rect class="cd-box" x="860" y="269" width="260" height="115" rx="3"/>
+<path class="cd-head cd-head-b" d="M860 319V272a3 3 0 0 1 3-3H1117a3 3 0 0 1 3 3V319Z"/>
+<line class="cd-rule" x1="860" y1="319" x2="1120" y2="319"/>
+<text class="cd-name" x="990.0" y="291" text-anchor="middle">Itinerary</text>
+<text class="cd-sub" x="990.0" y="308" text-anchor="middle">one per trip · locks on confirm</text>
+<rect class="cd-mvp" x="1082" y="276" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1097.5" y="287" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="872" y="339">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="872" y="356">confirmedAt<tspan class="cd-type"> : DateTime</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr cd-derived" x="872" y="373">/totalPrice<tspan class="cd-type"> : Money</tspan></text>
+</g>
+<g class="cd-class" id="cd-ItineraryItem">
+<rect class="cd-box" x="860" y="434" width="260" height="149" rx="3"/>
+<path class="cd-head cd-head-b" d="M860 484V437a3 3 0 0 1 3-3H1117a3 3 0 0 1 3 3V484Z"/>
+<line class="cd-rule" x1="860" y1="484" x2="1120" y2="484"/>
+<text class="cd-name" x="990.0" y="456" text-anchor="middle">ItineraryItem</text>
+<text class="cd-sub" x="990.0" y="473" text-anchor="middle">a block: one component in a time slot</text>
+<rect class="cd-mvp" x="1082" y="441" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1097.5" y="452" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="872" y="504">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="872" y="521">startsAt<tspan class="cd-type"> : DateTime</tspan></text>
+<text class="cd-attr cd-derived" x="872" y="538">/endsAt<tspan class="cd-type"> : DateTime</tspan></text>
+<text class="cd-attr" x="872" y="555">addedBy<tspan class="cd-type"> : AddedBy</tspan></text>
+<text class="cd-attr" x="872" y="572">price<tspan class="cd-type"> : Money</tspan></text>
+</g>
+<g class="cd-class" id="cd-Booking">
+<rect class="cd-box" x="860" y="633" width="260" height="149" rx="3"/>
+<path class="cd-head cd-head-b" d="M860 683V636a3 3 0 0 1 3-3H1117a3 3 0 0 1 3 3V683Z"/>
+<line class="cd-rule" x1="860" y1="683" x2="1120" y2="683"/>
+<text class="cd-name" x="990.0" y="655" text-anchor="middle">Booking</text>
+<text class="cd-sub" x="990.0" y="672" text-anchor="middle">one per block · sent by the AI agent</text>
+<text class="cd-attr" x="872" y="703">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="872" y="720">status<tspan class="cd-type"> : BookingStatus</tspan></text>
+<text class="cd-attr" x="872" y="737">confirmedTime<tspan class="cd-type"> : DateTime</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="872" y="754">vendorReference<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr cd-derived" x="872" y="771">/vendor<tspan class="cd-type"> : Vendor</tspan></text>
+</g>
+<g class="cd-class" id="cd-BookingEvent">
+<rect class="cd-box" x="860" y="832" width="260" height="149" rx="3"/>
+<path class="cd-head cd-head-b" d="M860 882V835a3 3 0 0 1 3-3H1117a3 3 0 0 1 3 3V882Z"/>
+<line class="cd-rule" x1="860" y1="882" x2="1120" y2="882"/>
+<text class="cd-name" x="990.0" y="854" text-anchor="middle">BookingEvent</text>
+<text class="cd-sub" x="990.0" y="871" text-anchor="middle">action log · internal only</text>
+<text class="cd-attr" x="872" y="902">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="872" y="919">occurredAt<tspan class="cd-type"> : DateTime</tspan></text>
+<text class="cd-attr" x="872" y="936">actor<tspan class="cd-type"> : Actor</tspan></text>
+<text class="cd-attr" x="872" y="953">action<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="872" y="970">detail<tspan class="cd-type"> : Text</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+</g>
+<g class="cd-class" id="cd-TripRequirements">
+<rect class="cd-box" x="1200" y="70" width="260" height="183" rx="3"/>
+<path class="cd-head cd-head-b" d="M1200 120V73a3 3 0 0 1 3-3H1457a3 3 0 0 1 3 3V120Z"/>
+<line class="cd-rule" x1="1200" y1="120" x2="1460" y2="120"/>
+<text class="cd-name" x="1330.0" y="92" text-anchor="middle">TripRequirements</text>
+<text class="cd-sub" x="1330.0" y="109" text-anchor="middle">what the client wants for this trip</text>
+<rect class="cd-mvp" x="1422" y="77" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1437.5" y="88" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="1212" y="140">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="1212" y="157">summary<tspan class="cd-type"> : Text</tspan></text>
+<text class="cd-attr" x="1212" y="174">moduleMix<tspan class="cd-type"> : ModuleShare</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="1212" y="191">budget<tspan class="cd-type"> : Money</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="1212" y="208">pace<tspan class="cd-type"> : Pace</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="1212" y="225">mustHaves<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="1212" y="242">avoid<tspan class="cd-type"> : String</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+</g>
+<g class="cd-class" id="cd-Trip">
+<rect class="cd-box" x="1200" y="300" width="260" height="166" rx="3"/>
+<path class="cd-head cd-head-b" d="M1200 350V303a3 3 0 0 1 3-3H1457a3 3 0 0 1 3 3V350Z"/>
+<line class="cd-rule" x1="1200" y1="350" x2="1460" y2="350"/>
+<text class="cd-name" x="1330.0" y="322" text-anchor="middle">Trip</text>
+<text class="cd-sub" x="1330.0" y="339" text-anchor="middle">pre-discovery → trip → dossier</text>
+<rect class="cd-mvp" x="1422" y="307" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1437.5" y="318" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="1212" y="370">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="1212" y="387">name<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="1212" y="404">startDate<tspan class="cd-type"> : Date</tspan></text>
+<text class="cd-attr" x="1212" y="421">endDate<tspan class="cd-type"> : Date</tspan></text>
+<text class="cd-attr" x="1212" y="438">travellers<tspan class="cd-type"> : Integer</tspan></text>
+<text class="cd-attr" x="1212" y="455">status<tspan class="cd-type"> : TripStatus</tspan></text>
+</g>
+<g class="cd-class" id="cd-HealthDossier">
+<rect class="cd-box" x="1200" y="520" width="260" height="132" rx="3"/>
+<path class="cd-head cd-head-b" d="M1200 570V523a3 3 0 0 1 3-3H1457a3 3 0 0 1 3 3V570Z"/>
+<line class="cd-rule" x1="1200" y1="570" x2="1460" y2="570"/>
+<text class="cd-name" x="1330.0" y="542" text-anchor="middle">HealthDossier</text>
+<text class="cd-sub" x="1330.0" y="559" text-anchor="middle">post-trip output, for continuity</text>
+<text class="cd-attr" x="1212" y="590">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="1212" y="607">summary<tspan class="cd-type"> : Text</tspan></text>
+<text class="cd-attr" x="1212" y="624">documents<tspan class="cd-type"> : URL</tspan><tspan class="cd-mult-in"> [*]</tspan></text>
+<text class="cd-attr" x="1212" y="641">sharedAt<tspan class="cd-type"> : DateTime</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+</g>
+<g class="cd-class" id="cd-Staff">
+<rect class="cd-box" x="1540" y="70" width="270" height="132" rx="3"/>
+<path class="cd-head cd-head-b" d="M1540 120V73a3 3 0 0 1 3-3H1807a3 3 0 0 1 3 3V120Z"/>
+<line class="cd-rule" x1="1540" y1="120" x2="1810" y2="120"/>
+<text class="cd-name" x="1675.0" y="92" text-anchor="middle">Staff</text>
+<text class="cd-sub" x="1675.0" y="109" text-anchor="middle">admin · relationship manager</text>
+<rect class="cd-mvp" x="1772" y="77" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1787.5" y="88" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="1552" y="140">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="1552" y="157">name<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="1552" y="174">email<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="1552" y="191">roles<tspan class="cd-type"> : StaffRole</tspan><tspan class="cd-mult-in"> [1..*]</tspan></text>
+</g>
+<g class="cd-class" id="cd-Client">
+<rect class="cd-box" x="1540" y="252" width="270" height="183" rx="3"/>
+<path class="cd-head cd-head-b" d="M1540 302V255a3 3 0 0 1 3-3H1807a3 3 0 0 1 3 3V302Z"/>
+<line class="cd-rule" x1="1540" y1="302" x2="1810" y2="302"/>
+<text class="cd-name" x="1675.0" y="274" text-anchor="middle">Client</text>
+<text class="cd-sub" x="1675.0" y="291" text-anchor="middle">account created by the team</text>
+<rect class="cd-mvp" x="1772" y="259" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1787.5" y="270" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="1552" y="322">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="1552" y="339">name<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="1552" y="356">dateOfBirth<tspan class="cd-type"> : Date</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="1552" y="373">email<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="1552" y="390">phone<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="1552" y="407">address<tspan class="cd-type"> : Address</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+<text class="cd-attr" x="1552" y="424">termsAcceptedAt<tspan class="cd-type"> : DateTime</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+</g>
+<g class="cd-class" id="cd-Conversation">
+<rect class="cd-box" x="1540" y="500" width="185" height="149" rx="3"/>
+<path class="cd-head cd-head-b" d="M1540 550V503a3 3 0 0 1 3-3H1722a3 3 0 0 1 3 3V550Z"/>
+<line class="cd-rule" x1="1540" y1="550" x2="1725" y2="550"/>
+<text class="cd-name" x="1632.5" y="522" text-anchor="middle">Conversation</text>
+<text class="cd-sub" x="1632.5" y="539" text-anchor="middle">AI chat, call, email, in person</text>
+<rect class="cd-mvp" x="1687" y="507" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1702.5" y="518" text-anchor="middle">MVP</text>
+<text class="cd-attr" x="1552" y="570">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="1552" y="587">channel<tspan class="cd-type"> : Channel</tspan></text>
+<text class="cd-attr" x="1552" y="604">occurredAt<tspan class="cd-type"> : DateTime</tspan></text>
+<text class="cd-attr" x="1552" y="621">transcript<tspan class="cd-type"> : Text</tspan></text>
+<text class="cd-attr" x="1552" y="638">summary<tspan class="cd-type"> : Text</tspan><tspan class="cd-mult-in"> [0..1]</tspan></text>
+</g>
+<g class="cd-class" id="cd-ClientPreference">
+<rect class="cd-box" x="1540" y="710" width="270" height="149" rx="3"/>
+<path class="cd-head cd-head-b" d="M1540 760V713a3 3 0 0 1 3-3H1807a3 3 0 0 1 3 3V760Z"/>
+<line class="cd-rule" x1="1540" y1="760" x2="1810" y2="760"/>
+<text class="cd-name" x="1675.0" y="732" text-anchor="middle">ClientPreference</text>
+<text class="cd-sub" x="1675.0" y="749" text-anchor="middle">the client record · lasts across trips</text>
+<text class="cd-attr" x="1552" y="780">id<tspan class="cd-type"> : ID</tspan></text>
+<text class="cd-attr" x="1552" y="797">category<tspan class="cd-type"> : PreferenceCategory</tspan></text>
+<text class="cd-attr" x="1552" y="814">detail<tspan class="cd-type"> : Text</tspan></text>
+<text class="cd-attr" x="1552" y="831">source<tspan class="cd-type"> : String</tspan></text>
+<text class="cd-attr" x="1552" y="848">recordedAt<tspan class="cd-type"> : DateTime</tspan></text>
+</g>
+<polyline class="cd-edge" points="195.0,168 195.0,218"/>
+<polygon class="cd-diamond" points="195.0,168 189.0,176.0 195.0,184 201.0,176.0"/>
+<text class="cd-mult cd-on-a" x="203.0" y="194" text-anchor="start">1</text>
+<text class="cd-mult cd-on-a" x="203.0" y="212" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-a" x="175.0" y="197.0" text-anchor="end">groups</text>
+<polygon class="cd-dir" points="179.5,189.5 186.5,189.5 183.0,196.5"/>
+<polyline class="cd-edge" points="340,255 440,255"/>
+<text class="cd-mult cd-on-a" x="346" y="248" text-anchor="start">1</text>
+<text class="cd-mult cd-on-a" x="434" y="248" text-anchor="end">0..*</text>
+<text class="cd-assoc cd-on-a" x="385.0" y="272" text-anchor="middle">classifies</text>
+<polygon class="cd-dir" points="419.5,264.5 426.5,268.0 419.5,271.5"/>
+<polyline class="cd-edge" points="300,400 300,345 480,345 480,287"/>
+<polygon class="cd-diamond" points="300,400 306.0,392.0 300,384 294.0,392.0"/>
+<text class="cd-mult cd-on-a" x="308" y="376" text-anchor="start">1</text>
+<text class="cd-mult cd-on-a" x="488" y="303" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-a" x="385" y="339" text-anchor="middle">offers</text>
+<polygon class="cd-dir" points="407.5,331.5 414.5,335.0 407.5,338.5"/>
+<polyline class="cd-edge" points="340,450 440,450"/>
+<polygon class="cd-diamond" points="340,450 348.0,456.0 356,450 348.0,444.0"/>
+<text class="cd-mult cd-on-a" x="360" y="443" text-anchor="start">1</text>
+<text class="cd-mult cd-on-a" x="434" y="443" text-anchor="end">0..*</text>
+<text class="cd-assoc cd-on-a" x="392.0" y="467" text-anchor="middle">engages</text>
+<polygon class="cd-dir" points="417.5,459.5 424.5,463.0 417.5,466.5"/>
+<polyline class="cd-edge" points="340,680 440,680"/>
+<polygon class="cd-diamond" points="340,680 348.0,686.0 356,680 348.0,674.0"/>
+<text class="cd-mult cd-on-a" x="360" y="673" text-anchor="start">1</text>
+<text class="cd-mult cd-on-a" x="434" y="673" text-anchor="end">0..*</text>
+<text class="cd-assoc cd-on-a" x="392.0" y="697" text-anchor="middle">has</text>
+<polygon class="cd-dir" points="405.5,689.5 412.5,693.0 405.5,696.5"/>
+<polyline class="cd-edge" points="680,287 680,380"/>
+<text class="cd-mult cd-on-a" x="688" y="303" text-anchor="start">0..*</text>
+<text class="cd-mult cd-on-a" x="688" y="374" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-a" x="660" y="337.5" text-anchor="end">delivered by</text>
+<polygon class="cd-dir" points="664.5,330.0 671.5,330.0 668.0,337.0"/>
+<polyline class="cd-edge" points="195.0,790 195.0,719"/>
+<text class="cd-mult cd-on-a" x="203.0" y="784" text-anchor="start">0..*</text>
+<text class="cd-mult cd-on-a" x="203.0" y="735" text-anchor="start">0..1</text>
+<text class="cd-assoc cd-on-a" x="175.0" y="758.5" text-anchor="end">posted by</text>
+<polygon class="cd-dir" points="179.5,758.0 183.0,751.0 186.5,758.0"/>
+<polyline class="cd-edge" points="1675.0,202 1675.0,252"/>
+<text class="cd-mult cd-on-b" x="1683.0" y="218" text-anchor="start">0..1</text>
+<text class="cd-mult cd-on-b" x="1683.0" y="246" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-b" x="1655.0" y="231.0" text-anchor="end">relationship manager of</text>
+<polygon class="cd-dir" points="1659.5,223.5 1666.5,223.5 1663.0,230.5"/>
+<polyline class="cd-edge" points="1540,390 1460,390"/>
+<polygon class="cd-diamond" points="1540,390 1532.0,384.0 1524,390 1532.0,396.0"/>
+<text class="cd-mult cd-on-b" x="1520" y="383" text-anchor="end">1</text>
+<text class="cd-mult cd-on-b" x="1466" y="383" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-b" x="1500.0" y="407" text-anchor="middle">takes</text>
+<polygon class="cd-dir" points="1526.5,399.5 1519.5,403.0 1526.5,406.5"/>
+<polyline class="cd-edge" points="1630,435 1630,500"/>
+<polygon class="cd-diamond" points="1630,435 1624.0,443.0 1630,451 1636.0,443.0"/>
+<text class="cd-mult cd-on-b" x="1638" y="461" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="1638" y="494" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-b" x="1610" y="471.5" text-anchor="end">has</text>
+<polygon class="cd-dir" points="1614.5,464.0 1621.5,464.0 1618.0,471.0"/>
+<polyline class="cd-edge" points="1785,435 1785,710"/>
+<polygon class="cd-diamond" points="1785,435 1779.0,443.0 1785,451 1791.0,443.0"/>
+<text class="cd-mult cd-on-b" x="1793" y="461" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="1793" y="704" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-b" x="1765" y="684" text-anchor="end">builds up</text>
+<polygon class="cd-dir" points="1769.5,676.5 1776.5,676.5 1773.0,683.5"/>
+<polyline class="cd-edge" points="1540,545 1500,545 1500,440 1460,440"/>
+<text class="cd-mult cd-on-b" x="1534" y="538" text-anchor="end">0..*</text>
+<text class="cd-mult cd-on-b" x="1466" y="456" text-anchor="start">0..1</text>
+<text class="cd-assoc cd-on-b" x="1480" y="497" text-anchor="end">about</text>
+<polygon class="cd-dir" points="1484.5,496.5 1488.0,489.5 1491.5,496.5"/>
+<polyline class="cd-edge" points="1330.0,300 1330.0,253"/>
+<polygon class="cd-diamond" points="1330.0,300 1336.0,292.0 1330.0,284 1324.0,292.0"/>
+<text class="cd-mult cd-on-b" x="1338.0" y="278" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="1338.0" y="269" text-anchor="start">0..1</text>
+<text class="cd-assoc cd-on-b" x="1310.0" y="280.5" text-anchor="end">wants</text>
+<polygon class="cd-dir" points="1314.5,280.0 1318.0,273.0 1321.5,280.0"/>
+<polyline class="cd-edge" points="1330.0,466 1330.0,520"/>
+<polygon class="cd-diamond" points="1330.0,466 1324.0,474.0 1330.0,482 1336.0,474.0"/>
+<text class="cd-mult cd-on-b" x="1338.0" y="492" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="1338.0" y="514" text-anchor="start">0..1</text>
+<text class="cd-assoc cd-on-b" x="1310.0" y="497.0" text-anchor="end">results in</text>
+<polygon class="cd-dir" points="1314.5,489.5 1321.5,489.5 1318.0,496.5"/>
+<polyline class="cd-edge" points="1200,340 1120,340"/>
+<polygon class="cd-diamond" points="1200,340 1192.0,334.0 1184,340 1192.0,346.0"/>
+<text class="cd-mult cd-on-b" x="1180" y="333" text-anchor="end">1</text>
+<text class="cd-mult cd-on-b" x="1126" y="333" text-anchor="start">1</text>
+<text class="cd-assoc cd-on-b" x="1160.0" y="357" text-anchor="middle">plans</text>
+<polygon class="cd-dir" points="1186.5,349.5 1179.5,353.0 1186.5,356.5"/>
+<polyline class="cd-edge" points="990.0,269 990.0,219"/>
+<text class="cd-mult cd-on-b" x="998.0" y="263" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="998.0" y="235" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-b" x="970.0" y="248.0" text-anchor="end">paid by</text>
+<polygon class="cd-dir" points="974.5,247.5 978.0,240.5 981.5,247.5"/>
+<polyline class="cd-edge" points="990.0,384 990.0,434"/>
+<polygon class="cd-diamond" points="990.0,384 984.0,392.0 990.0,400 996.0,392.0"/>
+<text class="cd-mult cd-on-b" x="998.0" y="410" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="998.0" y="428" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-b" x="970.0" y="413.0" text-anchor="end">made of</text>
+<polygon class="cd-dir" points="974.5,405.5 981.5,405.5 978.0,412.5"/>
+<polyline class="cd-edge" points="990.0,583 990.0,633"/>
+<polygon class="cd-diamond" points="990.0,583 984.0,591.0 990.0,599 996.0,591.0"/>
+<text class="cd-mult cd-on-b" x="998.0" y="609" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="998.0" y="627" text-anchor="start">0..1</text>
+<text class="cd-assoc cd-on-b" x="970.0" y="612.0" text-anchor="end">booked through</text>
+<polygon class="cd-dir" points="974.5,604.5 981.5,604.5 978.0,611.5"/>
+<polyline class="cd-edge" points="990.0,782 990.0,832"/>
+<polygon class="cd-diamond" points="990.0,782 984.0,790.0 990.0,798 996.0,790.0"/>
+<text class="cd-mult cd-on-b" x="998.0" y="808" text-anchor="start">1</text>
+<text class="cd-mult cd-on-b" x="998.0" y="826" text-anchor="start">0..*</text>
+<text class="cd-assoc cd-on-b" x="970.0" y="811.0" text-anchor="end">logs</text>
+<polygon class="cd-dir" points="974.5,803.5 981.5,803.5 978.0,810.5"/>
+<polyline class="cd-edge" points="860,470 785,470 785,200 740,200"/>
+<text class="cd-mult cd-on-b" x="854" y="486" text-anchor="end">0..*</text>
+<text class="cd-mult cd-on-a" x="746" y="193" text-anchor="start">1</text>
+<text class="cd-assoc cd-on-b" x="806" y="463" text-anchor="start">places</text>
+<polygon class="cd-dir" points="853.5,455.5 846.5,459.0 853.5,462.5"/>
+<polyline class="cd-edge" points="860,560 785,560 785,690 740,690"/>
+<text class="cd-mult cd-on-b" x="854" y="576" text-anchor="end">0..*</text>
+<text class="cd-mult cd-on-a" x="746" y="683" text-anchor="start">0..1</text>
+<text class="cd-assoc cd-on-b" x="806" y="553" text-anchor="start">at</text>
+<polygon class="cd-dir" points="829.5,545.5 822.5,549.0 829.5,552.5"/>
+<path class="cd-note" d="M440 790H730L740 800V894H440Z"/>
+<path class="cd-note-fold" d="M730 790V800H740"/>
+<text class="cd-note-t cd-note-h" x="450" y="808" xml:space="preserve">Constraints</text>
+<text class="cd-note-t" x="450" y="823" xml:space="preserve">• A component’s practitioners work for</text>
+<text class="cd-note-t" x="450" y="838" xml:space="preserve">  that component’s vendor.</text>
+<text class="cd-note-t" x="450" y="853" xml:space="preserve">• A block’s branch belongs to the vendor</text>
+<text class="cd-note-t" x="450" y="868" xml:space="preserve">  of the block’s component.</text>
+<text class="cd-note-t" x="450" y="883" xml:space="preserve">• Module is derived through Catalogue.</text>
+<path class="cd-note" d="M1200 700H1450L1460 710V789H1200Z"/>
+<path class="cd-note-fold" d="M1450 700V710H1460"/>
+<text class="cd-note-t cd-note-h" x="1210" y="718" xml:space="preserve">Confirm → lock → pay → book</text>
+<text class="cd-note-t" x="1210" y="733" xml:space="preserve">Confirming sets Itinerary.confirmedAt,</text>
+<text class="cd-note-t" x="1210" y="748" xml:space="preserve">freezing blocks and their prices. Later</text>
+<text class="cd-note-t" x="1210" y="763" xml:space="preserve">changes go through the relationship</text>
+<text class="cd-note-t" x="1210" y="778" xml:space="preserve">manager. Payment precedes any booking.</text>
+<path class="cd-note" d="M1200 812H1450L1460 822V886H1200Z"/>
+<path class="cd-note-fold" d="M1450 812V822H1460"/>
+<text class="cd-note-t" x="1210" y="830" xml:space="preserve">Health core = blocks added by TEAM.</text>
+<text class="cd-note-t" x="1210" y="845" xml:space="preserve">The client adds the rest; the AI</text>
+<text class="cd-note-t" x="1210" y="860" xml:space="preserve">suggests a component per free slot.</text>
+<text class="cd-note-t" x="1210" y="875" xml:space="preserve">Blocks fall within the trip’s dates.</text>
+<path class="cd-note" d="M1200 910H1450L1460 920V969H1200Z"/>
+<path class="cd-note-fold" d="M1450 910V920H1460"/>
+<text class="cd-note-t" x="1210" y="928" xml:space="preserve">The client sees Booking.status (the</text>
+<text class="cd-note-t" x="1210" y="943" xml:space="preserve">green tick on the block), never the</text>
+<text class="cd-note-t" x="1210" y="958" xml:space="preserve">internal BookingEvents.</text>
+<line class="cd-note-link" x1="1200" y1="940" x2="1120" y2="940"/>
+<path class="cd-note" d="M1540 900H1800L1810 910V989H1540Z"/>
+<path class="cd-note-fold" d="M1800 900V910H1810"/>
+<text class="cd-note-t" x="1550" y="918" xml:space="preserve">The AI agent is not a class. It works</text>
+<text class="cd-note-t" x="1550" y="933" xml:space="preserve">on top: turns conversations into</text>
+<text class="cd-note-t" x="1550" y="948" xml:space="preserve">requirements and preferences, drafts</text>
+<text class="cd-note-t" x="1550" y="963" xml:space="preserve">itineraries, suggests blocks and sends</text>
+<text class="cd-note-t" x="1550" y="978" xml:space="preserve">booking requests.</text>
+<rect class="cd-box" x="34" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="139.0" y="1105" text-anchor="middle">«datatype»</text>
+<text class="cd-tname" x="139.0" y="1121" text-anchor="middle">Money</text>
+<line class="cd-rule" x1="34" y1="1128" x2="244" y2="1128"/>
+<text class="cd-lit" x="44" y="1144" xml:space="preserve">amount : Decimal</text>
+<text class="cd-lit" x="44" y="1159" xml:space="preserve">currency : CurrencyCode</text>
+<rect class="cd-box" x="258" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="363.0" y="1105" text-anchor="middle">«datatype»</text>
+<text class="cd-tname" x="363.0" y="1121" text-anchor="middle">Address</text>
+<line class="cd-rule" x1="258" y1="1128" x2="468" y2="1128"/>
+<text class="cd-lit" x="268" y="1144" xml:space="preserve">line : String · city : String</text>
+<text class="cd-lit" x="268" y="1159" xml:space="preserve">postcode : String</text>
+<text class="cd-lit" x="268" y="1174" xml:space="preserve">country : String</text>
+<rect class="cd-box" x="482" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="587.0" y="1105" text-anchor="middle">«datatype»</text>
+<text class="cd-tname" x="587.0" y="1121" text-anchor="middle">ModuleShare</text>
+<line class="cd-rule" x1="482" y1="1128" x2="692" y2="1128"/>
+<text class="cd-lit" x="492" y="1144" xml:space="preserve">module : Module</text>
+<text class="cd-lit" x="492" y="1159" xml:space="preserve">percent : 0..100</text>
+<text class="cd-lit" x="492" y="1174" xml:space="preserve">{Σ percent = 100}</text>
+<rect class="cd-box" x="706" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="811.0" y="1105" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="811.0" y="1121" text-anchor="middle">TripStatus</text>
+<line class="cd-rule" x1="706" y1="1128" x2="916" y2="1128"/>
+<text class="cd-lit" x="716" y="1144" xml:space="preserve">PLANNING · AWAITING_PAYMENT</text>
+<text class="cd-lit" x="716" y="1159" xml:space="preserve">BOOKING · READY · IN_PROGRESS</text>
+<text class="cd-lit" x="716" y="1174" xml:space="preserve">COMPLETED · CANCELLED</text>
+<rect class="cd-box" x="930" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="1035.0" y="1105" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="1035.0" y="1121" text-anchor="middle">BookingStatus</text>
+<line class="cd-rule" x1="930" y1="1128" x2="1140" y2="1128"/>
+<text class="cd-lit" x="940" y="1144" xml:space="preserve">PENDING · REQUESTED</text>
+<text class="cd-lit" x="940" y="1159" xml:space="preserve">CONFIRMED · DECLINED</text>
+<text class="cd-lit" x="940" y="1174" xml:space="preserve">CANCELLED</text>
+<rect class="cd-box" x="1154" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="1259.0" y="1105" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="1259.0" y="1121" text-anchor="middle">PaymentStatus</text>
+<line class="cd-rule" x1="1154" y1="1128" x2="1364" y2="1128"/>
+<text class="cd-lit" x="1164" y="1144" xml:space="preserve">PENDING · PAID · FAILED</text>
+<text class="cd-lit" x="1164" y="1159" xml:space="preserve">REFUNDED</text>
+<rect class="cd-box" x="1378" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="1483.0" y="1105" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="1483.0" y="1121" text-anchor="middle">AddedBy</text>
+<line class="cd-rule" x1="1378" y1="1128" x2="1588" y2="1128"/>
+<text class="cd-lit" x="1388" y="1144" xml:space="preserve">TEAM · CLIENT · AI</text>
+<rect class="cd-box" x="1602" y="1090" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="1707.0" y="1105" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="1707.0" y="1121" text-anchor="middle">Channel</text>
+<line class="cd-rule" x1="1602" y1="1128" x2="1812" y2="1128"/>
+<text class="cd-lit" x="1612" y="1144" xml:space="preserve">AI_CHAT · STAFF_CHAT · CALL</text>
+<text class="cd-lit" x="1612" y="1159" xml:space="preserve">EMAIL · WHATSAPP · IN_PERSON</text>
+<rect class="cd-box" x="34" y="1199" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="139.0" y="1214" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="139.0" y="1230" text-anchor="middle">Actor</text>
+<line class="cd-rule" x1="34" y1="1237" x2="244" y2="1237"/>
+<text class="cd-lit" x="44" y="1253" xml:space="preserve">AI_AGENT · STAFF · VENDOR</text>
+<rect class="cd-box" x="258" y="1199" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="363.0" y="1214" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="363.0" y="1230" text-anchor="middle">PriceUnit</text>
+<line class="cd-rule" x1="258" y1="1237" x2="468" y2="1237"/>
+<text class="cd-lit" x="268" y="1253" xml:space="preserve">PER_PERSON · FOR_TWO</text>
+<text class="cd-lit" x="268" y="1268" xml:space="preserve">PER_GROUP</text>
+<rect class="cd-box" x="482" y="1199" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="587.0" y="1214" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="587.0" y="1230" text-anchor="middle">Pace</text>
+<line class="cd-rule" x1="482" y1="1237" x2="692" y2="1237"/>
+<text class="cd-lit" x="492" y="1253" xml:space="preserve">RELAXED · BALANCED · PACKED</text>
+<rect class="cd-box" x="706" y="1199" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="811.0" y="1214" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="811.0" y="1230" text-anchor="middle">PreferenceCategory</text>
+<line class="cd-rule" x1="706" y1="1237" x2="916" y2="1237"/>
+<text class="cd-lit" x="716" y="1253" xml:space="preserve">DIET · ALLERGY · MOBILITY</text>
+<text class="cd-lit" x="716" y="1268" xml:space="preserve">LANGUAGE · LIKES · DISLIKES</text>
+<text class="cd-lit" x="716" y="1283" xml:space="preserve">OTHER</text>
+<rect class="cd-box" x="930" y="1199" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="1035.0" y="1214" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="1035.0" y="1230" text-anchor="middle">FeedSource</text>
+<line class="cd-rule" x1="930" y1="1237" x2="1140" y2="1237"/>
+<text class="cd-lit" x="940" y="1253" xml:space="preserve">VENDOR_INSTAGRAM</text>
+<text class="cd-lit" x="940" y="1268" xml:space="preserve">KERALA_TOURISM · NEWS</text>
+<rect class="cd-box" x="1154" y="1199" width="210" height="95" rx="3"/>
+<text class="cd-stereo" x="1259.0" y="1214" text-anchor="middle">«enumeration»</text>
+<text class="cd-tname" x="1259.0" y="1230" text-anchor="middle">StaffRole</text>
+<line class="cd-rule" x1="1154" y1="1237" x2="1364" y2="1237"/>
+<text class="cd-lit" x="1164" y="1253" xml:space="preserve">ADMIN</text>
+<text class="cd-lit" x="1164" y="1268" xml:space="preserve">RELATIONSHIP_MANAGER</text>
+<rect class="cd-key" x="1378" y="1199" width="434" height="95" rx="3"/>
+<text class="cd-tname" x="1390" y="1219">Notation</text>
+<line class="cd-edge" x1="1392" y1="1233" x2="1448" y2="1233"/>
+<polygon class="cd-diamond" points="1392,1233 1400,1227 1408,1233 1400,1239"/>
+<text class="cd-key-t" x="1476" y="1237">composition: the part belongs to the whole</text>
+<line class="cd-edge" x1="1392" y1="1249" x2="1448" y2="1249"/>
+<text class="cd-key-t" x="1476" y="1253">association: its name reads the way the arrow points</text>
+<polygon class="cd-dir" points="1452.5,1245.5 1459.5,1249.0 1452.5,1252.5"/>
+<text class="cd-mult cd-on-k" x="1392" y="1269">0..1  0..*</text>
+<text class="cd-key-t" x="1476" y="1269">how many at that end · [*] a list · /name derived</text>
+<rect class="cd-mvp" x="1396" y="1274" width="31" height="15" rx="7.5"/>
+<text class="cd-mvp-t" x="1411.5" y="1285" text-anchor="middle">MVP</text>
+<text class="cd-key-t" x="1476" y="1285">needed for the first demo (MVP scope, 15 Oct)</text>
+</g>
+</svg>
