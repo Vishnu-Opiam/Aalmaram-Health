@@ -145,7 +145,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-15 | Vendor website drafting (P1.5): admin-triggered fetch of a public URL or pasted text; suggestions only; tests use fixtures, never the network. | Notebook §6.3 (scrape → structured output); tests must run offline. |
 | 2026-10-15 | Refinements beyond the diagram: Address stored as columns; `FeedPost.externalId` / `hiddenAt`; `Payment.providerReference`; `BookingEvent.actorUserId`; `Conversation.createdById`; `HealthDossier.documents` hold private storage keys, not public URLs. | Needed for de-duplication, moderation, reconciliation, audit and privacy; none changes the diagram's meaning. |
 | 2026-10-15 | Backlog, not planned: vendor view, commission tracking, phone app, landing page and translations, two-way human chat, in-trip capture, question bank. | Nivedith, 14–15 Oct: not now. |
-| 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. | CLAUDE.md §8; updating it was outside this docs change. |
+| 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans
 
