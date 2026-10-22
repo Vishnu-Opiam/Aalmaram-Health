@@ -318,6 +318,41 @@ export const itineraryNotesSchema = z.object({
   clientNotes: optionalText(4000),
 });
 
+// --- feed ------------------------------------------------------------------
+
+const feedSource = z.enum(["VENDOR_INSTAGRAM", "KERALA_TOURISM", "NEWS"]);
+const requiredUrl = (label: string) =>
+  z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => /^https?:\/\/\S+$/i.test(v), `${label} must be a full web address starting with https://`);
+
+export const feedPostSchema = z.object({
+  source: feedSource,
+  vendorId: optionalText(60),
+  caption: requiredText("Caption", 2000),
+  mediaUrl: optionalUrl,
+  link: requiredUrl("Link"),
+  publishedAt: requiredDate("date"),
+});
+
+/** One element of a pasted JSON import. Vendors are matched by exact name. */
+export const feedImportItemSchema = z.object({
+  source: feedSource,
+  caption: z.string().trim().min(1).max(2000),
+  link: requiredUrl("link"),
+  mediaUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => /^https?:\/\/\S+$/i.test(v), "mediaUrl must be a full web address")
+    .optional(),
+  publishedAt: z.string().refine((v) => !Number.isNaN(Date.parse(v)), "publishedAt must be a date"),
+  externalId: z.string().trim().min(1).max(200).optional(),
+  vendorName: z.string().trim().max(200).optional(),
+});
+
 // --- report ----------------------------------------------------------------
 
 export const reportSaveSchema = z.object({

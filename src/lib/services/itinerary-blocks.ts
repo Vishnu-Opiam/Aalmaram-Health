@@ -3,7 +3,7 @@ import type { AddedBy, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { conflict, forbidden, notFound, validation } from "@/lib/errors";
 import { blockPrice, placementProblems, toBlockStart } from "@/domain/trips/blocks";
-import { assertItineraryEditable } from "@/domain/trips/status";
+import { assertItineraryEditable, assertTransition } from "@/domain/trips/status";
 
 /**
  * Block mutations shared by the admin builder and the client portal.
@@ -162,6 +162,26 @@ export async function removeBlock(input: { blockId: string; scope: BlockScope })
   const { block, trip } = await loadBlockForMutation(input.blockId, input.scope);
   await prisma.itineraryItem.delete({ where: { id: block.id } });
   return { tripId: trip.id, itineraryId: trip.itinerary.id };
+}
+
+/**
+ * Confirm → lock. Prices are recomputed one last time and frozen, the
+ * itinerary is locked and the trip waits for payment. Nothing is booked yet.
+ */
+export async function confirmItinerary(tripId: string, scope: BlockScope) {
+  const trip = await loadTripForMutation(tripId, scope);
+  assertItineraryEditable(trip.status, trip.itinerary.confirmedAt);
+  assertTransition(trip.status, "AWAITING_PAYMENT");
+  const blocks = await prisma.itineraryItem.count({ where: { itineraryId: trip.itinerary.id } });
+  if (blocks === 0) throw conflict("Add at least one activity before confirming.");
+
+  const confirmedAt = new Date();
+  await prisma.$transaction(async (tx) => {
+    await repriceItinerary(trip.id, tx);
+    await tx.itinerary.update({ where: { id: trip.itinerary.id }, data: { confirmedAt } });
+    await tx.trip.update({ where: { id: trip.id }, data: { status: "AWAITING_PAYMENT" } });
+  });
+  return { trip, blocks, confirmedAt };
 }
 
 /** Recomputes every block price from current component prices and the trip's travellers. */

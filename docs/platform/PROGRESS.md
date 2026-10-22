@@ -19,11 +19,11 @@
 
 ## Phase 1 — What we offer: vendor profile (BUILD FIRST · MVP)
 - [x] P1.1 Schema + migration (Vendor profile fields, `accreditations[]`, Branch, Practitioner, Component duration / recovery time / price unit)
-- [~] P1.2 Domain: validation, missing-fields list, client + planner projections (client projection lands with the portal in P3.5)
+- [x] P1.2 Domain: validation, missing-fields list, client + planner projections (client projection = `src/domain/trips/builder-view.ts`)
 - [x] P1.3 Admin vendor profile editor (+ branches, practitioners)
 - [x] P1.4 Component editor additions + practitioner links
 - [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
-- [ ] P1.6 Client-facing provider info in portal + leak tests
+- [x] P1.6 Client-facing provider info in portal + leak tests
 - [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
 - [!] P1.8 First real vendors entered by humans — needs Nivedith's curated list
 - [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
@@ -38,14 +38,14 @@
 - [x] P2.7 Seed
 
 ## Phase 3 — Client portal: Feed + itinerary builder (MVP)
-- [ ] P3.1 FeedPost + admin feed manager (add / hide / import)
+- [x] P3.1 FeedPost + admin feed manager (add / hide / import)
 - [!] P3.2 Automated feed ingestion — build the seam now; real sources blocked on a sourcing decision
-- [ ] P3.3 Portal shell + Feed page
-- [ ] P3.4 Drag-and-drop itinerary builder with running cost
-- [ ] P3.5 Block detail (component + provider)
-- [ ] P3.6 Prices shown to the client
-- [ ] P3.7 50+ accessibility pass
-- [ ] P3.8 Tests
+- [x] P3.3 Portal shell + Feed page
+- [x] P3.4 Drag-and-drop itinerary builder with running cost
+- [x] P3.5 Block detail (component + provider)
+- [x] P3.6 Prices shown to the client
+- [~] P3.7 50+ accessibility pass (large type and targets, click alternative to drag, nothing on hover; no formal audit yet)
+- [x] P3.8 Tests
 
 ## Phase 4 — AI: conversation → requirements → itinerary (MVP)
 - [ ] P4.1 Requirements extraction + conversation summary
@@ -58,7 +58,7 @@
 
 ## Phase 5 — Confirm, lock & pay
 - [ ] P5.1 Schema + payment status machine
-- [!] P5.2 Confirm & lock — build now; terms text pending
+- [~] P5.2 Confirm & lock — confirm/lock/reopen built in Phase 3; terms acceptance pending
 - [!] P5.3 Payment seam (fake + manual recording) — build now; real provider and service fee pending
 - [ ] P5.4 Admin payments + staff edits after confirm
 - [ ] P5.5 What-to-Expect from the confirmed itinerary
@@ -157,6 +157,9 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-22 | Staff roles stored (`roles StaffRole[]`) and the relationship manager is assignable, but every staff member can still do everything (no permission split yet). P2.1 stays `[~]`. | MVP has one or two staff; the split needs a decision on what an RM may not do. |
 | 2026-10-22 | The What-to-Expect report is shared with the client by "Save and share" on the report page (no longer tied to publishing a proposal). | The publish flow is retired. |
 | 2026-10-22 | The migration gives clients that had intake text or trip dates but no itinerary a placeholder trip "First trip (dates to confirm)" so their intake survives as requirements. | Data preservation over neatness; staff can rename or cancel it. |
+| 2026-10-22 | Confirm & lock (P5.2) pulled into the MVP: the client's "Confirm my itinerary" reprices once, freezes prices, sets `confirmedAt` and moves the trip to AWAITING_PAYMENT; staff can "Reopen for changes". Payment itself stays Phase 5. | The demo ends at "the final itinerary with its cost" (§12.1 #16); confirm is the explicit human action the AI-draft guardrail relies on. |
+| 2026-10-22 | Portal sections live in the route group `src/app/trip/(portal)/`: Feed (`/trip`), Itinerary, Calendar (activities with "Not booked yet" until Booking exists), Chat (Phase 4). The trip is chosen by `?trip=`, defaulting to the next unfinished trip. | Keeps sign-in/access routes outside the portal chrome. |
+| 2026-10-22 | Feed posts without an image show a source-coloured placeholder; external images use a plain `<img>`. | `next/image` would need every social CDN host allow-listed; images are optional in the import. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans

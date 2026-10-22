@@ -12,6 +12,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { EXTRA_CATALOGUES, seedInventory } from "./seed-inventory";
 import { seedClientsAndTrips } from "./seed-trips";
+import { seedFeed } from "./seed-feed";
 
 const prisma = new PrismaClient();
 
@@ -118,6 +119,8 @@ async function main() {
   // ------------------------------------------- vendors and components
   const inventory = await seedInventory(prisma, catalogues, daysFromToday(-30));
   console.log(`  vendors: ${inventory.vendorCount}, components: ${inventory.componentCount}`);
+
+  await seedFeed(prisma);
 
   // --------------------------------------------------- clients and trips
   await seedClientsAndTrips(prisma, { adminId: admin.id, adminName: admin.name, passwordHash, daysFromToday });

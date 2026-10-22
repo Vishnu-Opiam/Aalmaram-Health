@@ -94,6 +94,12 @@ enum AddedBy {
   AI
 }
 
+enum FeedSource {
+  VENDOR_INSTAGRAM
+  KERALA_TOURISM
+  NEWS
+}
+
 // FOR_TWO = restaurants, priced from Google's "average for two".
 enum PriceUnit {
   PER_PERSON
@@ -153,6 +159,7 @@ model Vendor {
   components    Component[]
   branches      Branch[]
   practitioners Practitioner[]
+  feedPosts     FeedPost[]
 
   @@index([status])
 }
@@ -470,6 +477,30 @@ model ChangeRequest {
 
   @@index([itineraryId])
   @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Feed: what Kerala looks like right now (vendor socials, tourism, good news)
+// ---------------------------------------------------------------------------
+
+/// Staff curate the feed; `hiddenAt` takes a post off it (only "positive" news
+/// is shown). `externalId` de-duplicates re-imports of the same post.
+model FeedPost {
+  id          String     @id @default(cuid())
+  source      FeedSource
+  vendorId    String?
+  caption     String
+  mediaUrl    String?
+  link        String
+  publishedAt DateTime
+  externalId  String?    @unique
+  hiddenAt    DateTime?
+  createdAt   DateTime   @default(now())
+
+  vendor Vendor? @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+
+  @@index([hiddenAt, publishedAt])
+  @@index([vendorId])
 }
 
 // ---------------------------------------------------------------------------

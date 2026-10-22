@@ -80,9 +80,8 @@ export default async function ComponentDetailPage({
 
       {component.status === "INACTIVE" && (
         <Alert tone="warning" title="This component is deactivated">
-          It cannot be published in a new proposal. Any itinerary already
-          referencing it will fail validation until it is reactivated or
-          removed.
+          It can no longer be added to an itinerary. Activities already
+          placed stay where they are.
         </Alert>
       )}
 
@@ -96,7 +95,7 @@ export default async function ComponentDetailPage({
                   What the client sees
                 </span>
               }
-              description="Exactly this text appears in the proposal and the What-to-Expect report."
+              description="Exactly this text appears in the itinerary builder and the What-to-Expect report."
             />
             <div className="space-y-5 p-5">
               <section>

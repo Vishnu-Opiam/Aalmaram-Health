@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { default: "Your journey", template: "%s · Aalmaram Health" },
+  title: { default: "Your trip", template: "%s · Aalmaram Health" },
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -27,7 +27,7 @@ export default function TripLayout({
       </a>
 
       <header className="border-b border-sand-200 bg-white">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-5">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5">
           <p className="font-serif text-lg tracking-tight text-ink-900">
             Aalmaram Health
           </p>
@@ -42,7 +42,7 @@ export default function TripLayout({
       </main>
 
       <footer className="border-t border-sand-200 bg-white">
-        <div className="mx-auto max-w-3xl px-5 py-8">
+        <div className="mx-auto max-w-5xl px-5 py-8">
           <p className="text-xs leading-relaxed text-ink-400">
             This page is personal to you. Aalmaram Health coordinates your
             journey with independent providers in Kerala; it does not provide

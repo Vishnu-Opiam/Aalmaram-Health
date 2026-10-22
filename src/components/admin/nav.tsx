@@ -8,6 +8,7 @@ import {
   CalendarRange,
   LayoutDashboard,
   Layers,
+  Newspaper,
   Package,
   Users,
 } from "lucide-react";
@@ -21,6 +22,7 @@ const NAV = [
   { href: "/admin/modules", label: "Modules", icon: Layers },
   { href: "/admin/catalogues", label: "Catalogues", icon: Boxes },
   { href: "/admin/components", label: "Components", icon: Package },
+  { href: "/admin/feed", label: "Feed", icon: Newspaper },
 ];
 
 export function AdminNav() {
