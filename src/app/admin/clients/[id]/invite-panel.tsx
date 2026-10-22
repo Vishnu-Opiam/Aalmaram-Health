@@ -37,7 +37,7 @@ export function InvitePanel({
       {!issuedAt && (
         <Alert tone="info">
           This client has no portal access yet. Send an invitation so they can
-          open their proposal once it is published.
+          see the feed and build their itinerary.
         </Alert>
       )}
 

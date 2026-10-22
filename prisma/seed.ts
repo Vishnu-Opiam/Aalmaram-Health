@@ -12,6 +12,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { EXTRA_CATALOGUES, seedInventory } from "./seed-inventory";
 import { seedClientsAndTrips } from "./seed-trips";
+import { seedFeed } from "./seed-feed";
 
 const prisma = new PrismaClient();
 
@@ -30,21 +31,41 @@ function daysFromToday(offset: number): Date {
   return new Date(base + offset * 86_400_000);
 }
 
+/**
+ * `--content-only` (npm run db:seed:content) adds the fictional demo content
+ * to a shared database (staging, the demo deployment) WITHOUT creating any
+ * login: the demo password is public in this repo. Demo trips are assigned to
+ * the first existing active admin.
+ */
+const CONTENT_ONLY = process.argv.includes("--content-only");
+
 async function main() {
-  console.log("Seeding Aalmaram Health development data…");
+  console.log(`Seeding Aalmaram Health ${CONTENT_ONLY ? "demo content (no logins)" : "development data"}…`);
 
   // ---------------------------------------------------------------- user
-  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
-  const admin = await prisma.user.upsert({
-    where: { email: DEMO_EMAIL },
-    update: { passwordHash, name: "Priya Menon (demo admin)" },
-    create: {
-      email: DEMO_EMAIL,
-      name: "Priya Menon (demo admin)",
-      passwordHash,
-      roles: ["ADMIN", "RELATIONSHIP_MANAGER"],
-    },
-  });
+  let passwordHash: string | null = null;
+  let admin: { id: string; name: string; email: string };
+  if (CONTENT_ONLY) {
+    const existing = await prisma.user.findFirst({
+      where: { status: "ACTIVE", roles: { has: "ADMIN" } },
+      orderBy: { createdAt: "asc" },
+      select: { id: true, name: true, email: true },
+    });
+    if (!existing) throw new Error("No active admin exists to own the demo trips. Create one first.");
+    admin = existing;
+  } else {
+    passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
+    admin = await prisma.user.upsert({
+      where: { email: DEMO_EMAIL },
+      update: { passwordHash, name: "Priya Menon (demo admin)" },
+      create: {
+        email: DEMO_EMAIL,
+        name: "Priya Menon (demo admin)",
+        passwordHash,
+        roles: ["ADMIN", "RELATIONSHIP_MANAGER"],
+      },
+    });
+  }
   console.log(`  admin: ${admin.email}`);
 
   // -------------------------------------------------------------- modules
@@ -119,11 +140,13 @@ async function main() {
   const inventory = await seedInventory(prisma, catalogues, daysFromToday(-30));
   console.log(`  vendors: ${inventory.vendorCount}, components: ${inventory.componentCount}`);
 
+  await seedFeed(prisma);
+
   // --------------------------------------------------- clients and trips
   await seedClientsAndTrips(prisma, { adminId: admin.id, adminName: admin.name, passwordHash, daysFromToday });
 
   console.log("\nDone.");
-  console.log(`Sign in at /login with ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);
+  if (!CONTENT_ONLY) console.log(`Sign in at /login with ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);
 }
 
 main()

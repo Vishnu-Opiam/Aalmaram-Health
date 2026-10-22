@@ -10,7 +10,8 @@ import { blockPrice } from "../src/domain/trips/blocks";
 type Ctx = {
   adminId: string;
   adminName: string;
-  passwordHash: string;
+  /** Null in content-only mode: no demo RM login is created; the admin is the RM. */
+  passwordHash: string | null;
   daysFromToday: (offset: number) => Date;
 };
 
@@ -24,16 +25,18 @@ Relationship manager: Any budget in mind?
 Elena (demo): Around three thousand euros, flexible.`;
 
 export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
-  const rm = await prisma.user.upsert({
-    where: { email: "rm@aalmaram.test" },
-    update: {},
-    create: {
-      email: "rm@aalmaram.test",
-      name: "Arjun Nair (demo RM)",
-      passwordHash: ctx.passwordHash,
-      roles: ["RELATIONSHIP_MANAGER"],
-    },
-  });
+  const rm = ctx.passwordHash
+    ? await prisma.user.upsert({
+        where: { email: "rm@aalmaram.test" },
+        update: {},
+        create: {
+          email: "rm@aalmaram.test",
+          name: "Arjun Nair (demo RM)",
+          passwordHash: ctx.passwordHash,
+          roles: ["RELATIONSHIP_MANAGER"],
+        },
+      })
+    : { id: ctx.adminId };
 
   const modules = Object.fromEntries(
     (await prisma.module.findMany({ select: { id: true, name: true } })).map((m) => [m.name, m.id]),
@@ -182,5 +185,5 @@ export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
     },
   });
 
-  console.log("  clients: 2 · trips: 2 · staff: 2");
+  console.log(`  clients: 2 · trips: 2${ctx.passwordHash ? " · staff: 2" : ""}`);
 }

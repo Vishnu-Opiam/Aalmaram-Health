@@ -7,12 +7,12 @@ import { logger } from "@/lib/logger";
 /**
  * Email abstraction.
  *
- * The product only needs three transactional messages in the MVP. A provider
+ * The product only needs a few transactional messages in the MVP. A provider
  * (Resend, SES, Postmark, SMTP) can be dropped in behind `EmailTransport`
  * without touching a single call site.
  *
  * Notifications never block the operation that triggered them: `notify()`
- * catches and logs delivery failures. Publishing a proposal must not fail
+ * catches and logs delivery failures. Confirming an itinerary must not fail
  * because an SMTP host is unreachable.
  */
 
@@ -101,72 +101,27 @@ async function notify(message: EmailMessage): Promise<boolean> {
   }
 }
 
-// --- the three MVP notifications -------------------------------------------
+// --- notifications ----------------------------------------------------------
 
-export function sendProposalPublishedEmail(input: {
-  to: string;
-  clientName: string;
-  itineraryTitle: string;
-  inviteUrl: string;
-}) {
-  return notify({
-    to: input.to,
-    subject: `Your Aalmaram journey proposal is ready: ${input.itineraryTitle}`,
-    body: [
-      `Dear ${input.clientName},`,
-      "",
-      "Your proposed journey is ready for you to review.",
-      "",
-      "You can see the day-by-day plan, read the What-to-Expect report, and then either approve the proposal or tell us what you would like changed.",
-      "",
-      `Open your proposal: ${input.inviteUrl}`,
-      "",
-      "This link is personal to you. Please do not forward it.",
-      "",
-      "Warm regards,",
-      "The Aalmaram Health team",
-    ].join("\n"),
-  });
-}
+/** Internal notifications go to the client's relationship manager, else the ops inbox. */
+export const OPS_INBOX = "operations@aalmaram.example";
 
-export function sendClientApprovedEmail(input: {
+/**
+ * Tells staff something happened on a trip. Carries ids and names only: what
+ * the client wrote or said stays in the dashboard, never in email.
+ */
+export function sendStaffTripNotice(input: {
   to: string;
+  subject: string;
   clientName: string;
-  itineraryTitle: string;
+  tripName: string;
+  what: string;
   adminUrl: string;
 }) {
   return notify({
     to: input.to,
-    subject: `Approved: ${input.clientName} - ${input.itineraryTitle}`,
-    body: [
-      `${input.clientName} has approved the itinerary "${input.itineraryTitle}".`,
-      "",
-      `Open it in the admin dashboard: ${input.adminUrl}`,
-      "",
-      "Next step: confirm each element with the providers.",
-    ].join("\n"),
-  });
-}
-
-export function sendChangeRequestedEmail(input: {
-  to: string;
-  clientName: string;
-  itineraryTitle: string;
-  scope: string;
-  adminUrl: string;
-}) {
-  return notify({
-    to: input.to,
-    subject: `Changes requested: ${input.clientName} - ${input.itineraryTitle}`,
-    body: [
-      `${input.clientName} has requested changes to "${input.itineraryTitle}".`,
-      "",
-      `Scope: ${input.scope}`,
-      "",
-      `Read the request and revise the proposal: ${input.adminUrl}`,
-      "",
-      "The message itself is only in the dashboard - it is deliberately not copied into email.",
-    ].join("\n"),
+    subject: `${input.subject}: ${input.clientName} - ${input.tripName}`,
+    body: [input.what, "", `Open the trip: ${input.adminUrl}`].join("\n"),
   });
 }
 
@@ -181,7 +136,7 @@ export function sendClientInviteEmail(input: {
     body: [
       `Dear ${input.clientName},`,
       "",
-      "Here is your personal link to the Aalmaram Health journey portal, where you will find your proposal as soon as it is ready.",
+      "Here is your personal link to the Aalmaram Health journey portal, where you can see what's happening in Kerala and build your trip with us.",
       "",
       input.inviteUrl,
       "",

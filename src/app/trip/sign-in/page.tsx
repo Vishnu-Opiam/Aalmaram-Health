@@ -50,7 +50,7 @@ export default async function TripSignInPage({
       </h1>
       <p className="mt-4 text-[15px] leading-relaxed text-ink-600">
         Your Aalmaram coordinator sends you a personal link by email. Opening
-        that link is how you reach your proposal - there is no password to
+        that link is how you reach your trip - there is no password to
         remember.
       </p>
 

@@ -28,6 +28,14 @@ const SENSITIVE_KEYS = new Set([
   "generalPreferences",
   "message",
   "content",
+  "transcript",
+  "summary",
+  "prompt",
+  "system",
+  "musthaves",
+  "avoid",
+  "reply",
+  "text",
 ]);
 
 function redact(value: unknown, depth = 0): unknown {

@@ -166,7 +166,7 @@ export function generateReportContent(input: ReportInput): string {
         "Times shown are proposed. Aalmaram confirms each appointment with the provider and shares the final schedule with you before you travel.",
         "Bring any existing reports, prescriptions or records you would like a provider to see. Aalmaram does not hold your medical records.",
         "Providers may ask you to complete their own intake or consent forms on arrival.",
-        "If anything in this plan does not suit you, use the Request changes option on your proposal page and we will revise it.",
+        "If anything in this plan does not suit you, tell your relationship manager and we will change it.",
       ].join("\n"),
     ),
   );

@@ -209,7 +209,8 @@ next step) when any of these happen:
 - Client portal locally: client page → Portal access → Send invitation → copy the
   `/trip/access/<token>` URL from the server console or `.mail.log`.
 - E2E uses its own database `aalmaram_e2e` (see `scripts/e2e-db.mjs`).
-- Existing AI seam to replace in Phase 4 (P4.3): `src/lib/services/itinerary-recommendation.ts`.
+- AI lives in `src/lib/ai/` (model calls, prompts) and `src/lib/services/ai-planning.ts`
+  (requirements, draft itinerary, slot suggestions, client chat); planner logic in `src/domain/ai/`.
 - Existing report generator to mirror for new reports: `src/domain/reports/generate.ts`.
 - Human inputs (e.g. meeting notes and transcripts) will be placed in
   `docs/platform/inputs/`. Check it at the start of every session. It stays local:

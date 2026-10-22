@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound as nextNotFound } from "next/navigation";
-import { FileText } from "lucide-react";
+import { FileText, Sparkles } from "lucide-react";
 import {
   Alert,
   AppLink as Link,
@@ -19,11 +19,14 @@ import { prisma } from "@/lib/db";
 import {
   addBlockAction,
   addConversationAction,
+  draftItineraryWithAiAction,
+  draftRequirementsWithAiAction,
   moveBlockAction,
   removeBlockAction,
   reopenItineraryAction,
   saveItineraryNotesAction,
   saveRequirementsAction,
+  suggestForStaffSlot,
   updateTripAction,
 } from "../actions";
 import { ConversationForm, NotesForm, RequirementsForm, TripForm } from "../forms";
@@ -110,9 +113,21 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <section id="itinerary" aria-labelledby="itinerary-heading" className="min-w-0 space-y-3">
-          <h2 id="itinerary-heading" className="text-sm font-semibold text-ink-900">
-            Itinerary
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 id="itinerary-heading" className="text-sm font-semibold text-ink-900">
+              Itinerary
+            </h2>
+            {builder.editable && (
+              <ActionButton
+                action={draftItineraryWithAiAction}
+                fields={{ tripId: trip.id }}
+                pendingLabel="Drafting…"
+                confirm="Draft suggested activities around the health core? Earlier AI suggestions are replaced; team and client blocks are kept."
+              >
+                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Suggest activities (AI)
+              </ActionButton>
+            )}
+          </div>
           <p className="text-xs text-ink-500">
             What you add here is the client&rsquo;s <strong>health core</strong>: the client sees it fixed and builds
             the rest of the trip around it.
@@ -121,13 +136,28 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             trip={builder}
             library={library}
             variant="staff"
-            actions={{ add: addBlockAction, move: moveBlockAction, remove: removeBlockAction }}
+            actions={{ add: addBlockAction, move: moveBlockAction, remove: removeBlockAction, suggest: suggestForStaffSlot }}
           />
         </section>
 
         <aside className="space-y-6">
           <Card id="requirements">
-            <CardHeader title="Requirements" description="What the client wants from this trip." />
+            <CardHeader
+              title="Requirements"
+              description="What the client wants from this trip."
+              action={
+                trip.conversations.length > 0 ? (
+                  <ActionButton
+                    action={draftRequirementsWithAiAction.bind(null, trip.id)}
+                    fields={{}}
+                    pendingLabel="Reading…"
+                    confirm={requirements ? "Replace these requirements with a draft from the conversations?" : undefined}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Draft with AI
+                  </ActionButton>
+                ) : undefined
+              }
+            />
             <div className="p-5">
               {requirements && (
                 <dl className="mb-4 grid grid-cols-2 gap-2 text-xs text-ink-600">
