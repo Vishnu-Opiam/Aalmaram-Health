@@ -24,23 +24,28 @@ export type ClientFormValues = {
   name: string;
   email: string;
   phone: string;
+  dateOfBirth: string;
+  addressLine: string;
+  city: string;
+  postcode: string;
   country: string;
   status: string;
-  tripStartDate: string;
-  tripEndDate: string;
-  healthInterests: string;
-  wellnessInterests: string;
-  culturalInterests: string;
-  intakeNotes: string;
+  relationshipManagerId: string;
   generalPreferences: string;
 };
 
+/**
+ * The lasting client record. What the client wants from a particular trip
+ * lives on that trip's requirements, not here.
+ */
 export function ClientForm({
   values,
+  staff,
   action,
   submitLabel,
 }: {
   values?: Partial<ClientFormValues>;
+  staff: { id: string; name: string }[];
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
 }) {
@@ -49,6 +54,19 @@ export function ClientForm({
   const initial = (field: keyof ClientFormValues, fallback = "") =>
     state.values?.[field] ?? values?.[field] ?? fallback;
 
+  const text = (field: keyof ClientFormValues & string, label: string, opts: { type?: string; required?: boolean; hint?: string } = {}) => (
+    <Field label={label} htmlFor={field} required={opts.required} hint={opts.hint} errors={state.fieldErrors[field]}>
+      <Input
+        id={field}
+        name={field}
+        type={opts.type}
+        required={opts.required}
+        defaultValue={initial(field)}
+        invalid={Boolean(state.fieldErrors[field])}
+      />
+    </Field>
+  );
+
   return (
     <form action={formAction} className="space-y-5" noValidate>
       <FormFeedback state={state} />
@@ -56,71 +74,32 @@ export function ClientForm({
       <Card>
         <CardHeader title="Contact" description="How we reach this client." />
         <div className="grid gap-5 p-5 sm:grid-cols-2">
-          <Field
-            label="Full name"
-            htmlFor="name"
-            required
-            errors={state.fieldErrors.name}
-          >
-            <Input
-              id="name"
-              name="name"
-              required
-              defaultValue={initial("name")}
-              invalid={Boolean(state.fieldErrors.name)}
-            />
-          </Field>
+          {text("name", "Full name", { required: true })}
+          {text("email", "Email", { type: "email", required: true, hint: "Their portal link is sent here." })}
+          {text("phone", "Phone")}
+          {text("dateOfBirth", "Date of birth", { type: "date" })}
+          {text("addressLine", "Address")}
+          {text("city", "City")}
+          {text("postcode", "Postcode")}
+          {text("country", "Country")}
+        </div>
+      </Card>
 
-          <Field
-            label="Email"
-            htmlFor="email"
-            required
-            hint="Used for the secure portal invitation."
-            errors={state.fieldErrors.email}
-          >
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              defaultValue={initial("email")}
-              invalid={Boolean(state.fieldErrors.email)}
-            />
+      <Card>
+        <CardHeader title="Relationship" description="Who looks after this client, and where they are in the process." />
+        <div className="grid gap-5 p-5 sm:grid-cols-2">
+          <Field label="Relationship manager" htmlFor="relationshipManagerId" errors={state.fieldErrors.relationshipManagerId}>
+            <Select id="relationshipManagerId" name="relationshipManagerId" defaultValue={initial("relationshipManagerId")}>
+              <option value="">Not assigned</option>
+              {staff.map((person) => (
+                <option key={person.id} value={person.id}>
+                  {person.name}
+                </option>
+              ))}
+            </Select>
           </Field>
-
-          <Field label="Phone" htmlFor="phone" errors={state.fieldErrors.phone}>
-            <Input
-              id="phone"
-              name="phone"
-              defaultValue={initial("phone")}
-              invalid={Boolean(state.fieldErrors.phone)}
-            />
-          </Field>
-
-          <Field
-            label="Country"
-            htmlFor="country"
-            errors={state.fieldErrors.country}
-          >
-            <Input
-              id="country"
-              name="country"
-              defaultValue={initial("country")}
-              invalid={Boolean(state.fieldErrors.country)}
-              placeholder="Germany"
-            />
-          </Field>
-
-          <Field
-            label="Status"
-            htmlFor="status"
-            errors={state.fieldErrors.status}
-          >
-            <Select
-              id="status"
-              name="status"
-              defaultValue={initial("status", "LEAD")}
-            >
+          <Field label="Status" htmlFor="status" errors={state.fieldErrors.status}>
+            <Select id="status" name="status" defaultValue={initial("status", "LEAD")}>
               {CLIENT_STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -128,103 +107,12 @@ export function ClientForm({
               ))}
             </Select>
           </Field>
-        </div>
-      </Card>
-
-      <Card>
-        <CardHeader
-          title="Trip window"
-          description="The dates the client is available to travel. Itinerary items must fall inside this window."
-        />
-        <div className="grid gap-5 p-5 sm:grid-cols-2">
           <Field
-            label="Trip start date"
-            htmlFor="tripStartDate"
-            errors={state.fieldErrors.tripStartDate}
-          >
-            <Input
-              id="tripStartDate"
-              name="tripStartDate"
-              type="date"
-              defaultValue={initial("tripStartDate")}
-              invalid={Boolean(state.fieldErrors.tripStartDate)}
-            />
-          </Field>
-
-          <Field
-            label="Trip end date"
-            htmlFor="tripEndDate"
-            errors={state.fieldErrors.tripEndDate}
-          >
-            <Input
-              id="tripEndDate"
-              name="tripEndDate"
-              type="date"
-              defaultValue={initial("tripEndDate")}
-              invalid={Boolean(state.fieldErrors.tripEndDate)}
-            />
-          </Field>
-        </div>
-      </Card>
-
-      <Card>
-        <CardHeader
-          title="Intake"
-          description="Only what is needed to curate an itinerary. This is not a medical record - do not record diagnoses, medications or clinical history."
-        />
-        <div className="space-y-5 p-5">
-          <div className="grid gap-5 sm:grid-cols-3">
-            <Field
-              label="Health interests"
-              htmlFor="healthInterests"
-              hint="e.g. full-body diagnostics"
-              errors={state.fieldErrors.healthInterests}
-            >
-              <Textarea
-                id="healthInterests"
-                name="healthInterests"
-                rows={4}
-                defaultValue={initial("healthInterests")}
-                invalid={Boolean(state.fieldErrors.healthInterests)}
-              />
-            </Field>
-
-            <Field
-              label="Wellness interests"
-              htmlFor="wellnessInterests"
-              hint="e.g. Ayurveda, yoga"
-              errors={state.fieldErrors.wellnessInterests}
-            >
-              <Textarea
-                id="wellnessInterests"
-                name="wellnessInterests"
-                rows={4}
-                defaultValue={initial("wellnessInterests")}
-                invalid={Boolean(state.fieldErrors.wellnessInterests)}
-              />
-            </Field>
-
-            <Field
-              label="Cultural interests"
-              htmlFor="culturalInterests"
-              hint="e.g. Kathakali, backwaters"
-              errors={state.fieldErrors.culturalInterests}
-            >
-              <Textarea
-                id="culturalInterests"
-                name="culturalInterests"
-                rows={4}
-                defaultValue={initial("culturalInterests")}
-                invalid={Boolean(state.fieldErrors.culturalInterests)}
-              />
-            </Field>
-          </div>
-
-          <Field
-            label="General preferences"
+            label="Lasting preferences"
             htmlFor="generalPreferences"
-            hint="Diet, pace, accessibility, travel companions."
+            hint="True across trips: diet, mobility, language, likes and dislikes. Not a medical record."
             errors={state.fieldErrors.generalPreferences}
+            className="sm:col-span-2"
           >
             <Textarea
               id="generalPreferences"
@@ -232,21 +120,6 @@ export function ClientForm({
               rows={3}
               defaultValue={initial("generalPreferences")}
               invalid={Boolean(state.fieldErrors.generalPreferences)}
-            />
-          </Field>
-
-          <Field
-            label="Intake notes"
-            htmlFor="intakeNotes"
-            hint="Internal. Never shown to the client."
-            errors={state.fieldErrors.intakeNotes}
-          >
-            <Textarea
-              id="intakeNotes"
-              name="intakeNotes"
-              rows={4}
-              defaultValue={initial("intakeNotes")}
-              invalid={Boolean(state.fieldErrors.intakeNotes)}
             />
           </Field>
         </div>

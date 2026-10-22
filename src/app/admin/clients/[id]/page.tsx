@@ -13,12 +13,16 @@ import {
 import { InvitePanel } from "./invite-panel";
 import {
   ClientStatusBadge,
-  ItineraryStatusBadge,
+  TripStatusBadge,
 } from "@/components/admin/status-badges";
+import { createTripAction } from "../../trips/actions";
+import { TripForm } from "../../trips/forms";
 import {
+  addDays,
   formatDateRange,
   formatRelative,
   formatShortDate,
+  toDateInputValue,
 } from "@/domain/shared/dates";
 import { requireUserPage } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
@@ -38,35 +42,32 @@ export default async function ClientDetailPage({
   const client = await prisma.client.findUnique({
     where: { id },
     include: {
-      itineraries: {
-        orderBy: { createdAt: "desc" },
-        include: { _count: { select: { items: true } } },
+      relationshipManager: { select: { name: true } },
+      trips: {
+        orderBy: { startDate: "asc" },
+        include: { itinerary: { select: { _count: { select: { items: true } } } } },
       },
     },
   });
 
   if (!client) nextNotFound();
 
-  const itineraryIds = client.itineraries.map((itinerary) => itinerary.id);
+  const tripIds = client.trips.map((trip) => trip.id);
 
-  // Activity for the client record itself plus all of its itineraries.
+  // Activity for the client record itself plus all of its trips.
   const activity = await prisma.activityLog.findMany({
     where: {
       OR: [
         { entityType: "Client", entityId: client.id },
-        { entityType: "Itinerary", entityId: { in: itineraryIds } },
+        { entityType: "Trip", entityId: { in: tripIds } },
       ],
     },
     orderBy: { createdAt: "desc" },
     take: 20,
   });
 
-  const intake: { term: string; detail: string }[] = [
-    { term: "Health interests", detail: client.healthInterests ?? "—" },
-    { term: "Wellness interests", detail: client.wellnessInterests ?? "—" },
-    { term: "Cultural interests", detail: client.culturalInterests ?? "—" },
-    { term: "General preferences", detail: client.generalPreferences ?? "—" },
-  ];
+  const suggestedStart = addDays(new Date(), 30);
+  const address = [client.addressLine, client.city, client.postcode, client.country].filter(Boolean).join(", ");
 
   return (
     <div className="space-y-6">
@@ -88,12 +89,9 @@ export default async function ClientDetailPage({
               <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
               Edit
             </ButtonLink>
-            <ButtonLink
-              href={`/admin/itineraries/new?clientId=${client.id}`}
-              size="sm"
-            >
+            <ButtonLink href="#new-trip" size="sm">
               <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-              New itinerary
+              New trip
             </ButtonLink>
           </>
         }
@@ -112,19 +110,14 @@ export default async function ClientDetailPage({
                   },
                   { term: "Email", detail: client.email },
                   { term: "Phone", detail: client.phone ?? "—" },
-                  { term: "Country", detail: client.country ?? "—" },
                   {
-                    term: "Trip window",
-                    detail: formatDateRange(
-                      client.tripStartDate,
-                      client.tripEndDate,
-                    ),
+                    term: "Date of birth",
+                    detail: client.dateOfBirth ? formatShortDate(client.dateOfBirth) : "—",
                   },
+                  { term: "Address", detail: address || "—" },
                   {
-                    term: "Duration",
-                    detail: client.tripDuration
-                      ? pluralise(client.tripDuration, "day")
-                      : "—",
+                    term: "Relationship manager",
+                    detail: client.relationshipManager?.name ?? "Not assigned",
                   },
                 ]}
               />
@@ -133,91 +126,58 @@ export default async function ClientDetailPage({
 
           <Card>
             <CardHeader
-              title="Intake"
-              description="Enough to curate a journey. Not a medical record."
+              title="Lasting preferences"
+              description="True across trips. Not a medical record."
             />
-            <div className="space-y-5 p-5">
-              {intake.map((entry) => (
-                <section key={entry.term}>
-                  <h3 className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink-400">
-                    {entry.term}
-                  </h3>
-                  <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-ink-700">
-                    {entry.detail}
-                  </p>
-                </section>
-              ))}
-
-              {client.intakeNotes && (
-                <div className="rounded-md bg-sand-50 p-4">
-                  <h3 className="text-[11px] font-medium uppercase tracking-[0.08em] text-ink-400">
-                    Intake notes (internal)
-                  </h3>
-                  <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-ink-700">
-                    {client.intakeNotes}
-                  </p>
-                </div>
-              )}
-            </div>
+            <p className="whitespace-pre-wrap p-5 text-sm leading-relaxed text-ink-700">
+              {client.generalPreferences ?? "—"}
+            </p>
           </Card>
 
           <Card>
             <CardHeader
-              title="Itineraries"
-              description="Every proposal prepared for this client."
-              action={
-                <ButtonLink
-                  href={`/admin/itineraries/new?clientId=${client.id}`}
-                  variant="secondary"
-                  size="sm"
-                >
-                  New itinerary
-                </ButtonLink>
-              }
+              title="Trips"
+              description="Each trip has its own requirements, conversations and itinerary."
             />
-            {client.itineraries.length === 0 ? (
-              <div className="p-5">
-                <EmptyState
-                  title="No itineraries yet"
-                  description="Build the first proposal from the component library."
-                  action={
-                    <ButtonLink
-                      href={`/admin/itineraries/new?clientId=${client.id}`}
-                      size="sm"
-                    >
-                      Start an itinerary
-                    </ButtonLink>
-                  }
-                />
-              </div>
-            ) : (
+            {client.trips.length > 0 && (
               <ul className="divide-y divide-sand-200">
-                {client.itineraries.map((itinerary) => (
-                  <li key={itinerary.id}>
+                {client.trips.map((trip) => (
+                  <li key={trip.id}>
                     <Link
-                      href={`/admin/itineraries/${itinerary.id}`}
+                      href={`/admin/trips/${trip.id}`}
                       className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-sand-50"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-[13px] font-medium text-ink-900">
-                          {itinerary.title}
-                        </p>
+                        <p className="truncate text-[13px] font-medium text-ink-900">{trip.name}</p>
                         <p className="truncate text-xs text-ink-500">
-                          {formatDateRange(
-                            itinerary.startDate,
-                            itinerary.endDate,
-                          )}{" "}
-                          · {pluralise(itinerary._count.items, "item")}
-                          {itinerary.publishedAt &&
-                            ` · published ${formatShortDate(itinerary.publishedAt)}`}
+                          {formatDateRange(trip.startDate, trip.endDate)} ·{" "}
+                          {pluralise(trip.itinerary?._count.items ?? 0, "activity", "activities")}
                         </p>
                       </div>
-                      <ItineraryStatusBadge status={itinerary.status} />
+                      <TripStatusBadge status={trip.status} />
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
+            <details id="new-trip" className="border-t border-sand-200 px-5 py-4" open={client.trips.length === 0}>
+              <summary className="cursor-pointer text-[13px] font-medium text-teal-600">
+                {client.trips.length === 0 ? "Create the first trip" : "New trip"}
+              </summary>
+              <div className="mt-4">
+                <TripForm
+                  action={createTripAction}
+                  clientId={client.id}
+                  initial={{
+                    name: "Kerala trip",
+                    startDate: toDateInputValue(suggestedStart),
+                    endDate: toDateInputValue(addDays(suggestedStart, 9)),
+                    travellers: 1,
+                  }}
+                  submitLabel="Create trip"
+                />
+              </div>
+            </details>
           </Card>
         </div>
 

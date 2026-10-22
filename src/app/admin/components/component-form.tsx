@@ -190,7 +190,7 @@ export function ComponentForm({
       <Card>
         <CardHeader
           title="What the client sees"
-          description="These fields are shown verbatim in the proposal and the What-to-Expect report. Write them for the client, not for the team."
+          description="These fields are shown verbatim in the client's itinerary builder and the What-to-Expect report. Write them for the client, not for the team."
         />
         <div className="space-y-5 p-5">
           <Field

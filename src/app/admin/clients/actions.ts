@@ -2,9 +2,9 @@
 
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
-import { notFound } from "@/lib/errors";
+import { notFound, validation } from "@/lib/errors";
 import { clientSchema } from "@/lib/validation/schemas";
-import { daysBetweenInclusive, parseDateInput } from "@/domain/shared/dates";
+import { parseDateInput } from "@/domain/shared/dates";
 import {
   parseForm,
   runAction,
@@ -24,35 +24,22 @@ import { refreshUrl } from "@/lib/refresh-url";
 
 type ClientInput = ReturnType<typeof parseForm<typeof clientSchema>>;
 
-/**
- * tripDuration is derived, never entered. Keeping it stored (rather than
- * computed on read) means list views can sort and filter on it cheaply.
- */
-function toData(input: ClientInput) {
-  const tripStartDate = input.tripStartDate
-    ? parseDateInput(input.tripStartDate)
-    : null;
-  const tripEndDate = input.tripEndDate
-    ? parseDateInput(input.tripEndDate)
-    : null;
-
+/** A relationship manager must be an active staff member. */
+async function toData(input: ClientInput) {
+  if (input.relationshipManagerId) {
+    const manager = await prisma.user.findFirst({
+      where: { id: input.relationshipManagerId, status: "ACTIVE" },
+      select: { id: true },
+    });
+    if (!manager) {
+      throw validation("Please choose a relationship manager.", {
+        relationshipManagerId: ["That staff member is not available."],
+      });
+    }
+  }
   return {
-    name: input.name,
-    email: input.email,
-    phone: input.phone,
-    country: input.country,
-    status: input.status,
-    tripStartDate,
-    tripEndDate,
-    tripDuration:
-      tripStartDate && tripEndDate
-        ? daysBetweenInclusive(tripStartDate, tripEndDate)
-        : null,
-    healthInterests: input.healthInterests,
-    wellnessInterests: input.wellnessInterests,
-    culturalInterests: input.culturalInterests,
-    intakeNotes: input.intakeNotes,
-    generalPreferences: input.generalPreferences,
+    ...input,
+    dateOfBirth: input.dateOfBirth ? parseDateInput(input.dateOfBirth) : null,
   };
 }
 
@@ -63,9 +50,10 @@ export async function createClientAction(
   const result = await runAction("client.create", formData, async () => {
     const user = await requireUser();
     const input = parseForm(clientSchema, formData);
+    const data = await toData(input);
 
     const client = await prisma.$transaction(async (tx) => {
-      const created = await tx.client.create({ data: toData(input) });
+      const created = await tx.client.create({ data });
       await logActivity(
         {
           action: ACTIVITY_ACTIONS.CLIENT_CREATED,
@@ -101,9 +89,10 @@ export async function updateClientAction(
       select: { id: true },
     });
     if (!existing) throw notFound("That client");
+    const data = await toData(input);
 
     await prisma.$transaction(async (tx) => {
-      await tx.client.update({ where: { id: clientId }, data: toData(input) });
+      await tx.client.update({ where: { id: clientId }, data });
       await logActivity(
         {
           action: ACTIVITY_ACTIONS.CLIENT_UPDATED,

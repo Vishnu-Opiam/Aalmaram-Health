@@ -7,58 +7,58 @@
 
 ## Current focus
 
-- Phase: 0 (P0.1 baseline), then Phase 1 — build order in PLAN.md §4 "MVP and build order"
-- Branch: —
-- Last updated: 2026-10-15 (plan revised to the class diagram v1)
+- Phase: MVP (Phases 1–4) built; next are human reviews of the four stacked PRs, then Phase 5 (payment)
+- Branch: `feat/phase-1-vendor-profile` → `feat/phase-2-trips` → `feat/phase-3-portal` → `feat/phase-4-ai`
+- Last updated: 2026-10-22
 
 ## Phase 0 — Foundations
 - [x] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
-- [ ] P0.2 AI gateway module `src/lib/ai/` with fake provider default
-- [ ] P0.3 `AiRun` model + `/admin/ai-runs`
-- [ ] P0.4 Evals harness `npm run eval`
+- [x] P0.2 AI gateway module `src/lib/ai/` with fake provider default
+- [x] P0.3 `AiRun` model + `/admin/ai-runs`
+- [!] P0.4 Evals harness `npm run eval` — not built: no gateway key yet (Blockers)
 
 ## Phase 1 — What we offer: vendor profile (BUILD FIRST · MVP)
 - [x] P1.1 Schema + migration (Vendor profile fields, `accreditations[]`, Branch, Practitioner, Component duration / recovery time / price unit)
-- [~] P1.2 Domain: validation, missing-fields list, client + planner projections (client projection lands with the portal in P3.5)
+- [x] P1.2 Domain: validation, missing-fields list, client + planner projections (client projection = `src/domain/trips/builder-view.ts`)
 - [x] P1.3 Admin vendor profile editor (+ branches, practitioners)
 - [x] P1.4 Component editor additions + practitioner links
 - [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
-- [ ] P1.6 Client-facing provider info in portal + leak tests
+- [x] P1.6 Client-facing provider info in portal + leak tests
 - [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
 - [!] P1.8 First real vendors entered by humans — needs Nivedith's curated list
 - [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
 
 ## Phase 2 — Clients & trips (MVP)
-- [ ] P2.1 Staff roles ADMIN / RELATIONSHIP_MANAGER + client's relationship manager
-- [ ] P2.2 Schema + migration + backfill (Trip, TripRequirements, Conversation, Itinerary 1:1 Trip, blocks)
-- [ ] P2.3 Domain: trip status machine, module mix, block rules, block pricing
-- [ ] P2.4 Admin UI: trips, requirements, conversations, health core
-- [ ] P2.5 Retire proposal / approval / change-request flow
-- [ ] P2.6 Privacy (transcripts, summaries, leak tests)
-- [ ] P2.7 Seed
+- [~] P2.1 Staff roles ADMIN / RELATIONSHIP_MANAGER + client's relationship manager
+- [x] P2.2 Schema + migration + backfill (Trip, TripRequirements, Conversation, Itinerary 1:1 Trip, blocks)
+- [x] P2.3 Domain: trip status machine, module mix, block rules, block pricing
+- [x] P2.4 Admin UI: trips, requirements, conversations, health core
+- [x] P2.5 Retire proposal / approval / change-request flow
+- [x] P2.6 Privacy (transcripts, summaries, leak tests)
+- [x] P2.7 Seed
 
 ## Phase 3 — Client portal: Feed + itinerary builder (MVP)
-- [ ] P3.1 FeedPost + admin feed manager (add / hide / import)
+- [x] P3.1 FeedPost + admin feed manager (add / hide / import)
 - [!] P3.2 Automated feed ingestion — build the seam now; real sources blocked on a sourcing decision
-- [ ] P3.3 Portal shell + Feed page
-- [ ] P3.4 Drag-and-drop itinerary builder with running cost
-- [ ] P3.5 Block detail (component + provider)
-- [ ] P3.6 Prices shown to the client
-- [ ] P3.7 50+ accessibility pass
-- [ ] P3.8 Tests
+- [x] P3.3 Portal shell + Feed page
+- [x] P3.4 Drag-and-drop itinerary builder with running cost
+- [x] P3.5 Block detail (component + provider)
+- [x] P3.6 Prices shown to the client
+- [~] P3.7 50+ accessibility pass (large type and targets, click alternative to drag, nothing on hover; no formal audit yet)
+- [x] P3.8 Tests
 
 ## Phase 4 — AI: conversation → requirements → itinerary (MVP)
-- [ ] P4.1 Requirements extraction + conversation summary
-- [ ] P4.2 Draft itinerary (`AI` blocks around the health core)
-- [ ] P4.3 Slot suggestions (`ItineraryRecommendationService`)
-- [ ] P4.4 Client AI chat + "talk to a person"
-- [ ] P4.5 Evals fixtures
-- [ ] P4.6 Privacy (chat visibility, leak tests)
+- [x] P4.1 Requirements extraction + conversation summary
+- [x] P4.2 Draft itinerary (`AI` blocks around the health core)
+- [x] P4.3 Slot suggestions (`ItineraryRecommendationService`)
+- [x] P4.4 Client AI chat + "talk to a person"
+- [!] P4.5 Evals fixtures — waits for P0.4 and a key; unit tests cover the deterministic planner and safety checks
+- [x] P4.6 Privacy (chat visibility, leak tests)
 - [ ] P4.7 (optional) pgvector retrieval
 
 ## Phase 5 — Confirm, lock & pay
 - [ ] P5.1 Schema + payment status machine
-- [!] P5.2 Confirm & lock — build now; terms text pending
+- [~] P5.2 Confirm & lock — confirm/lock/reopen built in Phase 3; terms acceptance pending
 - [!] P5.3 Payment seam (fake + manual recording) — build now; real provider and service fee pending
 - [ ] P5.4 Admin payments + staff edits after confirm
 - [ ] P5.5 What-to-Expect from the confirmed itinerary
@@ -151,6 +151,23 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-22 | Branches and practitioners are edited inline on the vendor page (expandable rows), not on separate pages; deactivate via the status field. | Fewer screens for the admin flow module → catalogue → vendor → component; matches "simple fields first". |
 | 2026-10-22 | Vendor phone is required by the form (diagram `phone 1..1`), column stays nullable. | Old rows may lack it; the form enforces it on the next save. |
 | 2026-10-22 | Work happens in the git worktree `.claude/worktrees/mvp`, not the main checkout. | The main checkout holds untracked older copies of CLAUDE.md / docs and a `.env.local` with a remote `DATABASE_URL`; a separate worktree keeps the local DB the only one in reach. |
+| 2026-10-22 | Block times are Kerala wall-clock times stored as "floating" UTC timestamps (09:30 → `09:30Z`, always formatted in UTC). | No server or browser zone can shift a block; Kerala has no DST. A real zone column is only needed if trips ever span zones. |
+| 2026-10-22 | Block prices are stored at add time (`blockPrice` = unit price × per person / per two (rounded up) / per group) and recomputed when travellers change while unconfirmed. Staff price overrides (`priceOverride`) dropped. | Diagram: price on the block, frozen at confirm. Overrides can return as a field if the team needs them. |
+| 2026-10-22 | One builder component (`src/components/builder/`) serves both the admin trip page (staff add `TEAM` blocks) and the portal (client adds `CLIENT` blocks); permissions are decided server-side in `src/lib/services/itinerary-blocks.ts` and arrive as `block.canEdit`. | One timeline to maintain; the client-safe view model (`builder-view.ts`) is the only shape either screen renders. |
+| 2026-10-22 | Staff roles stored (`roles StaffRole[]`) and the relationship manager is assignable, but every staff member can still do everything (no permission split yet). P2.1 stays `[~]`. | MVP has one or two staff; the split needs a decision on what an RM may not do. |
+| 2026-10-22 | The What-to-Expect report is shared with the client by "Save and share" on the report page (no longer tied to publishing a proposal). | The publish flow is retired. |
+| 2026-10-22 | The migration gives clients that had intake text or trip dates but no itinerary a placeholder trip "First trip (dates to confirm)" so their intake survives as requirements. | Data preservation over neatness; staff can rename or cancel it. |
+| 2026-10-22 | Confirm & lock (P5.2) pulled into the MVP: the client's "Confirm my itinerary" reprices once, freezes prices, sets `confirmedAt` and moves the trip to AWAITING_PAYMENT; staff can "Reopen for changes". Payment itself stays Phase 5. | The demo ends at "the final itinerary with its cost" (§12.1 #16); confirm is the explicit human action the AI-draft guardrail relies on. |
+| 2026-10-22 | Portal sections live in the route group `src/app/trip/(portal)/`: Feed (`/trip`), Itinerary, Calendar (activities with "Not booked yet" until Booking exists), Chat (Phase 4). The trip is chosen by `?trip=`, defaulting to the next unfinished trip. | Keeps sign-in/access routes outside the portal chrome. |
+| 2026-10-22 | Feed posts without an image show a source-coloured placeholder; external images use a plain `<img>`. | `next/image` would need every social CDN host allow-listed; images are optional in the import. |
+| 2026-10-22 | `AI_PROVIDER` defaults to `fake` even when a key is present; real models run only with `AI_PROVIDER=gateway` set explicitly (e.g. on the Vercel deployment). Models via AI Gateway: `anthropic/claude-sonnet-5.5` (reasoning), `anthropic/claude-haiku-5.5` (fast), from env. | CLAUDE.md §4: dev and tests never call a real model; the demo deployment can opt in. |
+| 2026-10-22 | The fake provider is not a canned fixture but a deterministic implementation: keyword extraction for requirements, the rule-based planner for drafts, a short discovery script for chat. | The demo works offline with sensible results; the same code is the model's fallback and its validation baseline. |
+| 2026-10-22 | Itinerary drafting: the planner proposes, the model may re-pick from the same candidates and gaps, `validatePicks` drops anything invalid, and an empty result falls back to the planner. Slot suggestions are deterministic (no model call). | Bounded, testable AI; the "+" stays instant and free. |
+| 2026-10-22 | An AI block's one-line reason is stored as its client-facing note ("You asked for Kathakali."), shown to the client; it passes the medical-claims check first. | Explains a suggestion where the client decides on it. PLAN P4.6 said reasons are staff-only; reasons contain no client data, so showing them is safe. |
+| 2026-10-22 | "Build my itinerary" from the chat writes requirements only if none exist (never overwrites the team's), then replaces earlier AI blocks only. Staff's "Draft with AI" on the trip page does overwrite requirements (explicit staff action, editable after). | Staff-written requirements are the source of truth. |
+| 2026-10-22 | `AiRun.output` holds ids, counts and flags only (no summaries, reasons or transcript text); the logger now also redacts `transcript`, `summary`, `prompt`, `reply`. | CLAUDE.md §4 privacy rules. |
+| 2026-10-22 | AI drafts choose a provider's first active branch (by city); the client can change it with "Change time". | The client picks the branch near where they stay; the AI doesn't know that yet. |
+| 2026-10-22 | `src/lib/services/itinerary-recommendation.ts` (null stub) removed; suggestions live in `ai-planning.ts` + `domain/ai/planner.ts`. | Dead code once P4.3 landed. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans
@@ -158,7 +175,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | Raised | Task | Question | Answer |
 | --- | --- | --- | --- |
 | 2026-09-17 | P1.8 (Sept) | Nivedith's vendor profiling Q&A document — please drop it at `docs/platform/inputs/` | 2026-10-15: superseded. The question list came in the 14 Oct call (notebook §6.1) and the fields on 15 Oct (class diagram); no question bank. |
-| 2026-09-17 | P0.2 | AI Gateway key / budget ceiling for evals | |
+| 2026-09-17 | P0.2 | AI Gateway key / budget ceiling for evals | 2026-10-22: still needed. The gateway path is built and typechecks but has never been run against a real model; to enable it on the deployment set `AI_PROVIDER=gateway` (+ key or OIDC). P0.4/P4.5 evals wait for this. |
 | 2026-09-17 | — | See PLAN.md §6 open questions 7–8 | |
 | 2026-10-15 | P1.8 | Nivedith's curated list of trusted vendors (one per module to start) — he'll share access. | |
 | 2026-10-15 | P3.4 | Health core: may the client move or remove the team's (`TEAM`) blocks? The plan assumes they are locked. (notebook §10) | |
@@ -201,3 +218,12 @@ Append one short entry per working session: date, branch, tasks touched, test st
   Deferred past the demo (noted, not built): P0.4 eval harness and P4.5 eval fixtures (no model key yet),
   P1.5 vendor drafting from a website, P3.2 automated feed ingestion (blocked), role-based permission split
   (roles stored, every staff member can still do everything).
+- **2026-10-22 · MVP build** · branches `feat/phase-1-vendor-profile` (8da2400) → `feat/phase-2-trips` (f04e186) →
+  `feat/phase-3-portal` (00149be) → `feat/phase-4-ai`. Built Phases 1–4 of the plan above, plus Confirm & lock from
+  Phase 5. Verification at the end of Phase 4: `npm run typecheck` clean; `npm test` 134 passed (10 files);
+  `npm run test:e2e` 2 passed (golden path: admin health core → client Feed → add + drag → AI chat build → confirm;
+  inventory incl. branches/practitioners); `next build` ok (inside the e2e run). Lint not run: `next lint` is not
+  configured in this repo (interactive setup). Browser check of admin vendor, trip and builder pages done in the dev
+  server; the browser pane was hidden for part of the session, so drag-and-drop was verified by Playwright instead.
+  Not done: evals (no key), real Instagram/news ingestion (P3.2), staff permission split (P2.1), formal accessibility
+  audit (P3.7). Next: human review of the four PRs (merge in order), then Phase 5 (payment).

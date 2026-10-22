@@ -16,6 +16,8 @@ export async function resetDatabase() {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE
       "ActivityLog",
+      "FeedPost",
+      "AiRun",
       "ChangeRequest",
       "Report",
       "ItineraryItem",
@@ -40,7 +42,7 @@ export async function createAdmin(email = "test-admin@aalmaram.test") {
       name: "Test Admin",
       email,
       passwordHash: await bcrypt.hash("TestPassword!1", 10),
-      role: "ADMIN",
+      roles: ["ADMIN"],
     },
   });
 }
@@ -81,21 +83,31 @@ export async function createInventory() {
   };
 }
 
-export async function createClientRecord(overrides: {
-  email?: string;
-  name?: string;
-  tripStartDate?: Date;
-  tripEndDate?: Date;
-} = {}) {
+export async function createClientRecord(overrides: { email?: string; name?: string } = {}) {
   return prisma.client.create({
     data: {
       name: overrides.name ?? "Elena Fischer (demo)",
       email: overrides.email ?? `client-${Date.now()}-${Math.random()}@example.com`,
       country: "Germany",
       status: "PLANNING",
-      tripStartDate: overrides.tripStartDate ?? utcDay("2026-03-01"),
-      tripEndDate: overrides.tripEndDate ?? utcDay("2026-03-10"),
-      tripDuration: 10,
     },
+  });
+}
+
+/** A trip with its (empty) itinerary, 1-10 March 2026 unless overridden. */
+export async function createTrip(
+  clientId: string,
+  overrides: { startDate?: Date; endDate?: Date; travellers?: number } = {},
+) {
+  return prisma.trip.create({
+    data: {
+      clientId,
+      name: "Test trip (demo)",
+      startDate: overrides.startDate ?? utcDay("2026-03-01"),
+      endDate: overrides.endDate ?? utcDay("2026-03-10"),
+      travellers: overrides.travellers ?? 1,
+      itinerary: { create: {} },
+    },
+    include: { itinerary: true },
   });
 }

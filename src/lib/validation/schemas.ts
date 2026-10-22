@@ -204,134 +204,172 @@ export const componentSchema = z.object({
 
 // --- client ----------------------------------------------------------------
 
-export const clientSchema = z
+export const clientSchema = z.object({
+  name: requiredText("Client name"),
+  email: z.string().trim().toLowerCase().email("Enter a valid email address."),
+  phone: optionalText(50),
+  dateOfBirth: optionalDate,
+  addressLine: optionalText(300),
+  city: optionalText(120),
+  postcode: optionalText(20),
+  country: optionalText(100),
+  status: z
+    .enum(["LEAD", "INTAKE", "PLANNING", "PROPOSAL_SENT", "CONFIRMED", "ARCHIVED"])
+    .default("LEAD"),
+  relationshipManagerId: optionalText(60),
+  generalPreferences: optionalText(2000),
+});
+
+// --- trip ------------------------------------------------------------------
+
+const requiredDate = (label: string) =>
+  z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, `Choose the ${label}.`);
+
+export const tripSchema = z
   .object({
-    name: requiredText("Client name"),
-    email: z.string().trim().toLowerCase().email("Enter a valid email address."),
-    phone: optionalText(50),
-    country: optionalText(100),
-    status: z
-      .enum(["LEAD", "INTAKE", "PLANNING", "PROPOSAL_SENT", "CONFIRMED", "ARCHIVED"])
-      .default("LEAD"),
-    tripStartDate: optionalDate,
-    tripEndDate: optionalDate,
-    healthInterests: optionalText(2000),
-    wellnessInterests: optionalText(2000),
-    culturalInterests: optionalText(2000),
-    intakeNotes: optionalText(4000),
-    generalPreferences: optionalText(2000),
+    name: requiredText("Trip name", 200),
+    startDate: requiredDate("start date"),
+    endDate: requiredDate("end date"),
+    travellers: z.coerce
+      .number({ message: "Enter the number of travellers." })
+      .int("Enter a whole number.")
+      .min(1, "At least one traveller.")
+      .max(20, "Groups over 20 are arranged by hand."),
+  })
+  .refine((data) => data.endDate >= data.startDate, {
+    message: "The end date must be on or after the start date.",
+    path: ["endDate"],
   })
   .refine(
     (data) =>
-      !data.tripStartDate ||
-      !data.tripEndDate ||
-      data.tripEndDate >= data.tripStartDate,
-    {
-      message: "The trip end date must be on or after the start date.",
-      path: ["tripEndDate"],
-    },
+      (Date.parse(data.endDate) - Date.parse(data.startDate)) / 86_400_000 < 60,
+    { message: "Trips are planned up to 60 days.", path: ["endDate"] },
   );
 
-// --- itinerary -------------------------------------------------------------
+export const tripCreateSchema = z.object({ clientId: requiredText("Client") }).and(tripSchema);
 
-export const itineraryCreateSchema = z
-  .object({
-    clientId: requiredText("Client"),
-    title: requiredText("Itinerary title", 200),
-    startDate: optionalDate,
-    endDate: optionalDate,
-    adminNotes: optionalText(4000),
-  })
-  .refine(
-    (data) => !data.startDate || !data.endDate || data.endDate >= data.startDate,
-    { message: "The end date must be on or after the start date.", path: ["endDate"] },
-  );
-
-export const itineraryUpdateSchema = z
-  .object({
-    itineraryId: requiredText("Itinerary"),
-    title: requiredText("Itinerary title", 200),
-    startDate: optionalDate,
-    endDate: optionalDate,
-    adminNotes: optionalText(4000),
-    clientNotes: optionalText(4000),
-  })
-  .refine(
-    (data) => !data.startDate || !data.endDate || data.endDate >= data.startDate,
-    { message: "The end date must be on or after the start date.", path: ["endDate"] },
-  );
-
-export const itineraryItemAddSchema = z.object({
-  itineraryId: requiredText("Itinerary"),
-  componentId: requiredText("Component"),
-  scheduledDate: optionalDate,
-});
-
-export const itineraryItemUpdateSchema = z.object({
-  itemId: requiredText("Itinerary item"),
-  scheduledDate: optionalDate,
-  customTitle: optionalText(200),
-  clientFacingNotes: optionalText(2000),
-  internalNotes: optionalText(2000),
-  priceOverride: z
+export const requirementsSchema = z.object({
+  summary: requiredText("Summary", 4000),
+  budgetAmount: z
     .string()
     .trim()
     .optional()
     .transform((v) => (v === "" || v === undefined ? null : v))
     .refine(
       (v) => v === null || (!Number.isNaN(Number(v)) && Number(v) >= 0),
-      "Enter a non-negative number, or leave blank to use the component price.",
+      "Enter a non-negative amount, or leave blank.",
     ),
-  status: z.enum(["PLANNED", "CONFIRMED", "REMOVED"]).default("PLANNED"),
+  budgetCurrency: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? null : v))
+    .refine((v) => v === null || /^[A-Z]{3}$/.test(v), "Use a 3-letter currency code."),
+  pace: z
+    .enum(["", "RELAXED", "BALANCED", "PACKED"])
+    .optional()
+    .transform((v) => (v ? v : null)),
+  mustHaves: lineList(20, 200),
+  avoid: lineList(20, 200),
 });
 
-export const itineraryItemMoveSchema = z.object({
-  itemId: requiredText("Itinerary item"),
-  direction: z.enum(["up", "down"]),
+export const conversationSchema = z.object({
+  channel: z.enum(["AI_CHAT", "STAFF_CHAT", "CALL", "EMAIL", "WHATSAPP", "IN_PERSON"]),
+  occurredAt: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "Choose when the conversation happened."),
+  transcript: requiredText("Transcript", 100_000),
+  summary: optionalText(4000),
 });
 
-export const itineraryStatusSchema = z.object({
-  itineraryId: requiredText("Itinerary"),
-  status: z.enum([
-    "DRAFT",
-    "READY_FOR_REVIEW",
-    "PUBLISHED",
-    "CHANGES_REQUESTED",
-    "APPROVED",
-    "ARCHIVED",
-  ]),
+// --- itinerary blocks ------------------------------------------------------
+
+const blockTime = z
+  .string()
+  .trim()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Choose a start time.");
+
+export const blockAddSchema = z.object({
+  tripId: requiredText("Trip"),
+  componentId: requiredText("Component"),
+  branchId: optionalText(60),
+  day: requiredDate("day"),
+  time: blockTime,
+});
+
+export const blockMoveSchema = z.object({
+  blockId: requiredText("Block"),
+  day: requiredDate("day"),
+  time: blockTime,
+  branchId: optionalText(60),
+});
+
+export const blockRemoveSchema = z.object({
+  blockId: requiredText("Block"),
+});
+
+export const itineraryNotesSchema = z.object({
+  adminNotes: optionalText(4000),
+  clientNotes: optionalText(4000),
+});
+
+// --- feed ------------------------------------------------------------------
+
+const feedSource = z.enum(["VENDOR_INSTAGRAM", "KERALA_TOURISM", "NEWS"]);
+const requiredUrl = (label: string) =>
+  z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => /^https?:\/\/\S+$/i.test(v), `${label} must be a full web address starting with https://`);
+
+export const feedPostSchema = z.object({
+  source: feedSource,
+  vendorId: optionalText(60),
+  caption: requiredText("Caption", 2000),
+  mediaUrl: optionalUrl,
+  link: requiredUrl("Link"),
+  publishedAt: requiredDate("date"),
+});
+
+/** One element of a pasted JSON import. Vendors are matched by exact name. */
+export const feedImportItemSchema = z.object({
+  source: feedSource,
+  caption: z.string().trim().min(1).max(2000),
+  link: requiredUrl("link"),
+  mediaUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => /^https?:\/\/\S+$/i.test(v), "mediaUrl must be a full web address")
+    .optional(),
+  publishedAt: z.string().refine((v) => !Number.isNaN(Date.parse(v)), "publishedAt must be a date"),
+  externalId: z.string().trim().min(1).max(200).optional(),
+  vendorName: z.string().trim().max(200).optional(),
 });
 
 // --- report ----------------------------------------------------------------
 
 export const reportSaveSchema = z.object({
-  itineraryId: requiredText("Itinerary"),
+  tripId: requiredText("Trip"),
   title: requiredText("Report title", 200),
   content: requiredText("Report content", 100_000),
 });
 
 // --- client portal ---------------------------------------------------------
 
-export const changeRequestSchema = z.object({
-  itineraryId: requiredText("Itinerary"),
-  itineraryItemId: z
+export const chatMessageSchema = z.object({
+  tripId: requiredText("Trip"),
+  text: z
     .string()
     .trim()
-    .optional()
-    .transform((v) => (v === "" || v === undefined || v === "GENERAL" ? null : v)),
-  message: z
-    .string()
-    .trim()
-    .min(10, "Please tell us a little more - at least 10 characters.")
-    .max(4000, "Please keep your message under 4000 characters."),
-});
-
-export const approvalSchema = z.object({
-  itineraryId: requiredText("Itinerary"),
-});
-
-export const changeRequestResolveSchema = z.object({
-  changeRequestId: requiredText("Change request"),
+    .min(1, "Please write a message.")
+    .max(2000, "Please keep messages under 2000 characters."),
 });
 
 export const portalSignInSchema = z.object({

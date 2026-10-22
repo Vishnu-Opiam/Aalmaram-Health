@@ -30,7 +30,7 @@ export default async function LoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-ink-400">
-          Client looking for your journey proposal?{" "}
+          Client looking for your trip?{" "}
           <a href="/trip" className="text-teal-600 underline underline-offset-4">
             Open your portal
           </a>

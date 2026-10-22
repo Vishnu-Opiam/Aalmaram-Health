@@ -1,17 +1,18 @@
-// Aalmaram Health - canonical data model (Pre-Journey MVP)
+// Aalmaram Health - canonical data model (class diagram v1, docs/platform/class-diagram.md)
 //
 // Design notes:
 //  * Component.moduleId is deliberately NOT stored. Module is derived through
 //    Catalogue so there is a single source of truth for the hierarchy.
-//  * ItineraryItem means "proposed to the client". It is NOT a vendor-confirmed
-//    appointment. A future Booking/Appointment domain will sit beside it rather
-//    than overload this model.
-//  * ItineraryItemStatus intentionally leaves room for future journey states
-//    (COMPLETED / CANCELLED / RESCHEDULED) without changing the meaning of
-//    existing rows.
+//  * Client 1->* Trip, Trip 1->1 Itinerary. The itinerary is built in place and
+//    locked by `confirmedAt`; trip progress lives on Trip.status.
+//  * An ItineraryItem is a "block": one component, optionally at one branch,
+//    at a start time. Booking state will sit beside it (Booking), not on it.
+//  * Block times are Kerala wall-clock times stored as UTC timestamps
+//    ("floating" times): 09:30 is stored as 09:30Z and always formatted in UTC,
+//    so server and browser time zones can never shift a block.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   // "native" for local development; the RHEL target is what Vercel's Linux
   // runtime needs, and generating both keeps one lockfile working in both places.
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
@@ -26,8 +27,9 @@ datasource db {
 // Enums
 // ---------------------------------------------------------------------------
 
-enum UserRole {
+enum StaffRole {
   ADMIN
+  RELATIONSHIP_MANAGER
 }
 
 enum RecordStatus {
@@ -42,21 +44,6 @@ enum ClientStatus {
   PROPOSAL_SENT
   CONFIRMED
   ARCHIVED
-}
-
-enum ItineraryStatus {
-  DRAFT
-  READY_FOR_REVIEW
-  PUBLISHED
-  CHANGES_REQUESTED
-  APPROVED
-  ARCHIVED
-}
-
-enum ItineraryItemStatus {
-  PLANNED
-  CONFIRMED
-  REMOVED
 }
 
 enum ReportStatus {
@@ -75,6 +62,56 @@ enum CostStatus {
   ON_REQUEST
 }
 
+enum TripStatus {
+  PLANNING
+  AWAITING_PAYMENT
+  BOOKING
+  READY
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum Pace {
+  RELAXED
+  BALANCED
+  PACKED
+}
+
+enum Channel {
+  AI_CHAT
+  STAFF_CHAT
+  CALL
+  EMAIL
+  WHATSAPP
+  IN_PERSON
+}
+
+// TEAM = the health core placed by staff; the client cannot move or remove it.
+enum AddedBy {
+  TEAM
+  CLIENT
+  AI
+}
+
+enum FeedSource {
+  VENDOR_INSTAGRAM
+  KERALA_TOURISM
+  NEWS
+}
+
+enum AiTask {
+  TRIP_REQUIREMENTS_EXTRACTION
+  ITINERARY_DRAFT
+  CLIENT_CHAT
+}
+
+enum AiRunStatus {
+  SUCCEEDED
+  FAILED
+  INVALID_OUTPUT
+}
+
 // FOR_TWO = restaurants, priced from Google's "average for two".
 enum PriceUnit {
   PER_PERSON
@@ -91,12 +128,14 @@ model User {
   name         String
   email        String       @unique
   passwordHash String
-  role         UserRole     @default(ADMIN)
+  roles        StaffRole[]  @default([ADMIN])
   status       RecordStatus @default(ACTIVE)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  activityLogs ActivityLog[]
+  activityLogs   ActivityLog[]
+  managedClients Client[]       @relation("RelationshipManager")
+  conversations  Conversation[]
 }
 
 // ---------------------------------------------------------------------------
@@ -132,6 +171,7 @@ model Vendor {
   components    Component[]
   branches      Branch[]
   practitioners Practitioner[]
+  feedPosts     FeedPost[]
 
   @@index([status])
 }
@@ -149,7 +189,8 @@ model Branch {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  vendor Vendor          @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  blocks ItineraryItem[]
 
   @@unique([vendorId, name])
 }
@@ -197,6 +238,7 @@ model Module {
   updatedAt   DateTime     @updatedAt
 
   catalogues Catalogue[]
+  tripShares TripModuleShare[]
 
   @@index([sortOrder])
 }
@@ -240,8 +282,8 @@ model Component {
   createdAt               DateTime     @default(now())
   updatedAt               DateTime     @updatedAt
 
-  vendor         Vendor          @relation(fields: [vendorId], references: [id], onDelete: Restrict)
-  catalogue      Catalogue       @relation(fields: [catalogueId], references: [id], onDelete: Restrict)
+  vendor         Vendor                  @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  catalogue      Catalogue               @relation(fields: [catalogueId], references: [id], onDelete: Restrict)
   itineraryItems ItineraryItem[]
   practitioners  ComponentPractitioner[]
 
@@ -257,22 +299,22 @@ model Component {
 // ---------------------------------------------------------------------------
 
 model Client {
-  id      String       @id @default(cuid())
-  name    String
-  email   String       @unique
-  phone   String?
-  country String?
-  status  ClientStatus @default(LEAD)
+  id          String       @id @default(cuid())
+  name        String
+  email       String       @unique
+  phone       String?
+  dateOfBirth DateTime?    @db.Date
+  addressLine String?
+  city        String?
+  postcode    String?
+  country     String?
+  status      ClientStatus @default(LEAD)
 
-  tripStartDate DateTime?
-  tripEndDate   DateTime?
-  tripDuration  Int?
-
-  healthInterests    String?
-  wellnessInterests  String?
-  culturalInterests  String?
-  intakeNotes        String?
+  // Lasting notes across trips until ClientPreference arrives (Phase 8).
   generalPreferences String?
+  termsAcceptedAt    DateTime?
+
+  relationshipManagerId String?
 
   // Secure, non-guessable portal access. Only the SHA-256 hash of the
   // invitation token is stored; the raw token lives only in the invite link.
@@ -284,61 +326,137 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  itineraries Itinerary[]
+  relationshipManager User?          @relation("RelationshipManager", fields: [relationshipManagerId], references: [id], onDelete: SetNull)
+  trips               Trip[]
+  conversations       Conversation[]
 
   @@index([status])
   @@index([name])
+  @@index([relationshipManagerId])
+}
+
+// ---------------------------------------------------------------------------
+// Trips: requirements, conversations, one itinerary each
+// ---------------------------------------------------------------------------
+
+model Trip {
+  id         String     @id @default(cuid())
+  clientId   String
+  name       String
+  startDate  DateTime   @db.Date
+  endDate    DateTime   @db.Date
+  travellers Int        @default(1)
+  status     TripStatus @default(PLANNING)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  client        Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  itinerary     Itinerary?
+  requirements  TripRequirements?
+  conversations Conversation[]
+
+  @@index([clientId])
+  @@index([status])
+}
+
+/// What the client wants for THIS trip (lasting preferences live on the client).
+model TripRequirements {
+  id             String   @id @default(cuid())
+  tripId         String   @unique
+  summary        String
+  budgetAmount   Decimal? @db.Decimal(10, 2)
+  budgetCurrency String?
+  pace           Pace?
+  mustHaves      String[] @default([])
+  avoid          String[] @default([])
+  updatedAt      DateTime @updatedAt
+
+  trip      Trip              @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  moduleMix TripModuleShare[]
+}
+
+/// One module's share of the trip; a mix sums to 100 (validated in the domain).
+model TripModuleShare {
+  requirementsId String
+  moduleId       String
+  percent        Int
+
+  requirements TripRequirements @relation(fields: [requirementsId], references: [id], onDelete: Cascade)
+  module       Module           @relation(fields: [moduleId], references: [id], onDelete: Restrict)
+
+  @@id([requirementsId, moduleId])
+  @@index([moduleId])
+}
+
+/// Transcripts and summaries are SENSITIVE: never logged, never in AiRun.output,
+/// staff-only except the client's own chat.
+model Conversation {
+  id          String   @id @default(cuid())
+  clientId    String
+  tripId      String?
+  channel     Channel
+  occurredAt  DateTime
+  transcript  String
+  summary     String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  client    Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  trip      Trip?  @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  createdBy User?  @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@index([tripId])
 }
 
 // ---------------------------------------------------------------------------
 // Itineraries
 // ---------------------------------------------------------------------------
 
+/// Exactly one per trip, created with it. `confirmedAt` locks it: blocks and
+/// prices freeze and later changes go through the relationship manager.
+/// The total is derived from the blocks, never stored.
 model Itinerary {
-  id          String          @id @default(cuid())
-  clientId    String
-  title       String
-  startDate   DateTime?
-  endDate     DateTime?
-  status      ItineraryStatus @default(DRAFT)
+  id          String    @id @default(cuid())
+  tripId      String    @unique
+  confirmedAt DateTime?
   adminNotes  String?
   clientNotes String?
-  publishedAt DateTime?
-  approvedAt  DateTime?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  client         Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  trip           Trip            @relation(fields: [tripId], references: [id], onDelete: Cascade)
   items          ItineraryItem[]
   report         Report?
   changeRequests ChangeRequest[]
-
-  @@index([clientId])
-  @@index([status])
 }
 
+/// A block. endsAt is derived (startsAt + component duration). `price` is the
+/// component price times its unit for the trip's travellers: recomputed while
+/// planning, frozen at confirm.
 model ItineraryItem {
-  id                String              @id @default(cuid())
+  id                String   @id @default(cuid())
   itineraryId       String
   componentId       String
-  scheduledDate     DateTime?
-  dayNumber         Int?
-  sequence          Int                 @default(0)
+  branchId          String?
+  startsAt          DateTime
+  addedBy           AddedBy
+  price             Decimal  @db.Decimal(10, 2)
+  currency          String
   customTitle       String?
   clientFacingNotes String?
   internalNotes     String?
-  priceOverride     Decimal?            @db.Decimal(10, 2)
-  status            ItineraryItemStatus @default(PLANNED)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   itinerary      Itinerary       @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
   component      Component       @relation(fields: [componentId], references: [id], onDelete: Restrict)
+  branch         Branch?         @relation(fields: [branchId], references: [id], onDelete: Restrict)
   changeRequests ChangeRequest[]
 
-  @@index([itineraryId])
+  @@index([itineraryId, startsAt])
   @@index([componentId])
-  @@index([itineraryId, dayNumber, sequence])
+  @@index([branchId])
 }
 
 model Report {
@@ -355,6 +473,8 @@ model Report {
   itinerary Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
 }
 
+/// Legacy (proposal flow, retired 2026-10-22): no longer written. Dropped once a
+/// human confirms production holds nothing worth keeping.
 model ChangeRequest {
   id              String              @id @default(cuid())
   itineraryId     String
@@ -372,7 +492,58 @@ model ChangeRequest {
 }
 
 // ---------------------------------------------------------------------------
+// Feed: what Kerala looks like right now (vendor socials, tourism, good news)
+// ---------------------------------------------------------------------------
+
+/// Staff curate the feed; `hiddenAt` takes a post off it (only "positive" news
+/// is shown). `externalId` de-duplicates re-imports of the same post.
+model FeedPost {
+  id          String     @id @default(cuid())
+  source      FeedSource
+  vendorId    String?
+  caption     String
+  mediaUrl    String?
+  link        String
+  publishedAt DateTime
+  externalId  String?    @unique
+  hiddenAt    DateTime?
+  createdAt   DateTime   @default(now())
+
+  vendor Vendor? @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+
+  @@index([hiddenAt, publishedAt])
+  @@index([vendorId])
+}
+
+// ---------------------------------------------------------------------------
 // Audit
+// ---------------------------------------------------------------------------
+
+/// One model call. Never stores prompts, transcripts or client text: `output`
+/// holds ids and counts only (see src/lib/ai).
+model AiRun {
+  id            String      @id @default(cuid())
+  task          AiTask
+  provider      String
+  model         String
+  promptVersion String
+  status        AiRunStatus
+  inputTokens   Int?
+  outputTokens  Int?
+  latencyMs     Int
+  attempts      Int         @default(1)
+  entityType    String?
+  entityId      String?
+  actorUserId   String?
+  output        Json?
+  errorCode     String?
+  createdAt     DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+}
+
+// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
 model ActivityLog {
