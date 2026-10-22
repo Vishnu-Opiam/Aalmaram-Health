@@ -116,7 +116,7 @@ function Summary({ trip, big }: { trip: BuilderTrip; big: boolean }) {
   return (
     <div
       className={cn(
-        "sticky top-0 z-10 rounded-lg border border-sand-200 bg-white/95 shadow-sm backdrop-blur",
+        "z-10 rounded-lg border border-sand-200 bg-white/95 shadow-sm backdrop-blur sm:sticky sm:top-0",
         big ? "p-5" : "p-4",
       )}
     >
@@ -320,13 +320,14 @@ function BlockCard({
       )}
       aria-label={`${block.time} to ${block.endTime}: ${block.title}`}
     >
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-1 sm:flex-row sm:gap-3">
         {block.canEdit && (
-          <GripVertical className="mt-1 h-4 w-4 shrink-0 text-ink-400" aria-hidden="true" />
+          // Touch screens can't drag; "Change time" is the way there.
+          <GripVertical className="mt-1 hidden h-4 w-4 shrink-0 text-ink-400 sm:block" aria-hidden="true" />
         )}
-        <div className={cn("shrink-0 tabular-nums text-ink-600", big ? "w-24 text-[15px]" : "w-20 text-xs")}>
+        <div className={cn("shrink-0 tabular-nums text-ink-600", big ? "text-[15px] sm:w-24" : "text-xs sm:w-20")}>
           <span className="font-semibold text-ink-900">{block.time}</span>
-          <span className="block">– {block.endTime}</span>
+          <span className="sm:block"> – {block.endTime}</span>
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-start justify-between gap-2">

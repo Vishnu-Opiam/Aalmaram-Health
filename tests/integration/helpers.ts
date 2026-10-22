@@ -17,6 +17,7 @@ export async function resetDatabase() {
     TRUNCATE TABLE
       "ActivityLog",
       "FeedPost",
+      "AiRun",
       "ChangeRequest",
       "Report",
       "ItineraryItem",

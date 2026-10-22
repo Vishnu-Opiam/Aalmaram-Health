@@ -363,6 +363,15 @@ export const reportSaveSchema = z.object({
 
 // --- client portal ---------------------------------------------------------
 
+export const chatMessageSchema = z.object({
+  tripId: requiredText("Trip"),
+  text: z
+    .string()
+    .trim()
+    .min(1, "Please write a message.")
+    .max(2000, "Please keep messages under 2000 characters."),
+});
+
 export const portalSignInSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email address."),
 });

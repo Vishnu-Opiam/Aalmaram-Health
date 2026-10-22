@@ -65,9 +65,11 @@ async function addFromLibrary(
   const dayCard = page.locator(`#day-${day}`);
   await dayCard.getByRole("button", { name: /^Add something on day/ }).first().click();
   const panel = dayCard.getByRole("region", { name: "Add to this day" });
-  await panel.getByRole("button", { name: path[0], exact: true }).click();
-  await panel.getByRole("button", { name: path[1], exact: true }).click();
-  await panel.getByRole("button", { name: new RegExp(`^${path[2]}`) }).click();
+  // Suggestions may list the same experience; browse the library explicitly.
+  const browse = panel.getByRole("region", { name: "Browse" });
+  await browse.getByRole("button", { name: path[0], exact: true }).click();
+  await browse.getByRole("button", { name: path[1], exact: true }).click();
+  await browse.getByRole("button", { name: new RegExp(`^${path[2]}`) }).click();
   if (opts.branch) await panel.getByRole("combobox").selectOption({ label: opts.branch });
   await panel.getByLabel("Start time").fill(opts.time);
   await clickAndSettle(page, panel.getByRole("button", { name: "Add to day" }));
@@ -166,6 +168,27 @@ test("golden path: trip → health core → client builds → confirm", async ({
       "19:30",
     );
     await expect(client.locator(`#day-${DAY_2} article`)).toHaveCount(0);
+  });
+
+  await test.step("client chats with the assistant and gets suggestions", async () => {
+    await client.getByRole("link", { name: "Chat" }).click();
+    await expect(client).toHaveURL(/\/trip\/chat/);
+    for (const text of [
+      "I'd like a check-up while I'm there.",
+      "I love Kathakali and the backwaters, and some yoga.",
+      "Slowly please, with free afternoons.",
+    ]) {
+      await client.getByLabel("Your message").fill(text);
+      await client.getByRole("button", { name: "Send" }).click();
+      await expect(client.getByText(text)).toBeVisible();
+    }
+    await expect(client.getByText(/Build my itinerary/).first()).toBeVisible();
+    await clickAndSettle(client, client.getByRole("button", { name: "Build my itinerary" }));
+    await expect(client).toHaveURL(/\/trip\/itinerary/);
+    await expect(client.getByText("Suggested").first()).toBeVisible();
+    // The health core and the client's own dinner survive the AI draft.
+    await expect(client.locator("article", { hasText: "Comprehensive Blood Panel" })).toContainText("arranged by your team");
+    await expect(client.locator(`#day-${DAY_3} article`, { hasText: "Dinner at Malabar Spice Table" })).toBeVisible();
   });
 
   await test.step("client confirms and the itinerary locks", async () => {

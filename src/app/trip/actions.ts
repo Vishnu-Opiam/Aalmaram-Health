@@ -8,7 +8,19 @@ import { env } from "@/lib/env";
 import { blockAddSchema, blockMoveSchema, blockRemoveSchema } from "@/lib/validation/schemas";
 import { parseForm, runAction, successState, type FormState } from "@/lib/validation/form";
 import { ACTIVITY_ACTIONS, logActivity } from "@/lib/services/activity-log";
-import { addBlock, confirmItinerary, moveBlock, removeBlock } from "@/lib/services/itinerary-blocks";
+import {
+  addBlock,
+  confirmItinerary,
+  loadTripForMutation,
+  moveBlock,
+  removeBlock,
+} from "@/lib/services/itinerary-blocks";
+import { draftItinerary, extractRequirements, sendChatMessage, suggestionsForSlot } from "@/lib/services/ai-planning";
+import type { ChatMessage } from "@/domain/ai/chat";
+import { chatMessageSchema } from "@/lib/validation/schemas";
+import { enforceRateLimit } from "@/lib/rate-limit";
+import { toUserMessage } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 import { OPS_INBOX, sendStaffTripNotice } from "@/lib/services/notifications";
 import { refreshUrl } from "@/lib/refresh-url";
 
@@ -96,6 +108,91 @@ export async function confirmItineraryAction(_prev: FormState, formData: FormDat
       adminUrl: `${env().APP_URL.replace(/\/$/, "")}/admin/trips/${trip.id}`,
     });
     return successState("Thank you — your itinerary is confirmed.", itineraryUrl(trip.id));
+  });
+}
+
+// ---------------------------------------------------------------------------
+// AI: suggestions, chat, "Build my itinerary", "Talk to a person"
+// ---------------------------------------------------------------------------
+
+/** Ideas for a "+" in the client's builder. */
+export async function suggestForClientSlot(tripId: string, day: string, time: string) {
+  const client = await requireClient();
+  return suggestionsForSlot(tripId, { kind: "client", clientId: client.id }, day, time);
+}
+
+export type ChatState = { messages: ChatMessage[]; readyToBuild: boolean; error: string | null };
+
+export async function sendChatMessageAction(prev: ChatState, formData: FormData): Promise<ChatState> {
+  try {
+    const client = await requireClient();
+    const input = chatMessageSchema.safeParse({ tripId: formData.get("tripId"), text: formData.get("text") });
+    if (!input.success) return { ...prev, error: input.error.issues[0]?.message ?? "Please write a message." };
+    await enforceRateLimit(`chat:${client.id}`, 30, 10 * 60_000);
+    const result = await sendChatMessage(input.data.tripId, client.id, input.data.text);
+    return { ...result, error: null };
+  } catch (error) {
+    logger.warn("portal chat failed", { code: (error as { code?: string })?.code });
+    return { ...prev, error: toUserMessage(error) };
+  }
+}
+
+async function notifyManager(clientId: string, trip: { id: string; name: string }, subject: string, what: string) {
+  const record = await prisma.client.findUnique({
+    where: { id: clientId },
+    select: { name: true, relationshipManager: { select: { email: true } } },
+  });
+  await sendStaffTripNotice({
+    to: record?.relationshipManager?.email ?? OPS_INBOX,
+    subject,
+    clientName: record?.name ?? "A client",
+    tripName: trip.name,
+    what,
+    adminUrl: `${env().APP_URL.replace(/\/$/, "")}/admin/trips/${trip.id}`,
+  });
+}
+
+/**
+ * Chat → requirements (unless the team has already written them) → AI
+ * blocks around the health core. The result is a draft the client edits and
+ * must still confirm; the relationship manager is told so they can review it.
+ */
+export async function buildMyItineraryAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("portal.ai.build", formData, async () => {
+    const client = await requireClient();
+    const tripId = String(formData.get("tripId") ?? "");
+    const scope = { kind: "client" as const, clientId: client.id };
+    await enforceRateLimit(`build:${client.id}`, 5, 10 * 60_000);
+    const hasConversation = await prisma.conversation.count({ where: { tripId, clientId: client.id } });
+    if (hasConversation) await extractRequirements(tripId, { scope }, { overwrite: false });
+    const { added, trip } = await draftItinerary(tripId, { scope });
+    await logActivity({
+      action: ACTIVITY_ACTIONS.AI_ITINERARY_DRAFTED,
+      entityType: "Trip",
+      entityId: trip.id,
+      actorLabel: client.name,
+      metadata: { added, by: "client" },
+    });
+    await notifyManager(client.id, trip, "AI draft ready", `${client.name} asked the assistant for an itinerary: ${added} suggested activities were added around the health core. Please review.`);
+    return successState(`${added} suggestions added to your itinerary.`, itineraryUrl(trip.id, "#itinerary"));
+  });
+}
+
+export async function talkToPersonAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("portal.ai.person", formData, async () => {
+    const client = await requireClient();
+    const trip = await loadTripForMutation(String(formData.get("tripId") ?? ""), { kind: "client", clientId: client.id });
+    await logActivity({
+      action: ACTIVITY_ACTIONS.CLIENT_ASKED_FOR_PERSON,
+      entityType: "Trip",
+      entityId: trip.id,
+      actorLabel: client.name,
+    });
+    await notifyManager(client.id, trip, "Client asked for a person", `${client.name} would like to talk to a person. Please get in touch.`);
+    return successState(
+      "We've let your relationship manager know — they will be in touch shortly.",
+      refreshUrl(`/trip/chat?trip=${encodeURIComponent(trip.id)}`),
+    );
   });
 }
 

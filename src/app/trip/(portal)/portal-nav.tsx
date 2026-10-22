@@ -28,11 +28,11 @@ export function PortalNav() {
                 href={trip ? `${section.href}?trip=${encodeURIComponent(trip)}` : section.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-14 items-center gap-2 border-b-2 px-4 text-[16px] font-medium transition-colors",
+                  "flex min-h-14 items-center gap-2 whitespace-nowrap border-b-2 px-3 text-[16px] font-medium transition-colors sm:px-4",
                   active ? "border-teal-600 text-teal-700" : "border-transparent text-ink-600 hover:text-ink-900",
                 )}
               >
-                <Icon className="h-5 w-5" aria-hidden="true" />
+                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
                 {section.label}
               </Link>
             </li>

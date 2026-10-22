@@ -100,6 +100,18 @@ enum FeedSource {
   NEWS
 }
 
+enum AiTask {
+  TRIP_REQUIREMENTS_EXTRACTION
+  ITINERARY_DRAFT
+  CLIENT_CHAT
+}
+
+enum AiRunStatus {
+  SUCCEEDED
+  FAILED
+  INVALID_OUTPUT
+}
+
 // FOR_TWO = restaurants, priced from Google's "average for two".
 enum PriceUnit {
   PER_PERSON
@@ -505,6 +517,33 @@ model FeedPost {
 
 // ---------------------------------------------------------------------------
 // Audit
+// ---------------------------------------------------------------------------
+
+/// One model call. Never stores prompts, transcripts or client text: `output`
+/// holds ids and counts only (see src/lib/ai).
+model AiRun {
+  id            String      @id @default(cuid())
+  task          AiTask
+  provider      String
+  model         String
+  promptVersion String
+  status        AiRunStatus
+  inputTokens   Int?
+  outputTokens  Int?
+  latencyMs     Int
+  attempts      Int         @default(1)
+  entityType    String?
+  entityId      String?
+  actorUserId   String?
+  output        Json?
+  errorCode     String?
+  createdAt     DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+}
+
+// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 
 model ActivityLog {

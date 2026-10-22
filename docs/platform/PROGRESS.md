@@ -7,15 +7,15 @@
 
 ## Current focus
 
-- Phase: 0 (P0.1 baseline), then Phase 1 — build order in PLAN.md §4 "MVP and build order"
-- Branch: —
-- Last updated: 2026-10-15 (plan revised to the class diagram v1)
+- Phase: MVP (Phases 1–4) built; next are human reviews of the four stacked PRs, then Phase 5 (payment)
+- Branch: `feat/phase-1-vendor-profile` → `feat/phase-2-trips` → `feat/phase-3-portal` → `feat/phase-4-ai`
+- Last updated: 2026-10-22
 
 ## Phase 0 — Foundations
 - [x] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
-- [ ] P0.2 AI gateway module `src/lib/ai/` with fake provider default
-- [ ] P0.3 `AiRun` model + `/admin/ai-runs`
-- [ ] P0.4 Evals harness `npm run eval`
+- [x] P0.2 AI gateway module `src/lib/ai/` with fake provider default
+- [x] P0.3 `AiRun` model + `/admin/ai-runs`
+- [!] P0.4 Evals harness `npm run eval` — not built: no gateway key yet (Blockers)
 
 ## Phase 1 — What we offer: vendor profile (BUILD FIRST · MVP)
 - [x] P1.1 Schema + migration (Vendor profile fields, `accreditations[]`, Branch, Practitioner, Component duration / recovery time / price unit)
@@ -48,12 +48,12 @@
 - [x] P3.8 Tests
 
 ## Phase 4 — AI: conversation → requirements → itinerary (MVP)
-- [ ] P4.1 Requirements extraction + conversation summary
-- [ ] P4.2 Draft itinerary (`AI` blocks around the health core)
-- [ ] P4.3 Slot suggestions (`ItineraryRecommendationService`)
-- [ ] P4.4 Client AI chat + "talk to a person"
-- [ ] P4.5 Evals fixtures
-- [ ] P4.6 Privacy (chat visibility, leak tests)
+- [x] P4.1 Requirements extraction + conversation summary
+- [x] P4.2 Draft itinerary (`AI` blocks around the health core)
+- [x] P4.3 Slot suggestions (`ItineraryRecommendationService`)
+- [x] P4.4 Client AI chat + "talk to a person"
+- [!] P4.5 Evals fixtures — waits for P0.4 and a key; unit tests cover the deterministic planner and safety checks
+- [x] P4.6 Privacy (chat visibility, leak tests)
 - [ ] P4.7 (optional) pgvector retrieval
 
 ## Phase 5 — Confirm, lock & pay
@@ -160,6 +160,14 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-22 | Confirm & lock (P5.2) pulled into the MVP: the client's "Confirm my itinerary" reprices once, freezes prices, sets `confirmedAt` and moves the trip to AWAITING_PAYMENT; staff can "Reopen for changes". Payment itself stays Phase 5. | The demo ends at "the final itinerary with its cost" (§12.1 #16); confirm is the explicit human action the AI-draft guardrail relies on. |
 | 2026-10-22 | Portal sections live in the route group `src/app/trip/(portal)/`: Feed (`/trip`), Itinerary, Calendar (activities with "Not booked yet" until Booking exists), Chat (Phase 4). The trip is chosen by `?trip=`, defaulting to the next unfinished trip. | Keeps sign-in/access routes outside the portal chrome. |
 | 2026-10-22 | Feed posts without an image show a source-coloured placeholder; external images use a plain `<img>`. | `next/image` would need every social CDN host allow-listed; images are optional in the import. |
+| 2026-10-22 | `AI_PROVIDER` defaults to `fake` even when a key is present; real models run only with `AI_PROVIDER=gateway` set explicitly (e.g. on the Vercel deployment). Models via AI Gateway: `anthropic/claude-sonnet-5.5` (reasoning), `anthropic/claude-haiku-5.5` (fast), from env. | CLAUDE.md §4: dev and tests never call a real model; the demo deployment can opt in. |
+| 2026-10-22 | The fake provider is not a canned fixture but a deterministic implementation: keyword extraction for requirements, the rule-based planner for drafts, a short discovery script for chat. | The demo works offline with sensible results; the same code is the model's fallback and its validation baseline. |
+| 2026-10-22 | Itinerary drafting: the planner proposes, the model may re-pick from the same candidates and gaps, `validatePicks` drops anything invalid, and an empty result falls back to the planner. Slot suggestions are deterministic (no model call). | Bounded, testable AI; the "+" stays instant and free. |
+| 2026-10-22 | An AI block's one-line reason is stored as its client-facing note ("You asked for Kathakali."), shown to the client; it passes the medical-claims check first. | Explains a suggestion where the client decides on it. PLAN P4.6 said reasons are staff-only; reasons contain no client data, so showing them is safe. |
+| 2026-10-22 | "Build my itinerary" from the chat writes requirements only if none exist (never overwrites the team's), then replaces earlier AI blocks only. Staff's "Draft with AI" on the trip page does overwrite requirements (explicit staff action, editable after). | Staff-written requirements are the source of truth. |
+| 2026-10-22 | `AiRun.output` holds ids, counts and flags only (no summaries, reasons or transcript text); the logger now also redacts `transcript`, `summary`, `prompt`, `reply`. | CLAUDE.md §4 privacy rules. |
+| 2026-10-22 | AI drafts choose a provider's first active branch (by city); the client can change it with "Change time". | The client picks the branch near where they stay; the AI doesn't know that yet. |
+| 2026-10-22 | `src/lib/services/itinerary-recommendation.ts` (null stub) removed; suggestions live in `ai-planning.ts` + `domain/ai/planner.ts`. | Dead code once P4.3 landed. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans
@@ -167,7 +175,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | Raised | Task | Question | Answer |
 | --- | --- | --- | --- |
 | 2026-09-17 | P1.8 (Sept) | Nivedith's vendor profiling Q&A document — please drop it at `docs/platform/inputs/` | 2026-10-15: superseded. The question list came in the 14 Oct call (notebook §6.1) and the fields on 15 Oct (class diagram); no question bank. |
-| 2026-09-17 | P0.2 | AI Gateway key / budget ceiling for evals | |
+| 2026-09-17 | P0.2 | AI Gateway key / budget ceiling for evals | 2026-10-22: still needed. The gateway path is built and typechecks but has never been run against a real model; to enable it on the deployment set `AI_PROVIDER=gateway` (+ key or OIDC). P0.4/P4.5 evals wait for this. |
 | 2026-09-17 | — | See PLAN.md §6 open questions 7–8 | |
 | 2026-10-15 | P1.8 | Nivedith's curated list of trusted vendors (one per module to start) — he'll share access. | |
 | 2026-10-15 | P3.4 | Health core: may the client move or remove the team's (`TEAM`) blocks? The plan assumes they are locked. (notebook §10) | |
@@ -210,3 +218,12 @@ Append one short entry per working session: date, branch, tasks touched, test st
   Deferred past the demo (noted, not built): P0.4 eval harness and P4.5 eval fixtures (no model key yet),
   P1.5 vendor drafting from a website, P3.2 automated feed ingestion (blocked), role-based permission split
   (roles stored, every staff member can still do everything).
+- **2026-10-22 · MVP build** · branches `feat/phase-1-vendor-profile` (8da2400) → `feat/phase-2-trips` (f04e186) →
+  `feat/phase-3-portal` (00149be) → `feat/phase-4-ai`. Built Phases 1–4 of the plan above, plus Confirm & lock from
+  Phase 5. Verification at the end of Phase 4: `npm run typecheck` clean; `npm test` 134 passed (10 files);
+  `npm run test:e2e` 2 passed (golden path: admin health core → client Feed → add + drag → AI chat build → confirm;
+  inventory incl. branches/practitioners); `next build` ok (inside the e2e run). Lint not run: `next lint` is not
+  configured in this repo (interactive setup). Browser check of admin vendor, trip and builder pages done in the dev
+  server; the browser pane was hidden for part of the session, so drag-and-drop was verified by Playwright instead.
+  Not done: evals (no key), real Instagram/news ingestion (P3.2), staff permission split (P2.1), formal accessibility
+  audit (P3.7). Next: human review of the four PRs (merge in order), then Phase 5 (payment).
