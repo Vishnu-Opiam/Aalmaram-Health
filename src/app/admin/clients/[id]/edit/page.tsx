@@ -6,6 +6,7 @@ import { ClientForm } from "../../client-form";
 import { toDateInputValue } from "@/domain/shared/dates";
 import { requireUserPage } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
+import { loadStaffOptions } from "@/lib/services/staff";
 
 export const metadata: Metadata = { title: "Edit client" };
 
@@ -16,7 +17,10 @@ export default async function EditClientPage({
 }) {
   await requireUserPage("/admin/clients");
   const { id } = await params;
-  const client = await prisma.client.findUnique({ where: { id } });
+  const [client, staff] = await Promise.all([
+    prisma.client.findUnique({ where: { id } }),
+    loadStaffOptions(),
+  ]);
   if (!client) nextNotFound();
 
   return (
@@ -38,16 +42,16 @@ export default async function EditClientPage({
           name: client.name,
           email: client.email,
           phone: client.phone ?? "",
+          dateOfBirth: toDateInputValue(client.dateOfBirth),
+          addressLine: client.addressLine ?? "",
+          city: client.city ?? "",
+          postcode: client.postcode ?? "",
           country: client.country ?? "",
           status: client.status,
-          tripStartDate: toDateInputValue(client.tripStartDate),
-          tripEndDate: toDateInputValue(client.tripEndDate),
-          healthInterests: client.healthInterests ?? "",
-          wellnessInterests: client.wellnessInterests ?? "",
-          culturalInterests: client.culturalInterests ?? "",
-          intakeNotes: client.intakeNotes ?? "",
+          relationshipManagerId: client.relationshipManagerId ?? "",
           generalPreferences: client.generalPreferences ?? "",
         }}
+        staff={staff}
         action={updateClientAction.bind(null, client.id)}
         submitLabel="Save changes"
       />

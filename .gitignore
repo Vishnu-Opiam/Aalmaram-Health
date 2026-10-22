@@ -26,3 +26,6 @@ next-env.d.ts
 .vercel
 
 .env*
+
+# Human inputs (meeting transcripts) stay local; the repo is public
+docs/platform/inputs/

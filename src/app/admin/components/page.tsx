@@ -19,6 +19,7 @@ import {
   loadComponentFilterOptions,
   searchComponents,
 } from "@/domain/components/queries";
+import { PRICE_UNIT_LABELS } from "@/domain/vendors/profile";
 import { formatMoney } from "@/domain/itineraries/pricing";
 import { requireUserPage } from "@/lib/auth/guards";
 import { param, pluralise } from "@/lib/utils";
@@ -182,7 +183,7 @@ export default async function ComponentsPage({
                   <Td className="text-right tabular-nums">
                     {formatMoney(component.price, component.currency)}
                     <span className="block text-xs text-ink-400">
-                      {component.unit}
+                      {PRICE_UNIT_LABELS[component.priceUnit]}
                     </span>
                   </Td>
                   <Td>

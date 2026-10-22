@@ -2,14 +2,15 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { forbidden, unauthenticated } from "@/lib/errors";
+import type { StaffRole } from "@prisma/client";
+import { unauthenticated } from "@/lib/errors";
 import { readAdminSession, readClientSession } from "@/lib/auth/session";
 
 export type CurrentUser = {
   id: string;
   name: string;
   email: string;
-  role: "ADMIN";
+  roles: StaffRole[];
 };
 
 /**
@@ -23,10 +24,10 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   if (!session) return null;
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { id: true, name: true, email: true, role: true, status: true },
+    select: { id: true, name: true, email: true, roles: true, status: true },
   });
   if (!user || user.status !== "ACTIVE") return null;
-  return { id: user.id, name: user.name, email: user.email, role: user.role };
+  return { id: user.id, name: user.name, email: user.email, roles: user.roles };
 });
 
 /** For Server Actions and API routes: throws instead of redirecting. */
@@ -76,21 +77,4 @@ export async function requireClientPage(): Promise<CurrentClient> {
   const client = await getCurrentClient();
   if (!client) redirect("/trip/sign-in");
   return client;
-}
-
-/**
- * Ownership check for the client portal.
- *
- * The portal never accepts an itinerary id from the URL without proving that
- * the itinerary belongs to the session's client. Client A cannot read Client B.
- */
-export async function assertItineraryBelongsToClient(
-  itineraryId: string,
-  clientId: string,
-) {
-  const owned = await prisma.itinerary.findFirst({
-    where: { id: itineraryId, clientId },
-    select: { id: true },
-  });
-  if (!owned) throw forbidden("This proposal is not available on your account.");
 }

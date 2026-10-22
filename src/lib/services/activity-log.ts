@@ -16,6 +16,22 @@ export const ACTIVITY_ACTIONS = {
   CLIENT_PORTAL_SIGNED_IN: "client.portal_signed_in",
   VENDOR_CREATED: "vendor.created",
   VENDOR_UPDATED: "vendor.updated",
+  BRANCH_CREATED: "branch.created",
+  BRANCH_UPDATED: "branch.updated",
+  PRACTITIONER_CREATED: "practitioner.created",
+  PRACTITIONER_UPDATED: "practitioner.updated",
+  TRIP_CREATED: "trip.created",
+  TRIP_UPDATED: "trip.updated",
+  TRIP_REQUIREMENTS_UPDATED: "trip.requirements_updated",
+  CONVERSATION_ADDED: "conversation.added",
+  BLOCK_ADDED: "itinerary.block_added",
+  BLOCK_MOVED: "itinerary.block_moved",
+  BLOCK_REMOVED: "itinerary.block_removed",
+  ITINERARY_CONFIRMED: "itinerary.confirmed",
+  ITINERARY_REOPENED: "itinerary.reopened",
+  AI_REQUIREMENTS_DRAFTED: "ai.requirements_drafted",
+  AI_ITINERARY_DRAFTED: "ai.itinerary_drafted",
+  CLIENT_ASKED_FOR_PERSON: "client.asked_for_person",
   MODULE_CREATED: "module.created",
   MODULE_UPDATED: "module.updated",
   CATALOGUE_CREATED: "catalogue.created",
@@ -46,6 +62,10 @@ export type ActivityAction =
 export type ActivityEntity =
   | "Client"
   | "Vendor"
+  | "Branch"
+  | "Practitioner"
+  | "Trip"
+  | "Conversation"
   | "Module"
   | "Catalogue"
   | "Component"
@@ -101,6 +121,22 @@ const ACTION_LABELS: Record<string, string> = {
   "client.portal_signed_in": "Client opened their portal",
   "vendor.created": "Vendor created",
   "vendor.updated": "Vendor updated",
+  "branch.created": "Branch added",
+  "branch.updated": "Branch updated",
+  "practitioner.created": "Practitioner added",
+  "practitioner.updated": "Practitioner updated",
+  "trip.created": "Trip created",
+  "trip.updated": "Trip details updated",
+  "trip.requirements_updated": "Trip requirements updated",
+  "conversation.added": "Conversation recorded",
+  "itinerary.block_added": "Activity added to itinerary",
+  "itinerary.block_moved": "Activity moved",
+  "itinerary.block_removed": "Activity removed",
+  "itinerary.confirmed": "Itinerary confirmed and locked",
+  "itinerary.reopened": "Itinerary reopened for changes",
+  "ai.requirements_drafted": "AI drafted the trip requirements",
+  "ai.itinerary_drafted": "AI drafted suggested activities",
+  "client.asked_for_person": "Client asked to talk to a person",
   "module.created": "Module created",
   "module.updated": "Module updated",
   "catalogue.created": "Catalogue created",

@@ -4,9 +4,8 @@ import { expect, test, type Page } from "@playwright/test";
  * Inventory administration: vendor, catalogue and component CRUD, plus the
  * activate/deactivate and reorder controls.
  *
- * The golden path never touches these, so they are covered here: they are the
- * screens an admin uses to keep the catalogue current, and a deactivated
- * component is one of the things itinerary validation refuses to publish.
+ * These are the screens an admin uses to build "what we offer" (module →
+ * catalogue → vendor → component), including branches and practitioners.
  */
 
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@aalmaram.test";
@@ -51,9 +50,11 @@ test("inventory: vendor and catalogue and component CRUD with status toggles", a
   await test.step("create a vendor", async () => {
     await page.goto("/admin/vendors/new");
     await page.getByLabel("Vendor name").fill(VENDOR_NAME);
-    await page.getByLabel("Contact name").fill("Test Contact");
+    await page.getByLabel("Point of contact").fill("Test Contact");
     await page.getByLabel("Email").fill(`vendor.${RUN}@example.com`);
-    await page.getByLabel("Location").fill("Kochi");
+    await page.getByLabel("Phone").fill("+91 484 000 9999");
+    await page.getByLabel("HQ city").fill("Kochi");
+    await page.getByLabel("Languages spoken").fill("English\nMalayalam");
     await page.getByRole("button", { name: "Create vendor" }).click();
 
     await expect(page).toHaveURL(/\/admin\/vendors\/(?!new)[a-z0-9]+$/, {
@@ -66,6 +67,20 @@ test("inventory: vendor and catalogue and component CRUD with status toggles", a
   });
 
   const vendorUrl = page.url();
+
+  await test.step("add a branch and a practitioner", async () => {
+    // A vendor without branches opens the add-branch form straight away.
+    await page.locator("#new-branch-name").fill("Edappally (test)");
+    await page.locator("#new-branch-city").fill("Kochi");
+    await clickAndSettle(page, page.getByRole("button", { name: "Add branch" }));
+    await expect(page.getByRole("heading", { name: "Branches (1)" })).toBeVisible();
+
+    await page.getByText("Add a practitioner").click();
+    await page.locator("#new-practitioner-name").fill("Dr Test (demo)");
+    await page.locator("#new-practitioner-role").fill("Consultant physician");
+    await clickAndSettle(page, page.getByRole("button", { name: "Add practitioner" }));
+    await expect(page.getByRole("heading", { name: "Practitioners (1)" })).toBeVisible();
+  });
 
   await test.step("deactivate and reactivate the vendor", async () => {
     await clickAndSettle(page, page.getByRole("button", { name: "Deactivate" }));
@@ -109,7 +124,9 @@ test("inventory: vendor and catalogue and component CRUD with status toggles", a
     await page.getByLabel("What is included").fill("A conversation");
     await page.getByLabel("Client deliverable").fill("A written summary");
     await page.getByLabel("Tags").fill("test, e2e");
-    await page.getByLabel("Price").fill("99.50");
+    await page.locator("#price").fill("99.50");
+    await page.getByLabel("Duration (minutes)").fill("45");
+    await page.getByLabel("Dr Test (demo)").check();
 
     await page.getByRole("button", { name: "Create component" }).click();
 
@@ -121,13 +138,15 @@ test("inventory: vendor and catalogue and component CRUD with status toggles", a
     ).toBeVisible();
     await expect(page.getByText("€99.50")).toBeVisible();
     await expect(page.getByText("A written summary")).toBeVisible();
+    await expect(page.getByText("45 min")).toBeVisible();
+    await expect(page.getByText("Dr Test (demo), Consultant physician")).toBeVisible();
 
     // It appears under its vendor.
     await page.goto(vendorUrl);
     await expect(page.getByText(COMPONENT_NAME)).toBeVisible();
   });
 
-  await test.step("deactivating a component warns that it cannot be proposed", async () => {
+  await test.step("deactivating a component warns that it cannot be added", async () => {
     await page.goto("/admin/components");
     await page.getByPlaceholder("Name, description or tag…").fill(RUN.toString());
     await page.getByRole("button", { name: "Apply" }).click();
@@ -136,7 +155,7 @@ test("inventory: vendor and catalogue and component CRUD with status toggles", a
     await clickAndSettle(page, page.getByRole("button", { name: "Deactivate" }));
     await expect(page.getByText("This component is deactivated")).toBeVisible();
     await expect(
-      page.getByText(/cannot be published in a new proposal/i),
+      page.getByText(/can no longer be added to an itinerary/i),
     ).toBeVisible();
   });
 

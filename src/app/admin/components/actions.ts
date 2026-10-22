@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/auth/guards";
 import { notFound, validation } from "@/lib/errors";
 import { componentSchema } from "@/lib/validation/schemas";
 import { parseDateInput } from "@/domain/shared/dates";
+import { practitionersBelongToVendor } from "@/domain/vendors/profile";
 import {
   parseForm,
   runAction,
@@ -39,6 +40,26 @@ async function assertReferences(vendorId: string, catalogueId: string) {
   }
 }
 
+/**
+ * Practitioner ids arrive as repeated checkbox values. A component's
+ * practitioners must work for its vendor, so foreign ids are refused rather
+ * than silently dropped.
+ */
+async function practitionerIdsFrom(formData: FormData, vendorId: string) {
+  const ids = [...new Set(formData.getAll("practitionerIds").map(String))].filter(Boolean);
+  if (ids.length === 0) return [];
+  const practitioners = await prisma.practitioner.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, vendorId: true },
+  });
+  if (practitioners.length !== ids.length || !practitionersBelongToVendor(vendorId, practitioners)) {
+    throw validation("Please check the practitioners.", {
+      practitionerIds: ["Choose practitioners who work for this component's vendor."],
+    });
+  }
+  return ids;
+}
+
 function toData(input: ReturnType<typeof parseComponentInput>) {
   return {
     vendorId: input.vendorId,
@@ -47,7 +68,9 @@ function toData(input: ReturnType<typeof parseComponentInput>) {
     tags: input.tags,
     price: new Prisma.Decimal(input.price.toFixed(2)),
     currency: input.currency,
-    unit: input.unit,
+    priceUnit: input.priceUnit,
+    durationMinutes: input.durationMinutes,
+    recoveryTimeMinutes: input.recoveryTimeMinutes,
     costStatus: input.costStatus,
     clientFacingDescription: input.clientFacingDescription,
     whatsIncluded: input.whatsIncluded,
@@ -70,9 +93,15 @@ export async function createComponentAction(
     const user = await requireUser();
     const input = parseComponentInput(formData);
     await assertReferences(input.vendorId, input.catalogueId);
+    const practitionerIds = await practitionerIdsFrom(formData, input.vendorId);
 
     const created = await prisma.$transaction(async (tx) => {
-      const component = await tx.component.create({ data: toData(input) });
+      const component = await tx.component.create({
+        data: {
+          ...toData(input),
+          practitioners: { create: practitionerIds.map((practitionerId) => ({ practitionerId })) },
+        },
+      });
       await logActivity(
         {
           action: ACTIVITY_ACTIONS.COMPONENT_CREATED,
@@ -109,6 +138,7 @@ export async function updateComponentAction(
     const user = await requireUser();
     const input = parseComponentInput(formData);
     await assertReferences(input.vendorId, input.catalogueId);
+    const practitionerIds = await practitionerIdsFrom(formData, input.vendorId);
 
     const existing = await prisma.component.findUnique({
       where: { id: componentId },
@@ -119,7 +149,13 @@ export async function updateComponentAction(
     await prisma.$transaction(async (tx) => {
       await tx.component.update({
         where: { id: componentId },
-        data: toData(input),
+        data: {
+          ...toData(input),
+          practitioners: {
+            deleteMany: {},
+            create: practitionerIds.map((practitionerId) => ({ practitionerId })),
+          },
+        },
       });
       await logActivity(
         {

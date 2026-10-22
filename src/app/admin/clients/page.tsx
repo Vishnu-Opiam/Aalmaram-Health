@@ -52,13 +52,17 @@ export default async function ClientsPage({
   const clients = await prisma.client.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { itineraries: true } } },
+    include: {
+      relationshipManager: { select: { name: true } },
+      trips: { orderBy: { startDate: "asc" }, select: { startDate: true, endDate: true }, take: 1 },
+      _count: { select: { trips: true } },
+    },
   });
 
   return (
     <div className="space-y-5">
       <PageHeader
-        eyebrow="Pre-journey"
+        eyebrow="Clients"
         title="Clients"
         description="People travelling to Kerala with Aalmaram."
         actions={
@@ -95,7 +99,7 @@ export default async function ClientsPage({
           title={
             q || status ? "No clients match those filters" : "No clients yet"
           }
-          description="The pre-journey process starts with a client record and their intake."
+          description="Everything starts with a client record, then their trips."
           action={
             <ButtonLink href="/admin/clients/new" size="sm">
               Create the first client
@@ -109,8 +113,9 @@ export default async function ClientsPage({
               <tr>
                 <Th>Client</Th>
                 <Th>Country</Th>
-                <Th>Trip window</Th>
-                <Th className="text-right">Itineraries</Th>
+                <Th>Relationship manager</Th>
+                <Th>Next trip</Th>
+                <Th className="text-right">Trips</Th>
                 <Th>Status</Th>
               </tr>
             </thead>
@@ -127,17 +132,13 @@ export default async function ClientsPage({
                     <p className="text-xs text-ink-400">{client.email}</p>
                   </Td>
                   <Td className="text-ink-500">{client.country ?? "—"}</Td>
+                  <Td className="text-ink-500">{client.relationshipManager?.name ?? "—"}</Td>
                   <Td className="text-ink-500">
-                    {formatDateRange(client.tripStartDate, client.tripEndDate)}
-                    {client.tripDuration && (
-                      <span className="block text-xs text-ink-400">
-                        {pluralise(client.tripDuration, "day")}
-                      </span>
-                    )}
+                    {client.trips[0]
+                      ? formatDateRange(client.trips[0].startDate, client.trips[0].endDate)
+                      : "—"}
                   </Td>
-                  <Td className="text-right tabular-nums">
-                    {client._count.itineraries}
-                  </Td>
+                  <Td className="text-right tabular-nums">{client._count.trips}</Td>
                   <Td>
                     <ClientStatusBadge status={client.status} />
                   </Td>

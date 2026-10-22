@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "New component" };
  */
 export default async function NewComponentPage() {
   await requireUserPage("/admin/components/new");
-  const { vendors, catalogues } = await loadComponentFilterOptions();
+  const { vendors, catalogues, practitioners } = await loadComponentFilterOptions();
 
   if (vendors.length === 0 || catalogues.length === 0) {
     return (
@@ -54,6 +54,7 @@ export default async function NewComponentPage() {
       <ComponentForm
         vendors={vendors}
         catalogues={catalogues}
+        practitioners={practitioners}
         action={createComponentAction}
         submitLabel="Create component"
       />
