@@ -1,3 +1,4 @@
+import { PRICE_UNIT_LABELS } from "@/domain/vendors/profile";
 import type { Metadata } from "next";
 import { notFound as nextNotFound } from "next/navigation";
 import { FileText, MessageSquareWarning, User } from "lucide-react";
@@ -256,8 +257,8 @@ export default async function ItineraryBuilderPage({
                                   >
                                     {item.component.vendor.name}
                                   </Link>
-                                  {item.component.vendor.location &&
-                                    `, ${item.component.vendor.location}`}
+                                  {item.component.vendor.hqCity &&
+                                    `, ${item.component.vendor.hqCity}`}
                                 </p>
 
                                 <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -303,7 +304,7 @@ export default async function ItineraryBuilderPage({
                                   )}
                                 </p>
                                 <p className="text-xs text-ink-400">
-                                  {item.component.unit}
+                                  {PRICE_UNIT_LABELS[item.component.priceUnit]}
                                 </p>
                               </div>
                             </div>

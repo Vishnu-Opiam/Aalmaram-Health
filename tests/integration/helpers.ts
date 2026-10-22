@@ -53,7 +53,7 @@ export async function createInventory() {
     data: { moduleId: module.id, name: "Diagnostics", sortOrder: 0 },
   });
   const vendor = await prisma.vendor.create({
-    data: { name: "Test Diagnostics (demo)", location: "Kochi" },
+    data: { name: "Test Diagnostics (demo)", hqCity: "Kochi", phone: "+91 000" },
   });
 
   const component = async (name: string, price: string) =>
@@ -65,7 +65,7 @@ export async function createInventory() {
         tags: ["test"],
         price: new Prisma.Decimal(price),
         currency: "EUR",
-        unit: "per person",
+        durationMinutes: 60,
         clientFacingDescription: `Description for ${name}.`,
         whatsIncluded: "Item one\nItem two",
         clientDeliverable: "A written report.",

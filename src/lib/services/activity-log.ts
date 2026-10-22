@@ -16,6 +16,10 @@ export const ACTIVITY_ACTIONS = {
   CLIENT_PORTAL_SIGNED_IN: "client.portal_signed_in",
   VENDOR_CREATED: "vendor.created",
   VENDOR_UPDATED: "vendor.updated",
+  BRANCH_CREATED: "branch.created",
+  BRANCH_UPDATED: "branch.updated",
+  PRACTITIONER_CREATED: "practitioner.created",
+  PRACTITIONER_UPDATED: "practitioner.updated",
   MODULE_CREATED: "module.created",
   MODULE_UPDATED: "module.updated",
   CATALOGUE_CREATED: "catalogue.created",
@@ -46,6 +50,8 @@ export type ActivityAction =
 export type ActivityEntity =
   | "Client"
   | "Vendor"
+  | "Branch"
+  | "Practitioner"
   | "Module"
   | "Catalogue"
   | "Component"
@@ -101,6 +107,10 @@ const ACTION_LABELS: Record<string, string> = {
   "client.portal_signed_in": "Client opened their portal",
   "vendor.created": "Vendor created",
   "vendor.updated": "Vendor updated",
+  "branch.created": "Branch added",
+  "branch.updated": "Branch updated",
+  "practitioner.created": "Practitioner added",
+  "practitioner.updated": "Practitioner updated",
   "module.created": "Module created",
   "module.updated": "Module updated",
   "catalogue.created": "Catalogue created",

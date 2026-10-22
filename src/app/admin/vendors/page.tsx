@@ -17,6 +17,7 @@ import { RecordStatusBadge } from "@/components/admin/status-badges";
 import { requireUserPage } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { param, pluralise } from "@/lib/utils";
+import { missingProfileFields } from "@/domain/vendors/profile";
 
 export const metadata: Metadata = { title: "Vendors" };
 
@@ -29,6 +30,7 @@ export default async function VendorsPage({
   const params = await searchParams;
   const q = param(params, "q").trim();
   const status = param(params, "status");
+  const moduleId = param(params, "module");
 
   const where: Prisma.VendorWhereInput = {
     ...(q
@@ -36,19 +38,30 @@ export default async function VendorsPage({
           OR: [
             { name: { contains: q, mode: "insensitive" } },
             { contactName: { contains: q, mode: "insensitive" } },
-            { location: { contains: q, mode: "insensitive" } },
+            { hqCity: { contains: q, mode: "insensitive" } },
+            { branches: { some: { city: { contains: q, mode: "insensitive" } } } },
             { email: { contains: q, mode: "insensitive" } },
           ],
         }
       : {}),
     ...(status === "ACTIVE" || status === "INACTIVE" ? { status } : {}),
+    // A vendor's modules are derived through its components' catalogues.
+    ...(moduleId ? { components: { some: { catalogue: { moduleId } } } } : {}),
   };
 
-  const vendors = await prisma.vendor.findMany({
-    where,
-    orderBy: { name: "asc" },
-    include: { _count: { select: { components: true } } },
-  });
+  const [vendors, modules] = await Promise.all([
+    prisma.vendor.findMany({
+      where,
+      orderBy: { name: "asc" },
+      include: {
+        _count: { select: { components: true, branches: true, practitioners: true } },
+      },
+    }),
+    prisma.module.findMany({
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      select: { id: true, name: true },
+    }),
+  ]);
 
   return (
     <div className="space-y-5">
@@ -67,9 +80,18 @@ export default async function VendorsPage({
       <FilterBar
         action="/admin/vendors"
         searchValue={q}
-        searchPlaceholder="Vendor name, contact, location…"
+        searchPlaceholder="Vendor name, contact, city…"
         resetHref="/admin/vendors"
         selects={[
+          {
+            name: "module",
+            label: "Module",
+            value: moduleId,
+            options: [
+              { value: "", label: "All modules" },
+              ...modules.map((m) => ({ value: m.id, label: m.name })),
+            ],
+          },
           {
             name: "status",
             label: "Status",
@@ -86,10 +108,10 @@ export default async function VendorsPage({
       {vendors.length === 0 ? (
         <EmptyState
           title={
-            q || status ? "No vendors match those filters" : "No vendors yet"
+            q || status || moduleId ? "No vendors match those filters" : "No vendors yet"
           }
           description={
-            q || status
+            q || status || moduleId
               ? "Try a broader search, or clear the filters."
               : "Add the first provider so components have somewhere to live."
           }
@@ -105,14 +127,19 @@ export default async function VendorsPage({
             <thead>
               <tr>
                 <Th>Vendor</Th>
-                <Th>Location</Th>
+                <Th>HQ</Th>
                 <Th>Contact</Th>
+                <Th className="text-right">Branches</Th>
+                <Th className="text-right">Practitioners</Th>
                 <Th className="text-right">Components</Th>
+                <Th>Profile</Th>
                 <Th>Status</Th>
               </tr>
             </thead>
             <tbody>
-              {vendors.map((vendor) => (
+              {vendors.map((vendor) => {
+                const missing = missingProfileFields(vendor).length;
+                return (
                 <Tr key={vendor.id}>
                   <Td>
                     <Link
@@ -121,27 +148,28 @@ export default async function VendorsPage({
                     >
                       {vendor.name}
                     </Link>
-                    {vendor.accreditation && (
-                      <p className="text-xs text-ink-400">
-                        {vendor.accreditation}
-                      </p>
-                    )}
                   </Td>
-                  <Td className="text-ink-500">{vendor.location ?? "—"}</Td>
+                  <Td className="text-ink-500">{vendor.hqCity ?? "—"}</Td>
                   <Td className="text-ink-500">
                     {vendor.contactName ?? "—"}
                     {vendor.email && (
                       <p className="text-xs text-ink-400">{vendor.email}</p>
                     )}
                   </Td>
+                  <Td className="text-right tabular-nums">{vendor._count.branches}</Td>
+                  <Td className="text-right tabular-nums">{vendor._count.practitioners}</Td>
                   <Td className="text-right tabular-nums">
                     {vendor._count.components}
+                  </Td>
+                  <Td className={missing ? "text-warning-700" : "text-ink-500"}>
+                    {missing ? `${missing} missing` : "Complete"}
                   </Td>
                   <Td>
                     <RecordStatusBadge status={vendor.status} />
                   </Td>
                 </Tr>
-              ))}
+                );
+              })}
             </tbody>
           </Table>
           <p className="px-4 py-2.5 text-xs text-ink-400">

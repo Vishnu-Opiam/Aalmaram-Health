@@ -289,7 +289,7 @@ describe("pre-journey workflow (integration)", () => {
       moduleName: item.component.catalogue.module.name,
       catalogueName: item.component.catalogue.name,
       vendorName: item.component.vendor.name,
-      vendorLocation: item.component.vendor.location,
+      vendorLocation: item.component.vendor.hqCity,
       clientFacingDescription: item.component.clientFacingDescription,
       whatsIncluded: item.component.whatsIncluded,
       clientDeliverable: item.component.clientDeliverable,

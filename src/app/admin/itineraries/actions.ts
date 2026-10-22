@@ -450,7 +450,7 @@ export async function generateReportAction(
           include: {
             component: {
               include: {
-                vendor: { select: { name: true, location: true } },
+                vendor: { select: { name: true, hqCity: true } },
                 catalogue: {
                   select: { name: true, module: { select: { name: true } } },
                 },
@@ -470,7 +470,7 @@ export async function generateReportAction(
       moduleName: item.component.catalogue.module.name,
       catalogueName: item.component.catalogue.name,
       vendorName: item.component.vendor.name,
-      vendorLocation: item.component.vendor.location,
+      vendorLocation: item.component.vendor.hqCity,
       clientFacingDescription: item.component.clientFacingDescription,
       whatsIncluded: item.component.whatsIncluded,
       clientDeliverable: item.component.clientDeliverable,

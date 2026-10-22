@@ -6,6 +6,7 @@ import {
 } from "@/domain/itineraries/status";
 import { dayNumberFor } from "@/domain/shared/dates";
 import { effectivePrice } from "@/domain/itineraries/pricing";
+import { PRICE_UNIT_LABELS } from "@/domain/vendors/profile";
 
 /**
  * The client-facing projection of an itinerary.
@@ -125,11 +126,11 @@ export async function loadClientItinerary(
               name: true,
               price: true,
               currency: true,
-              unit: true,
+              priceUnit: true,
               clientFacingDescription: true,
               whatsIncluded: true,
               clientDeliverable: true,
-              vendor: { select: { name: true, location: true } },
+              vendor: { select: { name: true, hqCity: true } },
               catalogue: {
                 select: { name: true, module: { select: { name: true } } },
               },
@@ -153,7 +154,7 @@ export async function loadClientItinerary(
     moduleName: item.component.catalogue.module.name,
     catalogueName: item.component.catalogue.name,
     vendorName: item.component.vendor.name,
-    vendorLocation: item.component.vendor.location,
+    vendorLocation: item.component.vendor.hqCity,
     description: item.component.clientFacingDescription,
     whatsIncluded: item.component.whatsIncluded,
     clientDeliverable: item.component.clientDeliverable,
@@ -169,7 +170,7 @@ export async function loadClientItinerary(
         }).toString()
       : null,
     currency: item.component.currency,
-    unit: item.component.unit,
+    unit: PRICE_UNIT_LABELS[item.component.priceUnit],
   }));
 
   const days = groupClientItems(items);

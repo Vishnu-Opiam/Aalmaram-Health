@@ -65,7 +65,7 @@ export function componentOrderBy(
 }
 
 export const componentListInclude = {
-  vendor: { select: { id: true, name: true, location: true, status: true } },
+  vendor: { select: { id: true, name: true, hqCity: true, status: true } },
   catalogue: {
     select: {
       id: true,
@@ -93,7 +93,7 @@ export async function searchComponents(
 
 /** Filter dropdown data, fetched in one round trip. */
 export async function loadComponentFilterOptions() {
-  const [modules, catalogues, vendors] = await Promise.all([
+  const [modules, catalogues, vendors, practitioners] = await Promise.all([
     prisma.module.findMany({
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
       select: { id: true, name: true, status: true },
@@ -112,11 +112,17 @@ export async function loadComponentFilterOptions() {
       orderBy: { name: "asc" },
       select: { id: true, name: true, status: true },
     }),
+    prisma.practitioner.findMany({
+      where: { status: "ACTIVE" },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, role: true, vendorId: true },
+    }),
   ]);
 
   return {
     modules,
     vendors,
+    practitioners,
     catalogues: catalogues.map((catalogue) => ({
       id: catalogue.id,
       name: catalogue.name,

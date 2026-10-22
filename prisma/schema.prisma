@@ -75,6 +75,13 @@ enum CostStatus {
   ON_REQUEST
 }
 
+// FOR_TWO = restaurants, priced from Google's "average for two".
+enum PriceUnit {
+  PER_PERSON
+  FOR_TWO
+  PER_GROUP
+}
+
 // ---------------------------------------------------------------------------
 // Identity
 // ---------------------------------------------------------------------------
@@ -96,22 +103,88 @@ model User {
 // Inventory: Vendor -> Component, Module -> Catalogue -> Component
 // ---------------------------------------------------------------------------
 
+// contactName, email, phone and notes are INTERNAL: we coordinate every booking,
+// so the client never needs them. Everything else is client-visible profile.
 model Vendor {
-  id            String       @id @default(cuid())
-  name          String       @unique
-  contactName   String?
-  email         String?
-  phone         String?
-  location      String?
-  accreditation String?
-  status        RecordStatus @default(ACTIVE)
-  notes         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  name            String       @unique
+  description     String?
+  contactName     String?
+  email           String?
+  phone           String?
+  hqLine          String?
+  hqCity          String?
+  hqPostcode      String?
+  hqCountry       String?
+  website         String?
+  socialLinks     String[]     @default([])
+  accreditations  String[]     @default([])
+  languages       String[]     @default([])
+  yearEstablished Int?
+  staffCount      Int?
+  equipment       String[]     @default([])
+  owners          String[]     @default([])
+  status          RecordStatus @default(ACTIVE)
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
-  components Component[]
+  components    Component[]
+  branches      Branch[]
+  practitioners Practitioner[]
 
   @@index([status])
+}
+
+/// A vendor's location; the client picks one per block (a lab chain may have ~100).
+model Branch {
+  id          String       @id @default(cuid())
+  vendorId    String
+  name        String
+  addressLine String?
+  city        String
+  postcode    String?
+  country     String       @default("India")
+  status      RecordStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+
+  @@unique([vendorId, name])
+}
+
+/// Doctor, therapist, instructor, guide or performer engaged by one vendor.
+model Practitioner {
+  id                String       @id @default(cuid())
+  vendorId          String
+  name              String
+  role              String
+  qualifications    String[]     @default([])
+  achievements      String[]     @default([])
+  yearsOfExperience Int?
+  languages         String[]     @default([])
+  status            RecordStatus @default(ACTIVE)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  vendor     Vendor                  @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  components ComponentPractitioner[]
+
+  @@index([vendorId])
+}
+
+/// "Delivered by". Optional: health always, wellness and culture some, restaurants never.
+/// The link is not inventory itself, so it cascades with either side.
+model ComponentPractitioner {
+  componentId    String
+  practitionerId String
+
+  component    Component    @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  practitioner Practitioner @relation(fields: [practitionerId], references: [id], onDelete: Cascade)
+
+  @@id([componentId, practitionerId])
+  @@index([practitionerId])
 }
 
 model Module {
@@ -154,7 +227,9 @@ model Component {
   tags                    String[]     @default([])
   price                   Decimal      @db.Decimal(10, 2)
   currency                String       @default("EUR")
-  unit                    String       @default("per person")
+  priceUnit               PriceUnit    @default(PER_PERSON)
+  durationMinutes         Int
+  recoveryTimeMinutes     Int?
   costStatus              CostStatus   @default(ESTIMATED)
   clientFacingDescription String
   whatsIncluded           String?
@@ -168,6 +243,7 @@ model Component {
   vendor         Vendor          @relation(fields: [vendorId], references: [id], onDelete: Restrict)
   catalogue      Catalogue       @relation(fields: [catalogueId], references: [id], onDelete: Restrict)
   itineraryItems ItineraryItem[]
+  practitioners  ComponentPractitioner[]
 
   @@unique([vendorId, name])
   @@index([catalogueId])

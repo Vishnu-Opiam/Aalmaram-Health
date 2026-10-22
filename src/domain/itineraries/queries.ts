@@ -34,7 +34,7 @@ export const itineraryDetailInclude = {
       component: {
         include: {
           vendor: {
-            select: { id: true, name: true, location: true, status: true },
+            select: { id: true, name: true, hqCity: true, status: true },
           },
           catalogue: {
             select: {

@@ -27,7 +27,10 @@ export type ComponentFormValues = {
   tags: string[];
   price: string;
   currency: string;
-  unit: string;
+  priceUnit: string;
+  durationMinutes: string;
+  recoveryTimeMinutes: string;
+  practitionerIds: string[];
   costStatus: string;
   clientFacingDescription: string;
   whatsIncluded: string;
@@ -45,16 +48,25 @@ export type CatalogueOption = {
   status: string;
 };
 
+export type PractitionerOption = {
+  id: string;
+  name: string;
+  role: string;
+  vendorId: string;
+};
+
 export function ComponentForm({
   values,
   vendors,
   catalogues,
+  practitioners,
   action,
   submitLabel,
 }: {
   values?: Partial<ComponentFormValues>;
   vendors: { id: string; name: string; status: string }[];
   catalogues: CatalogueOption[];
+  practitioners: PractitionerOption[];
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
 }) {
@@ -82,6 +94,11 @@ export function ComponentForm({
   const [moduleId, setModuleId] = useState(
     catalogues.find((c) => c.id === initialCatalogueId)?.moduleId ?? "",
   );
+
+  // Only the chosen vendor's practitioners can deliver its component.
+  const [vendorId, setVendorId] = useState(initial("vendorId"));
+  const vendorPractitioners = practitioners.filter((p) => p.vendorId === vendorId);
+  const checkedPractitioners = new Set(values?.practitionerIds ?? []);
 
   const visibleCatalogues = moduleId
     ? catalogues.filter((c) => c.moduleId === moduleId)
@@ -111,7 +128,8 @@ export function ComponentForm({
               id="vendorId"
               name="vendorId"
               required
-              defaultValue={initial("vendorId")}
+              value={vendorId}
+              onChange={(event) => setVendorId(event.target.value)}
               invalid={Boolean(state.fieldErrors.vendorId)}
             >
               <option value="">Select a vendor…</option>
@@ -260,8 +278,94 @@ export function ComponentForm({
 
       <Card>
         <CardHeader
+          title="Delivery"
+          description="How long it takes, any recovery afterwards, and who delivers it."
+        />
+        <div className="grid gap-5 p-5 sm:grid-cols-2">
+          <Field
+            label="Duration (minutes)"
+            htmlFor="durationMinutes"
+            required
+            hint="Time the client spends on it. 90 = 1 h 30 min."
+            errors={state.fieldErrors.durationMinutes}
+          >
+            <Input
+              id="durationMinutes"
+              name="durationMinutes"
+              type="number"
+              min={5}
+              step={5}
+              required
+              defaultValue={initial("durationMinutes", "60")}
+              invalid={Boolean(state.fieldErrors.durationMinutes)}
+            />
+          </Field>
+
+          <Field
+            label="Recovery time (minutes)"
+            htmlFor="recoveryTimeMinutes"
+            hint="Only for the few procedures that need it. Leave blank otherwise."
+            errors={state.fieldErrors.recoveryTimeMinutes}
+          >
+            <Input
+              id="recoveryTimeMinutes"
+              name="recoveryTimeMinutes"
+              type="number"
+              min={0}
+              step={5}
+              defaultValue={initial("recoveryTimeMinutes")}
+              invalid={Boolean(state.fieldErrors.recoveryTimeMinutes)}
+            />
+          </Field>
+
+          <fieldset className="sm:col-span-2">
+            <legend className="text-[13px] font-medium text-ink-700">
+              Delivered by
+            </legend>
+            <p className="mt-0.5 text-xs text-ink-500">
+              Optional. Health components always have one; restaurants never do.
+            </p>
+            {vendorPractitioners.length === 0 ? (
+              <p className="mt-2 text-sm text-ink-500">
+                {vendorId
+                  ? "This vendor has no practitioners yet. Add them on the vendor page."
+                  : "Choose a vendor to see its practitioners."}
+              </p>
+            ) : (
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {vendorPractitioners.map((practitioner) => (
+                  <label
+                    key={practitioner.id}
+                    className="flex items-start gap-2 rounded-md border border-sand-200 px-3 py-2 text-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      name="practitionerIds"
+                      value={practitioner.id}
+                      defaultChecked={checkedPractitioners.has(practitioner.id)}
+                      className="mt-0.5"
+                    />
+                    <span>
+                      <span className="font-medium text-ink-900">{practitioner.name}</span>
+                      <span className="block text-xs text-ink-500">{practitioner.role}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+            {state.fieldErrors.practitionerIds && (
+              <p role="alert" className="mt-1.5 text-xs text-danger-600">
+                {state.fieldErrors.practitionerIds.join(" ")}
+              </p>
+            )}
+          </fieldset>
+        </div>
+      </Card>
+
+      <Card>
+        <CardHeader
           title="Commercial and provenance"
-          description="Price is informational - this MVP does not process payments."
+          description="The client sees this price in the itinerary builder."
         />
         <div className="grid gap-5 p-5 sm:grid-cols-3">
           <Field
@@ -297,18 +401,21 @@ export function ComponentForm({
           </Field>
 
           <Field
-            label="Unit"
-            htmlFor="unit"
+            label="Price is"
+            htmlFor="priceUnit"
             required
-            errors={state.fieldErrors.unit}
+            hint="Restaurants: Google's average for two."
+            errors={state.fieldErrors.priceUnit}
           >
-            <Input
-              id="unit"
-              name="unit"
-              required
-              defaultValue={initial("unit", "per person")}
-              invalid={Boolean(state.fieldErrors.unit)}
-            />
+            <Select
+              id="priceUnit"
+              name="priceUnit"
+              defaultValue={initial("priceUnit", "PER_PERSON")}
+            >
+              <option value="PER_PERSON">Per person</option>
+              <option value="FOR_TWO">For two</option>
+              <option value="PER_GROUP">Per group</option>
+            </Select>
           </Field>
 
           <Field

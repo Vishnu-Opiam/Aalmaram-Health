@@ -18,7 +18,10 @@ export default async function EditComponentPage({
   await requireUserPage("/admin/components");
   const { id } = await params;
   const [component, options] = await Promise.all([
-    prisma.component.findUnique({ where: { id } }),
+    prisma.component.findUnique({
+      where: { id },
+      include: { practitioners: { select: { practitionerId: true } } },
+    }),
     loadComponentFilterOptions(),
   ]);
   if (!component) nextNotFound();
@@ -39,6 +42,7 @@ export default async function EditComponentPage({
       <ComponentForm
         vendors={options.vendors}
         catalogues={options.catalogues}
+        practitioners={options.practitioners}
         values={{
           id: component.id,
           vendorId: component.vendorId,
@@ -47,7 +51,10 @@ export default async function EditComponentPage({
           tags: component.tags,
           price: component.price.toString(),
           currency: component.currency,
-          unit: component.unit,
+          priceUnit: component.priceUnit,
+          durationMinutes: String(component.durationMinutes),
+          recoveryTimeMinutes: component.recoveryTimeMinutes?.toString() ?? "",
+          practitionerIds: component.practitioners.map((p) => p.practitionerId),
           costStatus: component.costStatus,
           clientFacingDescription: component.clientFacingDescription,
           whatsIncluded: component.whatsIncluded ?? "",

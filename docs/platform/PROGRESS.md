@@ -12,21 +12,21 @@
 - Last updated: 2026-10-15 (plan revised to the class diagram v1)
 
 ## Phase 0 — Foundations
-- [ ] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
+- [x] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
 - [ ] P0.2 AI gateway module `src/lib/ai/` with fake provider default
 - [ ] P0.3 `AiRun` model + `/admin/ai-runs`
 - [ ] P0.4 Evals harness `npm run eval`
 
 ## Phase 1 — What we offer: vendor profile (BUILD FIRST · MVP)
-- [ ] P1.1 Schema + migration (Vendor profile fields, `accreditations[]`, Branch, Practitioner, Component duration / recovery time / price unit)
-- [ ] P1.2 Domain: validation, missing-fields list, client + planner projections
-- [ ] P1.3 Admin vendor profile editor (+ branches, practitioners)
-- [ ] P1.4 Component editor additions + practitioner links
+- [x] P1.1 Schema + migration (Vendor profile fields, `accreditations[]`, Branch, Practitioner, Component duration / recovery time / price unit)
+- [~] P1.2 Domain: validation, missing-fields list, client + planner projections (client projection lands with the portal in P3.5)
+- [x] P1.3 Admin vendor profile editor (+ branches, practitioners)
+- [x] P1.4 Component editor additions + practitioner links
 - [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
 - [ ] P1.6 Client-facing provider info in portal + leak tests
-- [ ] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
+- [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
 - [!] P1.8 First real vendors entered by humans — needs Nivedith's curated list
-- [ ] P1.9 Vendor list filters + branch / practitioner / missing-field counts
+- [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
 
 ## Phase 2 — Clients & trips (MVP)
 - [ ] P2.1 Staff roles ADMIN / RELATIONSHIP_MANAGER + client's relationship manager
@@ -102,7 +102,9 @@
 
 ## Baseline results (P0.1)
 
-_Not yet run._
+2026-10-22, `d8e4885` (docs-only commit on top of `main` 022921b), fresh local embedded Postgres:
+`prisma migrate deploy` ok · `npm run typecheck` clean · `npm test` 7 files / 103 tests passed ·
+`npm run build` ok. E2E not run at baseline (first run at the end of Phase 1).
 
 ## Eval results
 
@@ -145,6 +147,10 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-15 | Vendor website drafting (P1.5): admin-triggered fetch of a public URL or pasted text; suggestions only; tests use fixtures, never the network. | Notebook §6.3 (scrape → structured output); tests must run offline. |
 | 2026-10-15 | Refinements beyond the diagram: Address stored as columns; `FeedPost.externalId` / `hiddenAt`; `Payment.providerReference`; `BookingEvent.actorUserId`; `Conversation.createdById`; `HealthDossier.documents` hold private storage keys, not public URLs. | Needed for de-duplication, moderation, reconciliation, audit and privacy; none changes the diagram's meaning. |
 | 2026-10-15 | Backlog, not planned: vendor view, commission tracking, phone app, landing page and translations, two-way human chat, in-trip capture, question bank. | Nivedith, 14–15 Oct: not now. |
+| 2026-10-22 | Phase 1 migration drops `Vendor.location`, `Vendor.accreditation` and `Component.unit` in the same migration that data-migrates them (not a follow-up). Unrecognised units → `PER_PERSON`; existing components get a 60-minute duration. | Every reader moved in the same commit, so nothing reads the old columns; a second migration would be ceremony. Old values are all demo seed rows. |
+| 2026-10-22 | Branches and practitioners are edited inline on the vendor page (expandable rows), not on separate pages; deactivate via the status field. | Fewer screens for the admin flow module → catalogue → vendor → component; matches "simple fields first". |
+| 2026-10-22 | Vendor phone is required by the form (diagram `phone 1..1`), column stays nullable. | Old rows may lack it; the form enforces it on the next save. |
+| 2026-10-22 | Work happens in the git worktree `.claude/worktrees/mvp`, not the main checkout. | The main checkout holds untracked older copies of CLAUDE.md / docs and a `.env.local` with a remote `DATABASE_URL`; a separate worktree keeps the local DB the only one in reach. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans
@@ -172,3 +178,26 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
 - **2026-10-15** · `claude/optimistic-haslett-e831b1` · Docs only: PLAN.md and PROGRESS.md revised to the class diagram v1 and the 14–15 Oct decisions (no code or schema changes). Tests not run (nothing executable changed). Next: P0.1 baseline, then Phase 1 in the build order of PLAN.md §4.
+- **2026-10-22 · MVP build plan** (goal: a demo Vishnu can show — admin vendor tool + client Feed + builder with cost + AI chat → itinerary).
+  Stacked branches, one per phase, each from the previous: `feat/phase-1-vendor-profile` → `feat/phase-2-trips` →
+  `feat/phase-3-portal` → `feat/phase-4-ai`.
+  1. **Phase 1** — migration (Vendor profile fields + `accreditations[]`, HQ address, Branch, Practitioner,
+     ComponentPractitioner, Component `durationMinutes` / `recoveryTimeMinutes` / `priceUnit`, data-migrating
+     `location`, `accreditation`, `unit`); `src/domain/vendors/` (missing fields, client projection, block-price
+     unit maths); vendor editor with branches + practitioners; component editor additions; vendor list counts;
+     seed (blood test, Swedish massage, Fort Kochi walk, multi-branch lab, restaurant `FOR_TWO`, one incomplete vendor).
+  2. **Phase 2** — migration + backfill (`User.roles`, Client profile fields + relationship manager, Trip,
+     TripRequirements + TripModuleShare, Conversation, Itinerary 1:1 Trip with `confirmedAt`, blocks with
+     `startsAt` / `addedBy` / `price` / `branchId`); `src/domain/trips/` (status table, module mix, block rules,
+     pricing); admin trip page (requirements, conversations, health-core builder); publish / approve / change
+     request flow retired.
+  3. **Phase 3** — FeedPost + `/admin/feed`; portal shell (Feed · Itinerary · Calendar "soon" · Chat); timeline
+     builder: "+" between blocks → suggestions or module → catalogue → component → branch → time; drag a block
+     to another day; running total; health core locked; Confirm & lock (sets `confirmedAt`, freezes prices,
+     trip → AWAITING_PAYMENT — the payment itself stays Phase 5).
+  4. **Phase 4** — `src/lib/ai/` (`generateStructured`, fake provider default, AI Gateway provider behind a key),
+     `AiRun` + `/admin/ai-runs`; requirements extraction; deterministic draft planner (slot budget → candidates →
+     selection) placing `AI` blocks; slot suggestions; client chat with "Build my itinerary" and "Talk to a person".
+  Deferred past the demo (noted, not built): P0.4 eval harness and P4.5 eval fixtures (no model key yet),
+  P1.5 vendor drafting from a website, P3.2 automated feed ingestion (blocked), role-based permission split
+  (roles stored, every staff member can still do everything).

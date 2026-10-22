@@ -16,6 +16,7 @@ import { RecordStatusBadge } from "@/components/admin/status-badges";
 import { ActionButton } from "@/components/admin/action-button";
 import { formatMoney } from "@/domain/itineraries/pricing";
 import { formatShortDate } from "@/domain/shared/dates";
+import { PRICE_UNIT_LABELS, formatDuration } from "@/domain/vendors/profile";
 import { requireUserPage } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 
@@ -40,6 +41,7 @@ export default async function ComponentDetailPage({
     include: {
       vendor: true,
       catalogue: { include: { module: true } },
+      practitioners: { include: { practitioner: true } },
       _count: { select: { itineraryItems: true } },
     },
   });
@@ -160,8 +162,20 @@ export default async function ComponentDetailPage({
                   ),
                 },
                 {
-                  term: "Location",
-                  detail: component.vendor.location ?? "—",
+                  term: "Delivered by",
+                  detail: component.practitioners.length
+                    ? component.practitioners
+                        .map(({ practitioner }) => `${practitioner.name}, ${practitioner.role}`)
+                        .join("; ")
+                    : "—",
+                },
+                { term: "Duration", detail: formatDuration(component.durationMinutes) },
+                {
+                  term: "Recovery time",
+                  detail:
+                    component.recoveryTimeMinutes !== null
+                      ? formatDuration(component.recoveryTimeMinutes)
+                      : "—",
                 },
                 { term: "Module", detail: component.catalogue.module.name },
                 { term: "Catalogue", detail: component.catalogue.name },
@@ -170,7 +184,7 @@ export default async function ComponentDetailPage({
                   detail: (
                     <span className="tabular-nums">
                       {formatMoney(component.price, component.currency)}{" "}
-                      <span className="text-ink-400">{component.unit}</span>
+                      <span className="text-ink-400">{PRICE_UNIT_LABELS[component.priceUnit]}</span>
                     </span>
                   ),
                 },

@@ -43,6 +43,45 @@ const optionalDate = z
 
 const recordStatus = z.enum(["ACTIVE", "INACTIVE"]);
 
+/** A textarea with one entry per line, stored as a string array. */
+const lineList = (maxItems = 30, maxLength = 300) =>
+  z
+    .string()
+    .optional()
+    .transform((v) =>
+      (v ?? "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean),
+    )
+    .refine((list) => list.length <= maxItems, `Please keep this to ${maxItems} lines or fewer.`)
+    .refine(
+      (list) => list.every((line) => line.length <= maxLength),
+      `Please keep each line under ${maxLength} characters.`,
+    );
+
+const optionalInt = (label: string, min: number, max: number) =>
+  z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? null : Number(v)))
+    .refine(
+      (v) => v === null || (Number.isInteger(v) && v >= min && v <= max),
+      `${label} must be a whole number between ${min} and ${max}.`,
+    );
+
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(500)
+  .optional()
+  .transform((v) => (v === "" || v === undefined ? null : v))
+  .refine(
+    (v) => v === null || /^https?:\/\/\S+$/i.test(v),
+    "Enter a full web address starting with https://",
+  );
+
 // --- auth ------------------------------------------------------------------
 
 export const loginSchema = z.object({
@@ -55,13 +94,51 @@ export const loginSchema = z.object({
 
 export const vendorSchema = z.object({
   name: requiredText("Vendor name"),
+  description: optionalText(4000),
   contactName: optionalText(200),
   email: optionalEmail,
-  phone: optionalText(50),
-  location: optionalText(200),
-  accreditation: optionalText(500),
+  // The diagram makes phone mandatory; the column stays nullable for older rows.
+  phone: requiredText("Phone", 50),
+  hqLine: optionalText(300),
+  hqCity: optionalText(120),
+  hqPostcode: optionalText(20),
+  hqCountry: optionalText(100),
+  website: optionalUrl,
+  socialLinks: lineList(10, 500).refine(
+    (list) => list.every((url) => /^https?:\/\/\S+$/i.test(url)),
+    "Each social link must be a full web address starting with https://",
+  ),
+  accreditations: lineList(),
+  languages: lineList(20, 60),
+  yearEstablished: optionalInt("Year established", 1800, 2100),
+  staffCount: optionalInt("Staff count", 0, 1_000_000),
+  equipment: lineList(),
+  owners: lineList(10, 200),
   status: recordStatus.default("ACTIVE"),
   notes: optionalText(2000),
+});
+
+// --- branch / practitioner ---------------------------------------------------
+
+export const branchSchema = z.object({
+  vendorId: requiredText("Vendor"),
+  name: requiredText("Branch name", 200),
+  addressLine: optionalText(300),
+  city: requiredText("City", 120),
+  postcode: optionalText(20),
+  country: requiredText("Country", 100),
+  status: recordStatus.default("ACTIVE"),
+});
+
+export const practitionerSchema = z.object({
+  vendorId: requiredText("Vendor"),
+  name: requiredText("Name", 200),
+  role: requiredText("Role", 120),
+  qualifications: lineList(),
+  achievements: lineList(),
+  yearsOfExperience: optionalInt("Years of experience", 0, 80),
+  languages: lineList(20, 60),
+  status: recordStatus.default("ACTIVE"),
 });
 
 // --- module ----------------------------------------------------------------
@@ -109,7 +186,13 @@ export const componentSchema = z.object({
     .toUpperCase()
     .length(3, "Use a 3-letter currency code, for example EUR.")
     .default("EUR"),
-  unit: requiredText("Unit", 60),
+  priceUnit: z.enum(["PER_PERSON", "FOR_TWO", "PER_GROUP"]).default("PER_PERSON"),
+  durationMinutes: z.coerce
+    .number({ message: "Enter the duration in minutes." })
+    .int("Enter whole minutes.")
+    .min(5, "A component takes at least 5 minutes.")
+    .max(24 * 60 * 14, "Durations over two weeks are not supported."),
+  recoveryTimeMinutes: optionalInt("Recovery time", 0, 24 * 60 * 30),
   costStatus: z.enum(["ESTIMATED", "CONFIRMED", "ON_REQUEST"]).default("ESTIMATED"),
   clientFacingDescription: requiredText("Client-facing description", 4000),
   whatsIncluded: optionalText(4000),
@@ -255,6 +338,8 @@ export const portalSignInSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email address."),
 });
 
+export type BranchInput = z.infer<typeof branchSchema>;
+export type PractitionerInput = z.infer<typeof practitionerSchema>;
 export type VendorInput = z.infer<typeof vendorSchema>;
 export type ModuleInput = z.infer<typeof moduleSchema>;
 export type CatalogueInput = z.infer<typeof catalogueSchema>;
