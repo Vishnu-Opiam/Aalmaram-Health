@@ -198,7 +198,7 @@ From the latest run (2026-10-22):
 
 | Suite                       | Result                     |
 | --------------------------- | -------------------------- |
-| Unit + integration (Vitest) | **133 passed** (10 files)  |
+| Unit + integration (Vitest) | **134 passed** (10 files)  |
 | End-to-end (Playwright)     | **2 passed**               |
 | `tsc --noEmit`              | clean                      |
 | `next build`                | succeeds                   |

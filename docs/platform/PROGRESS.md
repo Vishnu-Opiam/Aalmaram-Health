@@ -220,7 +220,7 @@ Append one short entry per working session: date, branch, tasks touched, test st
   (roles stored, every staff member can still do everything).
 - **2026-10-22 · MVP build** · branches `feat/phase-1-vendor-profile` (8da2400) → `feat/phase-2-trips` (f04e186) →
   `feat/phase-3-portal` (00149be) → `feat/phase-4-ai`. Built Phases 1–4 of the plan above, plus Confirm & lock from
-  Phase 5. Verification at the end of Phase 4: `npm run typecheck` clean; `npm test` 133 passed (10 files);
+  Phase 5. Verification at the end of Phase 4: `npm run typecheck` clean; `npm test` 134 passed (10 files);
   `npm run test:e2e` 2 passed (golden path: admin health core → client Feed → add + drag → AI chat build → confirm;
   inventory incl. branches/practitioners); `next build` ok (inside the e2e run). Lint not run: `next lint` is not
   configured in this repo (interactive setup). Browser check of admin vendor, trip and builder pages done in the dev

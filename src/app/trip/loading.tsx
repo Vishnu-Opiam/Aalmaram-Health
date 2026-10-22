@@ -2,8 +2,8 @@ import { Skeleton } from "@/components/ui/primitives";
 
 export default function TripLoading() {
   return (
-    <div className="mx-auto max-w-3xl px-5 py-12" aria-busy="true" aria-live="polite">
-      <span className="sr-only">Loading your journey…</span>
+    <div className="mx-auto max-w-5xl px-5 py-12" aria-busy="true" aria-live="polite">
+      <span className="sr-only">Loading…</span>
       <Skeleton className="h-3 w-32" />
       <Skeleton className="mt-4 h-10 w-3/4" />
       <Skeleton className="mt-6 h-24 w-full" />

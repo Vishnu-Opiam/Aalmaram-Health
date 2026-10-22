@@ -124,6 +124,14 @@ describe("freeGaps and suggestForSlot", () => {
     const tight = suggestForSlot(input, "2026-12-06", 18 * 60 + 30);
     expect(tight.map((s) => s.componentId)).not.toContain("kathakali");
   });
+
+  it("matches must-haves on an experience's name and tags, not its category", () => {
+    const input = base({
+      mustHaves: ["Backwaters"],
+      components: [comp("spice", "c", { name: "Spice Plantation Walk", catalogueName: "Backwaters & Nature", tags: ["walking"] })],
+    });
+    expect(suggestForSlot(input, "2026-12-07", 10 * 60)[0]?.reason).not.toMatch(/backwaters/i);
+  });
 });
 
 describe("requirements extraction (deterministic)", () => {
@@ -192,7 +200,10 @@ describe("medical safety", () => {
 
   it("recognises medical questions and deflects them in the scripted chat", () => {
     expect(isMedicalQuestion("Is it safe to do the MRI if I have a pacemaker?")).toBe(true);
+    expect(isMedicalQuestion("What does my cholesterol result mean?")).toBe(true);
+    expect(isMedicalQuestion("Are my blood test results normal?")).toBe(true);
     expect(isMedicalQuestion("Can I see Kathakali?")).toBe(false);
+    expect(isMedicalQuestion("I'd like a check-up and blood tests while I'm there.")).toBe(false);
     const reply = scriptedReply([{ role: "client", text: "What does my result mean for my cholesterol?" }]);
     expect(reply.reply).toBe(MEDICAL_DEFLECTION);
   });

@@ -102,7 +102,8 @@ export function fitStart(component: PlannerComponent, gaps: { start: number; end
 const matches = (component: PlannerComponent, term: string) => {
   const t = term.toLowerCase().trim();
   if (!t) return false;
-  const haystack = [component.name, component.catalogueName, ...component.tags].join(" ").toLowerCase();
+  // Name and tags only: a category name ("Backwaters & Nature") would make a spice walk "backwaters".
+  const haystack = [component.name, ...component.tags].join(" ").toLowerCase();
   return t.split(/\s+/).every((word) => haystack.includes(word.replace(/s$/, "")));
 };
 

@@ -93,7 +93,7 @@ export default async function ItineraryPage({
           href={`/trip/chat?trip=${trip.id}`}
           className="mt-6 inline-flex items-center gap-2 rounded-lg border border-teal-200 bg-teal-50 px-5 py-3 text-[16px] font-medium text-teal-700 hover:bg-teal-100"
         >
-          <MessageCircle className="h-5 w-5" aria-hidden="true" />
+          <MessageCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
           Not sure where to start? Tell our assistant what you enjoy and it will suggest a plan.
         </Link>
       )}

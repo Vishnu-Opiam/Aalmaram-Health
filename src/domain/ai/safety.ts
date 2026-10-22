@@ -29,8 +29,10 @@ export function safeText(text: string, fallback: string): string {
 
 /** Did the client ask for something only a clinician can answer? */
 export function isMedicalQuestion(text: string): boolean {
-  return /\b(should i (take|stop|start)|is it safe|what does my (result|report|scan)|my (result|report|scan|levels?) (show|mean)|diagnos|dosage|medication|symptom)/i.test(
-    text,
+  return (
+    /\b(should i (take|stop|start)|is it safe|diagnos|dosage|medication|medicine|symptom|prescri)/i.test(text) ||
+    /\b(results?|reports?|scans?|levels?|tests?|readings?)\b.{0,40}\b(mean|show|say|normal|high|low|worrying|bad|good)\b/i.test(text) ||
+    /\b(cholesterol|blood pressure|blood sugar|diabetes|cancer|tumou?r|pain)\b/i.test(text)
   );
 }
 
