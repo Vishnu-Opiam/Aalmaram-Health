@@ -53,7 +53,7 @@ const prisma = new PrismaClient({ datasources: { db: { url: testUrl } } });
 try {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE
-      "ActivityLog", "FeedPost", "ChangeRequest", "Report", "ItineraryItem",
+      "ActivityLog", "FeedPost", "AiRun", "ChangeRequest", "Report", "ItineraryItem",
       "Itinerary", "Client", "Component", "Catalogue", "Module",
       "Vendor", "User"
     RESTART IDENTITY CASCADE

@@ -16,6 +16,11 @@ const schema = z.object({
   EMAIL_TRANSPORT: z.enum(["log", "smtp"]).default("log"),
   EMAIL_FROM: z.string().default("Aalmaram Health <no-reply@aalmaram.example>"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  // AI: "fake" (deterministic, offline) unless explicitly switched to the gateway.
+  AI_PROVIDER: z.enum(["fake", "gateway"]).default("fake"),
+  AI_GATEWAY_API_KEY: z.string().optional(),
+  AI_MODEL_REASONING: z.string().default("anthropic/claude-sonnet-5.5"),
+  AI_MODEL_FAST: z.string().default("anthropic/claude-haiku-5.5"),
 });
 
 let cached: z.infer<typeof schema> | null = null;

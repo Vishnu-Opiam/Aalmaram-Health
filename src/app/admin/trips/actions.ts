@@ -35,6 +35,7 @@ import {
   repriceItinerary,
 } from "@/lib/services/itinerary-blocks";
 import { refreshUrl } from "@/lib/refresh-url";
+import { draftItinerary, extractRequirements, suggestionsForSlot } from "@/lib/services/ai-planning";
 
 const STAFF = { kind: "staff" } as const;
 const tripUrl = (tripId: string, hash = "") => `${refreshUrl(`/admin/trips/${tripId}`)}${hash}`;
@@ -321,6 +322,53 @@ export async function removeBlockAction(_prev: FormState, formData: FormData): P
     });
     return successState("Activity removed.", tripUrl(tripId, "#itinerary"));
   });
+}
+
+// ---------------------------------------------------------------------------
+// AI drafts (always drafts: staff review requirements; AI blocks are "Suggested")
+// ---------------------------------------------------------------------------
+
+export async function draftRequirementsWithAiAction(
+  tripId: string,
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return runAction("ai.requirements", formData, async () => {
+    const user = await requireUser();
+    // Staff asked for it explicitly, so the draft replaces the form; they edit from there.
+    await extractRequirements(tripId, { scope: STAFF, userId: user.id }, { overwrite: true });
+    await logActivity({
+      action: ACTIVITY_ACTIONS.AI_REQUIREMENTS_DRAFTED,
+      entityType: "Trip",
+      entityId: tripId,
+      actorUserId: user.id,
+      actorLabel: user.name,
+    });
+    return successState("Requirements drafted from the conversations. Please review them.", tripUrl(tripId, "#requirements"));
+  });
+}
+
+export async function draftItineraryWithAiAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("ai.itinerary", formData, async () => {
+    const user = await requireUser();
+    const tripId = String(formData.get("tripId") ?? "");
+    const { added, removed } = await draftItinerary(tripId, { scope: STAFF, userId: user.id });
+    await logActivity({
+      action: ACTIVITY_ACTIONS.AI_ITINERARY_DRAFTED,
+      entityType: "Trip",
+      entityId: tripId,
+      actorUserId: user.id,
+      actorLabel: user.name,
+      metadata: { added, removed },
+    });
+    return successState(`${added} suggested activities added.`, tripUrl(tripId, "#itinerary"));
+  });
+}
+
+/** Ideas for a "+" in the staff builder. */
+export async function suggestForStaffSlot(tripId: string, day: string, time: string) {
+  await requireUser();
+  return suggestionsForSlot(tripId, STAFF, day, time);
 }
 
 // ---------------------------------------------------------------------------

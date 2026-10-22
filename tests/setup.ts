@@ -13,3 +13,5 @@ process.env.SESSION_SECRET ??=
   "test-session-secret-that-is-definitely-long-enough-0123456789";
 process.env.APP_URL ??= "http://localhost:3000";
 process.env.EMAIL_TRANSPORT = "log";
+// Tests never call a real model.
+process.env.AI_PROVIDER = "fake";
