@@ -1,25 +1,35 @@
 import type {
-  ChangeRequestStatus,
+  AddedBy,
   ClientStatus,
-  ItineraryItemStatus,
-  ItineraryStatus,
   RecordStatus,
   ReportStatus,
+  TripStatus,
 } from "@prisma/client";
 import { Badge, type BadgeTone } from "@/components/ui/primitives";
-import { humanStatus } from "@/domain/itineraries/status";
+import { tripStatusLabel } from "@/domain/trips/status";
 
-const ITINERARY_TONES: Record<ItineraryStatus, BadgeTone> = {
-  DRAFT: "neutral",
-  READY_FOR_REVIEW: "info",
-  PUBLISHED: "accent",
-  CHANGES_REQUESTED: "warning",
-  APPROVED: "success",
-  ARCHIVED: "neutral",
+const TRIP_TONES: Record<TripStatus, BadgeTone> = {
+  PLANNING: "info",
+  AWAITING_PAYMENT: "warning",
+  BOOKING: "accent",
+  READY: "success",
+  IN_PROGRESS: "success",
+  COMPLETED: "neutral",
+  CANCELLED: "neutral",
 };
 
-export function ItineraryStatusBadge({ status }: { status: ItineraryStatus }) {
-  return <Badge tone={ITINERARY_TONES[status]}>{humanStatus(status)}</Badge>;
+export function TripStatusBadge({ status }: { status: TripStatus }) {
+  return <Badge tone={TRIP_TONES[status]}>{tripStatusLabel(status)}</Badge>;
+}
+
+const ADDED_BY: Record<AddedBy, { label: string; tone: BadgeTone }> = {
+  TEAM: { label: "Health core", tone: "accent" },
+  CLIENT: { label: "Client", tone: "neutral" },
+  AI: { label: "Suggested", tone: "info" },
+};
+
+export function AddedByBadge({ addedBy }: { addedBy: AddedBy }) {
+  return <Badge tone={ADDED_BY[addedBy].tone}>{ADDED_BY[addedBy].label}</Badge>;
 }
 
 const CLIENT_LABELS: Record<ClientStatus, string> = {
@@ -56,38 +66,10 @@ export function RecordStatusBadge({ status }: { status: RecordStatus }) {
   );
 }
 
-const ITEM_LABELS: Record<ItineraryItemStatus, string> = {
-  PLANNED: "Planned",
-  CONFIRMED: "Confirmed",
-  REMOVED: "Removed",
-};
-
-const ITEM_TONES: Record<ItineraryItemStatus, BadgeTone> = {
-  PLANNED: "info",
-  CONFIRMED: "success",
-  REMOVED: "neutral",
-};
-
-export function ItemStatusBadge({ status }: { status: ItineraryItemStatus }) {
-  return <Badge tone={ITEM_TONES[status]}>{ITEM_LABELS[status]}</Badge>;
-}
-
 export function ReportStatusBadge({ status }: { status: ReportStatus }) {
   return (
     <Badge tone={status === "PUBLISHED" ? "success" : "neutral"}>
       {status === "PUBLISHED" ? "Published" : "Draft"}
-    </Badge>
-  );
-}
-
-export function ChangeRequestStatusBadge({
-  status,
-}: {
-  status: ChangeRequestStatus;
-}) {
-  return (
-    <Badge tone={status === "OPEN" ? "warning" : "success"}>
-      {status === "OPEN" ? "Open" : "Resolved"}
     </Badge>
   );
 }

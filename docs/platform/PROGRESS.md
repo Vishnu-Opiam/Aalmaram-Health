@@ -29,13 +29,13 @@
 - [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
 
 ## Phase 2 — Clients & trips (MVP)
-- [ ] P2.1 Staff roles ADMIN / RELATIONSHIP_MANAGER + client's relationship manager
-- [ ] P2.2 Schema + migration + backfill (Trip, TripRequirements, Conversation, Itinerary 1:1 Trip, blocks)
-- [ ] P2.3 Domain: trip status machine, module mix, block rules, block pricing
-- [ ] P2.4 Admin UI: trips, requirements, conversations, health core
-- [ ] P2.5 Retire proposal / approval / change-request flow
-- [ ] P2.6 Privacy (transcripts, summaries, leak tests)
-- [ ] P2.7 Seed
+- [~] P2.1 Staff roles ADMIN / RELATIONSHIP_MANAGER + client's relationship manager
+- [x] P2.2 Schema + migration + backfill (Trip, TripRequirements, Conversation, Itinerary 1:1 Trip, blocks)
+- [x] P2.3 Domain: trip status machine, module mix, block rules, block pricing
+- [x] P2.4 Admin UI: trips, requirements, conversations, health core
+- [x] P2.5 Retire proposal / approval / change-request flow
+- [x] P2.6 Privacy (transcripts, summaries, leak tests)
+- [x] P2.7 Seed
 
 ## Phase 3 — Client portal: Feed + itinerary builder (MVP)
 - [ ] P3.1 FeedPost + admin feed manager (add / hide / import)
@@ -151,6 +151,12 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-22 | Branches and practitioners are edited inline on the vendor page (expandable rows), not on separate pages; deactivate via the status field. | Fewer screens for the admin flow module → catalogue → vendor → component; matches "simple fields first". |
 | 2026-10-22 | Vendor phone is required by the form (diagram `phone 1..1`), column stays nullable. | Old rows may lack it; the form enforces it on the next save. |
 | 2026-10-22 | Work happens in the git worktree `.claude/worktrees/mvp`, not the main checkout. | The main checkout holds untracked older copies of CLAUDE.md / docs and a `.env.local` with a remote `DATABASE_URL`; a separate worktree keeps the local DB the only one in reach. |
+| 2026-10-22 | Block times are Kerala wall-clock times stored as "floating" UTC timestamps (09:30 → `09:30Z`, always formatted in UTC). | No server or browser zone can shift a block; Kerala has no DST. A real zone column is only needed if trips ever span zones. |
+| 2026-10-22 | Block prices are stored at add time (`blockPrice` = unit price × per person / per two (rounded up) / per group) and recomputed when travellers change while unconfirmed. Staff price overrides (`priceOverride`) dropped. | Diagram: price on the block, frozen at confirm. Overrides can return as a field if the team needs them. |
+| 2026-10-22 | One builder component (`src/components/builder/`) serves both the admin trip page (staff add `TEAM` blocks) and the portal (client adds `CLIENT` blocks); permissions are decided server-side in `src/lib/services/itinerary-blocks.ts` and arrive as `block.canEdit`. | One timeline to maintain; the client-safe view model (`builder-view.ts`) is the only shape either screen renders. |
+| 2026-10-22 | Staff roles stored (`roles StaffRole[]`) and the relationship manager is assignable, but every staff member can still do everything (no permission split yet). P2.1 stays `[~]`. | MVP has one or two staff; the split needs a decision on what an RM may not do. |
+| 2026-10-22 | The What-to-Expect report is shared with the client by "Save and share" on the report page (no longer tied to publishing a proposal). | The publish flow is retired. |
+| 2026-10-22 | The migration gives clients that had intake text or trip dates but no itinerary a placeholder trip "First trip (dates to confirm)" so their intake survives as requirements. | Data preservation over neatness; staff can rename or cancel it. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans

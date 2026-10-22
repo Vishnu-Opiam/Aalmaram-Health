@@ -11,6 +11,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { EXTRA_CATALOGUES, seedInventory } from "./seed-inventory";
+import { seedClientsAndTrips } from "./seed-trips";
 
 const prisma = new PrismaClient();
 
@@ -41,7 +42,7 @@ async function main() {
       email: DEMO_EMAIL,
       name: "Priya Menon (demo admin)",
       passwordHash,
-      role: "ADMIN",
+      roles: ["ADMIN", "RELATIONSHIP_MANAGER"],
     },
   });
   console.log(`  admin: ${admin.email}`);
@@ -118,127 +119,8 @@ async function main() {
   const inventory = await seedInventory(prisma, catalogues, daysFromToday(-30));
   console.log(`  vendors: ${inventory.vendorCount}, components: ${inventory.componentCount}`);
 
-  // -------------------------------------------------------------- clients
-  const tripStart = daysFromToday(45);
-  const tripEnd = daysFromToday(54);
-
-  const demoClient = await prisma.client.upsert({
-    where: { email: "elena.fischer@example.com" },
-    update: {},
-    create: {
-      name: "Elena Fischer (demo client)",
-      email: "elena.fischer@example.com",
-      phone: "+49 30 000 0000",
-      country: "Germany",
-      status: "PLANNING",
-      tripStartDate: tripStart,
-      tripEndDate: tripEnd,
-      tripDuration: 10,
-      healthInterests:
-        "Would like a thorough diagnostic baseline - bloodwork and imaging - before turning fifty.",
-      wellnessInterests:
-        "Interested in a short Ayurveda programme and daily yoga. Prefers gentle rather than intensive.",
-      culturalInterests:
-        "Keen on Kathakali, backwaters and learning to cook a few Kerala dishes.",
-      generalPreferences:
-        "Vegetarian. Prefers a slow pace with rest afternoons. Travelling alone. Comfortable in English.",
-      intakeNotes:
-        "Reached us through a colleague. First visit to India. Wants the medical elements early in the trip so results arrive before departure.",
-    },
-  });
-
-  await prisma.client.upsert({
-    where: { email: "marc.dubois@example.com" },
-    update: {},
-    create: {
-      name: "Marc Dubois (demo client)",
-      email: "marc.dubois@example.com",
-      phone: "+33 1 00 00 00 00",
-      country: "France",
-      status: "INTAKE",
-      healthInterests: "Cardiac screening.",
-      wellnessInterests: "Open to Ayurveda but has not decided.",
-      culturalInterests: "Backwaters and food.",
-      generalPreferences: "Travelling with a partner. Prefers coastal locations.",
-      intakeNotes: "Early enquiry. No dates fixed yet.",
-    },
-  });
-  console.log("  clients: 2");
-
-  // ------------------------------------------------------------ itinerary
-  const existing = await prisma.itinerary.findFirst({
-    where: { clientId: demoClient.id },
-    select: { id: true },
-  });
-
-  if (existing) {
-    console.log("  itinerary: already seeded, skipping");
-  } else {
-    const pick = async (name: string) => {
-      const component = await prisma.component.findFirst({
-        where: { name },
-        select: { id: true },
-      });
-      if (!component) throw new Error(`Seed component not found: ${name}`);
-      return component.id;
-    };
-
-    const plan: { name: string; dayOffset: number }[] = [
-      { name: "Comprehensive Blood Panel", dayOffset: 0 },
-      { name: "Full-Body MRI Screening", dayOffset: 1 },
-      { name: "Internal Medicine Consultation", dayOffset: 2 },
-      { name: "Private Yoga Session", dayOffset: 3 },
-      { name: "Abhyanga Full-Body Treatment", dayOffset: 3 },
-      { name: "Sunrise Canoe Village Tour", dayOffset: 5 },
-      { name: "Private Backwater Day Cruise", dayOffset: 6 },
-      { name: "Kerala Home Cooking Workshop", dayOffset: 7 },
-      { name: "Kathakali Performance with Make-Up Demonstration", dayOffset: 8 },
-    ];
-
-    const itinerary = await prisma.itinerary.create({
-      data: {
-        clientId: demoClient.id,
-        title: "Ten days in Kerala: a diagnostic baseline, Ayurveda and the backwaters",
-        startDate: tripStart,
-        endDate: tripEnd,
-        status: "DRAFT",
-        adminNotes:
-          "Demo itinerary. Medical elements front-loaded so results land before departure, then a slower second half.",
-        clientNotes:
-          "Elena - here is the shape we have in mind. The medical mornings sit at the start so your results reach you before you fly home, and the second half is deliberately unhurried. Tell me anything you would like moved.",
-      },
-    });
-
-    for (const [index, entry] of plan.entries()) {
-      const componentId = await pick(entry.name);
-      const scheduledDate = new Date(
-        tripStart.getTime() + entry.dayOffset * 86_400_000,
-      );
-      await prisma.itineraryItem.create({
-        data: {
-          itineraryId: itinerary.id,
-          componentId,
-          scheduledDate,
-          dayNumber: entry.dayOffset + 1,
-          sequence: index,
-          status: "PLANNED",
-        },
-      });
-    }
-
-    await prisma.activityLog.create({
-      data: {
-        action: "itinerary.created",
-        entityType: "Itinerary",
-        entityId: itinerary.id,
-        actorUserId: admin.id,
-        actorLabel: admin.name,
-        metadata: { seeded: true, itemCount: plan.length },
-      },
-    });
-
-    console.log(`  itinerary: ${itinerary.title} (${plan.length} items, DRAFT)`);
-  }
+  // --------------------------------------------------- clients and trips
+  await seedClientsAndTrips(prisma, { adminId: admin.id, adminName: admin.name, passwordHash, daysFromToday });
 
   console.log("\nDone.");
   console.log(`Sign in at /login with ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);

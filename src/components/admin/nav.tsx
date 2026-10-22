@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/clients", label: "Clients", icon: Users },
-  { href: "/admin/itineraries", label: "Itineraries", icon: CalendarRange },
+  { href: "/admin/trips", label: "Trips", icon: CalendarRange },
   { href: "/admin/vendors", label: "Vendors", icon: Building2 },
   { href: "/admin/modules", label: "Modules", icon: Layers },
   { href: "/admin/catalogues", label: "Catalogues", icon: Boxes },

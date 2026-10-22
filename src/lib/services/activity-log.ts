@@ -20,6 +20,15 @@ export const ACTIVITY_ACTIONS = {
   BRANCH_UPDATED: "branch.updated",
   PRACTITIONER_CREATED: "practitioner.created",
   PRACTITIONER_UPDATED: "practitioner.updated",
+  TRIP_CREATED: "trip.created",
+  TRIP_UPDATED: "trip.updated",
+  TRIP_REQUIREMENTS_UPDATED: "trip.requirements_updated",
+  CONVERSATION_ADDED: "conversation.added",
+  BLOCK_ADDED: "itinerary.block_added",
+  BLOCK_MOVED: "itinerary.block_moved",
+  BLOCK_REMOVED: "itinerary.block_removed",
+  ITINERARY_CONFIRMED: "itinerary.confirmed",
+  ITINERARY_REOPENED: "itinerary.reopened",
   MODULE_CREATED: "module.created",
   MODULE_UPDATED: "module.updated",
   CATALOGUE_CREATED: "catalogue.created",
@@ -52,6 +61,8 @@ export type ActivityEntity =
   | "Vendor"
   | "Branch"
   | "Practitioner"
+  | "Trip"
+  | "Conversation"
   | "Module"
   | "Catalogue"
   | "Component"
@@ -111,6 +122,15 @@ const ACTION_LABELS: Record<string, string> = {
   "branch.updated": "Branch updated",
   "practitioner.created": "Practitioner added",
   "practitioner.updated": "Practitioner updated",
+  "trip.created": "Trip created",
+  "trip.updated": "Trip details updated",
+  "trip.requirements_updated": "Trip requirements updated",
+  "conversation.added": "Conversation recorded",
+  "itinerary.block_added": "Activity added to itinerary",
+  "itinerary.block_moved": "Activity moved",
+  "itinerary.block_removed": "Activity removed",
+  "itinerary.confirmed": "Itinerary confirmed and locked",
+  "itinerary.reopened": "Itinerary reopened for changes",
   "module.created": "Module created",
   "module.updated": "Module updated",
   "catalogue.created": "Catalogue created",
