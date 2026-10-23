@@ -13,6 +13,7 @@ import {
 } from "./blocks";
 import { actualMix } from "./module-mix";
 import { isItineraryEditable } from "./status";
+import { blockProgress } from "@/domain/bookings/status";
 import type { BranchOption, BuilderTrip, Library } from "./builder-view";
 
 const branchLabel = (b: { name: string; city: string }) =>
@@ -32,6 +33,7 @@ const builderInclude = {
         orderBy: { startsAt: "asc" },
         include: {
           branch: { select: { id: true, name: true, city: true } },
+          booking: { select: { status: true } },
           component: {
             include: {
               catalogue: { select: { name: true, module: { select: { id: true, name: true } } } },
@@ -127,6 +129,8 @@ export async function loadBuilderTrip(
       practitioners: c.practitioners.map((p) => p.practitioner),
       note: item.clientFacingNotes,
       overlaps: overlapping.has(item.id),
+      progress: blockProgress(trip.itinerary!.confirmedAt !== null, item.booking?.status ?? null),
+      bookingStatus: viewer.kind === "staff" ? (item.booking?.status ?? "PENDING") : null,
     };
   });
 

@@ -1,20 +1,27 @@
 import type { Metadata } from "next";
-import { FileText, Lock, MessageCircle } from "lucide-react";
+import { Check, CheckCheck, FileText, Lock, NotebookPen } from "lucide-react";
 import { requireClientPage } from "@/lib/auth/guards";
 import { AppLink as Link } from "@/components/ui/primitives";
-import { ItineraryBuilder } from "@/components/builder/itinerary-builder";
+import { TripBoard } from "@/components/portal/trip-board";
+import { CHAT_GREETING } from "@/domain/ai/chat";
+import { formatMoney } from "@/domain/itineraries/pricing";
 import { loadBuilderTrip, loadLibrary } from "@/domain/trips/queries";
 import { loadPortalTrips, pickTrip } from "@/domain/trips/portal";
 import { formatDateRange, parseDateInput } from "@/domain/shared/dates";
 import { prisma } from "@/lib/db";
 import { renderMarkdown } from "@/lib/markdown";
+import { boardIdeas, loadChat } from "@/lib/services/ai-planning";
 import { cn, param } from "@/lib/utils";
 import {
   addClientBlockAction,
+  buildMyItineraryAction,
   confirmItineraryAction,
   moveClientBlockAction,
+  placeClientIdeaAction,
   removeClientBlockAction,
+  sendChatMessageAction,
   suggestForClientSlot,
+  talkToPersonAction,
 } from "../../actions";
 import { ConfirmPanel } from "./confirm-panel";
 
@@ -40,21 +47,26 @@ export default async function ItineraryPage({
     );
   }
 
-  const [trip, library, extras] = await Promise.all([
+  const [trip, library, extras, chat] = await Promise.all([
     loadBuilderTrip(current.id, { kind: "client", clientId: client.id }),
     loadLibrary(),
     prisma.itinerary.findUnique({
       where: { tripId: current.id },
       select: { clientNotes: true, report: { select: { title: true, content: true, status: true } } },
     }),
+    loadChat(current.id, client.id),
   ]);
   if (!trip) return null;
+  const ideas = trip.editable ? await boardIdeas(trip.id, client.id) : [];
   const report = extras?.report?.status === "PUBLISHED" ? extras.report : null;
+  const blocks = trip.days.flatMap((d) => d.blocks);
+  const booked = blocks.filter((b) => b.progress === "booked").length;
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
+    // Room at the bottom for the docked chat.
+    <div className="mx-auto max-w-[1400px] px-3 pb-40 pt-6 sm:px-5 sm:pt-8">
       {trips.length > 1 && (
-        <nav aria-label="Your trips" className="mb-6 flex flex-wrap gap-2">
+        <nav aria-label="Your trips" className="mb-4 flex flex-wrap gap-2">
           {trips.map((t) => (
             <Link
               key={t.id}
@@ -71,48 +83,17 @@ export default async function ItineraryPage({
         </nav>
       )}
 
-      <header>
-        <p className="text-[13px] uppercase tracking-[0.14em] text-ink-400">Your itinerary</p>
-        <h1 className="mt-2 font-serif text-[2.1rem] leading-tight tracking-tight text-ink-900 sm:text-[2.5rem]">
-          {trip.name}
-        </h1>
-        <p className="mt-2 text-[17px] text-ink-600">
-          {formatDateRange(parseDateInput(trip.startDate), parseDateInput(trip.endDate))} · {trip.travellers}{" "}
-          {trip.travellers === 1 ? "traveller" : "travellers"}
-        </p>
-        {extras?.clientNotes && (
-          <div className="mt-6 border-l-2 border-brass-300 pl-5">
-            <p className="whitespace-pre-wrap font-serif text-[18px] leading-relaxed text-ink-700">{extras.clientNotes}</p>
-            <p className="mt-2 text-[14px] text-ink-400">Your relationship manager</p>
-          </div>
-        )}
-      </header>
-
-      {trip.editable && (
-        <Link
-          href={`/trip/chat?trip=${trip.id}`}
-          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-teal-200 bg-teal-50 px-5 py-3 text-[16px] font-medium text-teal-700 hover:bg-teal-100"
-        >
-          <MessageCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-          Not sure where to start? Tell our assistant what you enjoy and it will suggest a plan.
-        </Link>
-      )}
-
-      <div className="mt-8">
-        <ItineraryBuilder
-          trip={trip}
-          library={library}
-          variant="client"
-          actions={{
-            add: addClientBlockAction,
-            move: moveClientBlockAction,
-            remove: removeClientBlockAction,
-            suggest: suggestForClientSlot,
-          }}
-        />
-      </div>
-
-      <div className="mt-10">
+      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div className="min-w-0">
+          <h1 className="font-serif text-[1.8rem] leading-tight tracking-tight text-ink-900 sm:text-[2.2rem]">{trip.name}</h1>
+          <p className="mt-1 text-[16px] text-ink-600">
+            {formatDateRange(parseDateInput(trip.startDate), parseDateInput(trip.endDate))} · {trip.travellers}{" "}
+            {trip.travellers === 1 ? "traveller" : "travellers"} ·{" "}
+            <span className="font-semibold tabular-nums text-ink-900" aria-live="polite">
+              {formatMoney(trip.total, trip.currency)}
+            </span>
+          </p>
+        </div>
         {trip.editable ? (
           <ConfirmPanel
             tripId={trip.id}
@@ -122,33 +103,114 @@ export default async function ItineraryPage({
             action={confirmItineraryAction}
           />
         ) : (
-          <section className="rounded-lg border border-teal-200 bg-teal-50 p-6">
-            <h2 className="flex items-center gap-2 font-serif text-2xl text-ink-900">
-              <Lock className="h-5 w-5 text-teal-600" aria-hidden="true" /> Confirmed
-            </h2>
-            <p className="mt-2 text-[16px] leading-relaxed text-ink-700">
-              {trip.status === "AWAITING_PAYMENT"
-                ? "Thank you. Your relationship manager will be in touch about payment; once it is received we book each activity and you will see it confirmed here."
-                : "Your itinerary is locked. For any change, please contact your relationship manager."}
-            </p>
-          </section>
+          <StatusBanner booked={booked} total={blocks.length} awaitingPayment={trip.status === "AWAITING_PAYMENT"} />
         )}
-      </div>
+      </header>
 
-      {report && (
-        <section aria-labelledby="report-heading" className="mt-12">
-          <h2 id="report-heading" className="flex items-center gap-2 font-serif text-2xl text-ink-900">
-            <FileText className="h-5 w-5 text-brass-500" aria-hidden="true" /> What to expect
-          </h2>
-          <div className="mt-5 rounded-lg border border-sand-200 bg-white px-6 py-7 sm:px-10">
-            <article
-              className="prose-report"
-              // Server-side Markdown renderer escapes all HTML before applying a fixed tag whitelist.
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(report.content, 2) }}
-            />
-          </div>
-        </section>
+      <p className="mb-4 mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-ink-500">
+        {trip.editable ? (
+          <>
+            <span>Tap anything to see more.</span>
+            <span className="inline-flex items-center gap-1">
+              <Lock className="h-3.5 w-3.5" aria-hidden="true" /> arranged by your team
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="inline-flex items-center gap-1">
+              <CheckCheck className="h-4 w-4 text-teal-600" aria-hidden="true" /> confirmed
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-success-600 text-white">
+                <Check className="h-3 w-3" strokeWidth={3} aria-hidden="true" />
+              </span>
+              booked and ready
+            </span>
+          </>
+        )}
+      </p>
+
+      <TripBoard
+        trip={trip}
+        library={library}
+        ideas={ideas}
+        actions={{
+          add: addClientBlockAction,
+          move: moveClientBlockAction,
+          remove: removeClientBlockAction,
+          place: placeClientIdeaAction,
+          suggest: suggestForClientSlot,
+        }}
+        chat={{
+          tripId: trip.id,
+          greeting: CHAT_GREETING,
+          initial: chat,
+          send: sendChatMessageAction,
+          build: buildMyItineraryAction,
+          person: talkToPersonAction,
+        }}
+      />
+
+      {(extras?.clientNotes || report) && (
+        <div className="mt-8 space-y-3">
+          {extras?.clientNotes && (
+            <details className="rounded-xl border border-sand-200 bg-white px-5 py-4">
+              <summary className="flex cursor-pointer items-center gap-2 text-[16px] font-medium text-ink-800">
+                <NotebookPen className="h-5 w-5 text-brass-500" aria-hidden="true" /> A note from your relationship manager
+              </summary>
+              <p className="mt-3 whitespace-pre-wrap font-serif text-[18px] leading-relaxed text-ink-700">{extras.clientNotes}</p>
+            </details>
+          )}
+          {report && (
+            <details className="rounded-xl border border-sand-200 bg-white px-5 py-4">
+              <summary className="flex cursor-pointer items-center gap-2 text-[16px] font-medium text-ink-800">
+                <FileText className="h-5 w-5 text-brass-500" aria-hidden="true" /> What to expect
+              </summary>
+              <article
+                className="prose-report mt-4"
+                // Server-side Markdown renderer escapes all HTML before applying a fixed tag whitelist.
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(report.content, 2) }}
+              />
+            </details>
+          )}
+        </div>
       )}
     </div>
+  );
+}
+
+function StatusBanner({ booked, total, awaitingPayment }: { booked: number; total: number; awaitingPayment: boolean }) {
+  const all = total > 0 && booked === total;
+  return (
+    <section
+      aria-label="Trip status"
+      className={cn(
+        "flex min-w-[260px] items-center gap-3 rounded-xl border px-4 py-3",
+        all ? "border-success-200 bg-success-50" : "border-teal-200 bg-teal-50",
+      )}
+    >
+      {all ? (
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success-600 text-white">
+          <Check className="h-6 w-6" strokeWidth={3} aria-hidden="true" />
+        </span>
+      ) : (
+        <CheckCheck className="h-8 w-8 shrink-0 text-teal-600" aria-hidden="true" />
+      )}
+      <div className="flex-1">
+        <p className="text-[17px] font-semibold text-ink-900">{all ? "Everything is booked" : "Confirmed"}</p>
+        <p className="text-[15px] text-ink-600">
+          {all
+            ? "You’re ready to go."
+            : awaitingPayment && booked === 0
+              ? "We’ll be in touch about payment, then book each activity."
+              : `${booked} of ${total} booked`}
+        </p>
+        {!all && total > 0 && (
+          <div className="mt-1.5 h-1.5 w-full rounded-full bg-white" aria-hidden="true">
+            <div className="h-1.5 rounded-full bg-success-600" style={{ width: `${(booked / total) * 100}%` }} />
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

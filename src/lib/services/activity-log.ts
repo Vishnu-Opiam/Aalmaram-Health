@@ -29,6 +29,7 @@ export const ACTIVITY_ACTIONS = {
   BLOCK_REMOVED: "itinerary.block_removed",
   ITINERARY_CONFIRMED: "itinerary.confirmed",
   ITINERARY_REOPENED: "itinerary.reopened",
+  BOOKING_STATUS_CHANGED: "booking.status_changed",
   AI_REQUIREMENTS_DRAFTED: "ai.requirements_drafted",
   AI_ITINERARY_DRAFTED: "ai.itinerary_drafted",
   CLIENT_ASKED_FOR_PERSON: "client.asked_for_person",

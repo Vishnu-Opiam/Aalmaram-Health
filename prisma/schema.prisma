@@ -72,6 +72,14 @@ enum TripStatus {
   CANCELLED
 }
 
+enum BookingStatus {
+  PENDING
+  REQUESTED
+  CONFIRMED
+  DECLINED
+  CANCELLED
+}
+
 enum Pace {
   RELAXED
   BALANCED
@@ -453,10 +461,28 @@ model ItineraryItem {
   component      Component       @relation(fields: [componentId], references: [id], onDelete: Restrict)
   branch         Branch?         @relation(fields: [branchId], references: [id], onDelete: Restrict)
   changeRequests ChangeRequest[]
+  booking        Booking?
 
   @@index([itineraryId, startsAt])
   @@index([componentId])
   @@index([branchId])
+}
+
+/// One booking per block (class diagram v1). The client sees only the status
+/// (green tick on CONFIRMED); vendorReference is INTERNAL. Created when staff
+/// first record an outcome; cascades with its block.
+model Booking {
+  id              String        @id @default(cuid())
+  itineraryItemId String        @unique
+  status          BookingStatus @default(PENDING)
+  confirmedTime   DateTime?
+  vendorReference String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  itineraryItem ItineraryItem @relation(fields: [itineraryItemId], references: [id], onDelete: Cascade)
+
+  @@index([status])
 }
 
 model Report {

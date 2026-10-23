@@ -26,6 +26,7 @@ import {
   reopenItineraryAction,
   saveItineraryNotesAction,
   saveRequirementsAction,
+  setBookingStatusAction,
   suggestForStaffSlot,
   updateTripAction,
 } from "../actions";
@@ -97,7 +98,9 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
         <Alert tone="warning" title="The client confirmed this itinerary">
           <p>
             Blocks and prices are locked{builder.confirmedAt ? ` since ${formatShortDate(new Date(builder.confirmedAt))}` : ""}.
-            Payment is collected before any booking (not yet in the app). If the client asks for a change, reopen it.
+            Payment is collected before any booking (not yet in the app). Record each provider&rsquo;s answer under
+            &ldquo;Booking&rdquo; on its block: the client sees a green tick when it is confirmed. If the client asks for a
+            change, reopen it.
           </p>
           <ActionButton
             action={reopenItineraryAction}
@@ -136,7 +139,13 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             trip={builder}
             library={library}
             variant="staff"
-            actions={{ add: addBlockAction, move: moveBlockAction, remove: removeBlockAction, suggest: suggestForStaffSlot }}
+            actions={{
+              add: addBlockAction,
+              move: moveBlockAction,
+              remove: removeBlockAction,
+              suggest: suggestForStaffSlot,
+              setBooking: setBookingStatusAction,
+            }}
           />
         </section>
 

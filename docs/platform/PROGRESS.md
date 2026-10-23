@@ -7,9 +7,9 @@
 
 ## Current focus
 
-- Phase: MVP (Phases 1–4) built; next are human reviews of the four stacked PRs, then Phase 5 (payment)
-- Branch: `feat/phase-1-vendor-profile` → `feat/phase-2-trips` → `feat/phase-3-portal` → `feat/phase-4-ai`
-- Last updated: 2026-10-22
+- Phase: MVP (Phases 1–4) merged; client itinerary redesigned as a one-look board with booking ticks (start of Phase 6)
+- Branch: `feat/portal-workflow-board` (from `main`)
+- Last updated: 2026-10-23
 
 ## Phase 0 — Foundations
 - [x] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
@@ -65,12 +65,12 @@
 - [ ] P5.6 Tests
 
 ## Phase 6 — Booking
-- [ ] P6.1 Schema + booking status machine
+- [~] P6.1 Schema + booking status machine — `Booking` + status machine built; `BookingEvent` waits for P6.3
 - [ ] P6.2 One booking per block when the trip enters BOOKING
 - [ ] P6.3 AI-drafted vendor emails, staff send, BookingEvents (`BOOKING_AUTO_SEND` off)
-- [ ] P6.4 Vendor replies recorded by staff (optional AI parse)
+- [~] P6.4 Vendor replies recorded by staff (optional AI parse) — status recorded per block on the admin trip page; no reply text or AI parse yet
 - [ ] P6.5 Booking board + overdue cron (flags only)
-- [ ] P6.6 Client calendar / green tick
+- [x] P6.6 Client calendar / green tick — on the itinerary board itself (✓✓ confirmed, green ✓ booked)
 - [ ] P6.7 Declines and changes via the relationship manager
 - [ ] P6.8 Trip READY + client notified
 - [ ] P6.9 Tests
@@ -168,6 +168,11 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-22 | `AiRun.output` holds ids, counts and flags only (no summaries, reasons or transcript text); the logger now also redacts `transcript`, `summary`, `prompt`, `reply`. | CLAUDE.md §4 privacy rules. |
 | 2026-10-22 | AI drafts choose a provider's first active branch (by city); the client can change it with "Change time". | The client picks the branch near where they stay; the AI doesn't know that yet. |
 | 2026-10-22 | `src/lib/services/itinerary-recommendation.ts` (null stub) removed; suggestions live in `ai-planning.ts` + `domain/ai/planner.ts`. | Dead code once P4.3 landed. |
+| 2026-10-23 | Client itinerary is a board: a column per day, short cards, details in a side sheet; Calendar and Chat tabs fold into it (`/trip/calendar`, `/trip/chat` redirect). | Vishnu: see everything in one look, not a long PDF-like report; status and chat belong on the same page. |
+| 2026-10-23 | The client sees three booking states only: planned (nothing), ✓✓ (itinerary confirmed), green ✓ (booking CONFIRMED). REQUESTED and DECLINED read as ✓✓. | Vishnu's double tick / big green tick; booking detail stays internal (P6.6). |
+| 2026-10-23 | `Booking` lands now (P6.1 shape, no `BookingEvent`); staff set its status per block; the row is created on the first recorded outcome, not on entering BOOKING. Not gated on payment yet. | The green tick needs real data; payment (Phase 5) and the agent (P6.3) are not built. Gate on `Trip.status = BOOKING` when payments land. |
+| 2026-10-23 | Client-side AI ideas (rail, chat) never include Health & Medical components; matching uses the client's words plus a small synonym map ("art" → performance, Kathakali). | The team arranges the health core; suggesting clinical services from what someone says about themselves edges toward medical advice. |
+| 2026-10-23 | Dropping an idea on a day: the server picks the first gap that suits its time of day (else after the day's last block) and the provider's first branch; both editable on the card. | No time picker in a drag; matches the AI-draft branch decision of 22 Oct. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans
@@ -194,6 +199,13 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-10-23** · `feat/portal-workflow-board` · Vishnu's portal feedback: itinerary as a one-look workflow board
+  (day columns, compact cards, tap for details), AI "Ideas for you" rail with drag-and-drop, the assistant docked at
+  the bottom and able to offer items from what the client types ("I love art"), ✓✓ / green ✓ booking status on each
+  card. Added `Booking` (migration `booking`), `src/domain/bookings/status.ts`, a staff booking control on the admin
+  trip page, and seed data (Marc's trip confirmed and part-booked). Tests: typecheck ✓, 144 unit + integration ✓,
+  e2e golden path updated (results in the PR). Not done: native HTML5 drag only (on touch screens "Add" → day chips
+  is the path), `BookingEvent`, payment gating. Next: human review of the PR.
 - **2026-10-15** · `claude/optimistic-haslett-e831b1` · Docs only: PLAN.md and PROGRESS.md revised to the class diagram v1 and the 14–15 Oct decisions (no code or schema changes). Tests not run (nothing executable changed). Next: P0.1 baseline, then Phase 1 in the build order of PLAN.md §4.
 - **2026-10-22 · MVP build plan** (goal: a demo Vishnu can show — admin vendor tool + client Feed + builder with cost + AI chat → itinerary).
   Stacked branches, one per phase, each from the previous: `feat/phase-1-vendor-profile` → `feat/phase-2-trips` →

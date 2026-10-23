@@ -8,6 +8,7 @@ import {
   blockAddSchema,
   blockMoveSchema,
   blockRemoveSchema,
+  bookingStatusSchema,
   conversationSchema,
   itineraryNotesSchema,
   reportSaveSchema,
@@ -35,6 +36,7 @@ import {
   repriceItinerary,
 } from "@/lib/services/itinerary-blocks";
 import { refreshUrl } from "@/lib/refresh-url";
+import { setBookingStatus } from "@/lib/services/bookings";
 import { draftItinerary, extractRequirements, suggestionsForSlot } from "@/lib/services/ai-planning";
 
 const STAFF = { kind: "staff" } as const;
@@ -493,5 +495,26 @@ export async function saveReportAction(_prev: FormState, formData: FormData): Pr
       share ? "Report shared with the client." : "Report saved.",
       refreshUrl(`/admin/trips/${trip.id}/report`),
     );
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Bookings (recorded by staff; the client sees the green tick)
+// ---------------------------------------------------------------------------
+
+export async function setBookingStatusAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("booking.status", formData, async () => {
+    const user = await requireUser();
+    const input = parseForm(bookingStatusSchema, formData);
+    const { tripId, from } = await setBookingStatus(input.blockId, input.status);
+    await logActivity({
+      action: ACTIVITY_ACTIONS.BOOKING_STATUS_CHANGED,
+      entityType: "Trip",
+      entityId: tripId,
+      actorUserId: user.id,
+      actorLabel: user.name,
+      metadata: { blockId: input.blockId, from, to: input.status },
+    });
+    return successState("Booking updated.", tripUrl(tripId, "#itinerary"));
   });
 }

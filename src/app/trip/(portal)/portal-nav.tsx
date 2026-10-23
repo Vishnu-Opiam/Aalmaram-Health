@@ -1,15 +1,13 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { CalendarDays, MessageCircle, Newspaper, Route } from "lucide-react";
+import { Newspaper, Route } from "lucide-react";
 import { AppLink as Link } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 
 const SECTIONS = [
   { href: "/trip", label: "Feed", icon: Newspaper, exact: true },
   { href: "/trip/itinerary", label: "Itinerary", icon: Route },
-  { href: "/trip/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/trip/chat", label: "Chat", icon: MessageCircle },
 ];
 
 export function PortalNav() {

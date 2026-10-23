@@ -13,10 +13,14 @@ Two interfaces over one data model:
 - **Admin** (`/admin`) — for the team: what we offer (modules → catalogues →
   vendors with branches and practitioners → components), clients, trips,
   requirements, conversations, the health-core builder, the Feed and AI runs.
-- **Client portal** (`/trip`) — large and simple: **Feed**, **Itinerary**
-  (builder + confirm), **Calendar**, **Chat** (AI assistant, "talk to a person").
+- **Client portal** (`/trip`) — large and simple: **Feed** and **Itinerary**, a
+  one-look board (a column per day, a short card per activity, details on tap)
+  with AI **Ideas for you** to drag onto a day, the assistant docked at the
+  bottom, and booking status on each card: ✓✓ once confirmed, a green ✓ once
+  the provider has confirmed.
 
-Payment, booking and in-trip features come next (PLAN.md Phases 5–8).
+Payment, the booking agent and in-trip features come next (PLAN.md Phases 5–8);
+staff record booking outcomes by hand for now.
 
 ---
 
@@ -31,9 +35,14 @@ Payment, booking and in-trip features come next (PLAN.md Phases 5–8).
 4. **Clients** → Elena → *Send invitation link*; copy the `/trip/access/…` URL
    from the server console or `.mail.log` and open it in a private window.
 5. As Elena: the **Feed**, then **Plan my itinerary** — press **+** on a day,
-   pick Culture → Restaurants → a dinner, watch the total; drag a block to
-   another day; open **Chat**, answer three questions, **Build my itinerary**;
-   finally **Confirm my itinerary**. Back in admin the trip is awaiting payment.
+   pick Culture → Restaurants → a dinner, watch the total; drag a card to
+   another day; type "I love art" in the assistant at the bottom and add the
+   idea it offers (or drag one from **Ideas for you**); **Build my itinerary**;
+   finally **Confirm my itinerary** — every card gets ✓✓. Back in admin the
+   trip is awaiting payment; set a block's **Booking** to *Confirmed by
+   provider* and the client's card turns into a green ✓.
+6. *Marc Dubois (demo client)* has a confirmed, part-booked trip: invite him to
+   see the ticks straight away.
 
 ---
 
@@ -87,9 +96,10 @@ Single Next.js App Router application. Server Components read, Server Actions wr
 ```
 src/
   app/admin/…              admin screens; one actions.ts per area (trips, vendors, feed…)
-  app/trip/(portal)/…      client portal sections: Feed, Itinerary, Calendar, Chat
+  app/trip/(portal)/…      client portal: Feed, Itinerary board (/calendar and /chat redirect to it)
   app/trip/access/[token]  portal sign-in link → session cookie
-  components/builder/      the itinerary builder, shared by admin and portal
+  components/builder/      the staff itinerary builder (and the add panel the portal reuses)
+  components/portal/       the client's trip board, chat dock and progress ticks
   domain/                  framework-free business logic, unit-tested
     vendors/               profile checklist, durations, price units
     trips/                 status machine, block rules and pricing, module mix,
@@ -168,8 +178,13 @@ itineraries, blocks, requirements and conversations cascade with the client.
   candidates, and anything invalid (unknown ids, clashes, outside the day) is
   dropped.
 - **"+" suggestions** — deterministic ranking of what fits the gap.
-- **Chat** — a discovery assistant with "Build my itinerary" and "Talk to a
-  person". It never gives medical advice: prompts forbid it and every model
+- **Ideas for you** — the board's side rail: what the client said in the chat
+  ("I love art" → Kathakali), then must-haves, then the module mix. Dropping an
+  idea on a day picks a time that suits it. Health is never suggested to the
+  client: the team arranges the health core.
+- **Chat** — a discovery assistant docked under the board, with "Build my
+  itinerary" and "Talk to a person"; it answers wishes with up to three ideas
+  (ids validated against what it was offered) to add or drag onto a day. It never gives medical advice: prompts forbid it and every model
   sentence passes `src/domain/ai/safety.ts` before it is stored or shown.
 
 ---
@@ -206,9 +221,10 @@ From the latest run (2026-10-22):
 The Playwright golden path: admin creates a client and trip → records a 40/30/30
 mix → places the blood test at the Fort Kochi branch (€370 for two) → invites the
 client → client lands on the Feed → can't touch the health core → adds a dinner
-priced for two (total €405) → drags it to another day → chats three messages →
-*Build my itinerary* adds suggestions around the health core → confirms → admin
-sees the trip awaiting payment. A second spec covers vendor, branch,
+priced for two (total €405) → drags it to another day → tells the assistant "I
+love this art" and adds the Kathakali it offers → *Build my itinerary* adds
+suggestions around the health core → confirms (✓✓) → admin sees the trip
+awaiting payment and records a booking → the client sees the green ✓. A second spec covers vendor, branch,
 practitioner, catalogue and component administration.
 
 ---
@@ -228,8 +244,9 @@ items become timed blocks, intake text becomes the trip's requirements.
 
 ## Known limitations
 
-- Payment, booking, the client calendar's green ticks and in-trip features are
-  not built (PLAN.md Phases 5–8). The Calendar shows "Not booked yet".
+- Payment, the booking agent and in-trip features are not built (PLAN.md
+  Phases 5–8). Staff record each booking's outcome by hand, and recording is
+  not yet gated on payment.
 - The Feed is curated by hand (add, hide, JSON import); automated Instagram /
   news ingestion waits on a sourcing decision.
 - Staff roles are stored but not enforced: every staff member can do everything.

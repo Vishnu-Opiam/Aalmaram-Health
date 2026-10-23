@@ -31,12 +31,14 @@ export function appendToTranscript(transcript: string, message: ChatMessage): st
 export const chatReplySchema = z.object({
   reply: z.string().min(1).max(1200),
   readyToBuild: z.boolean(),
+  /** Component ids from the offered list; anything else is dropped by the caller. */
+  suggestions: z.array(z.string()).max(3).default([]),
 });
 
 export type ChatReply = z.infer<typeof chatReplySchema>;
 
 export const CHAT_GREETING =
-  "Hello, I'm Aalmaram's trip assistant. Tell me what you'd like from your time in Kerala — the health side, wellness, culture, the pace you enjoy — and I'll sketch an itinerary around the appointments your team has arranged. You can ask for a person at any time.";
+  "Hello, I'm Aalmaram's trip assistant. Tell me what you'd like from your time in Kerala — “I love art”, “can we see the backwaters?”, the pace you enjoy — and I'll suggest things to add around the appointments your team has arranged. You can ask for a person at any time.";
 
 const SCRIPT = [
   "Thank you. What would you like from the health side of the trip — for example a check-up, a specialist consultation, or a review of reports you already have?",
@@ -44,15 +46,28 @@ const SCRIPT = [
   "And how do you like to travel: relaxed with free afternoons, balanced, or as much as possible?",
 ];
 
-/** Deterministic assistant for the fake provider: a short discovery script. */
-export function scriptedReply(messages: ChatMessage[]): ChatReply {
+export const SUGGESTION_REPLY =
+  "That sounds lovely. Here are some things you might enjoy — press “Add” on any of them, or drag one onto a day. Nothing is booked until you confirm your trip.";
+
+/**
+ * Deterministic assistant for the fake provider: offers what the client's
+ * last message points at (`matches`, from `interestMatches`), otherwise
+ * walks a short discovery script.
+ */
+export function scriptedReply(messages: ChatMessage[], matches: string[] = []): ChatReply {
   const last = [...messages].reverse().find((m) => m.role === "client");
-  if (last && isMedicalQuestion(last.text)) return { reply: MEDICAL_DEFLECTION, readyToBuild: false };
+  if (last && isMedicalQuestion(last.text)) return { reply: MEDICAL_DEFLECTION, readyToBuild: false, suggestions: [] };
   const asked = messages.filter((m) => m.role === "client").length;
-  if (asked <= SCRIPT.length) return { reply: SCRIPT[Math.max(0, asked - 1)], readyToBuild: asked >= SCRIPT.length };
+  if (matches.length > 0) {
+    return { reply: SUGGESTION_REPLY, readyToBuild: asked >= SCRIPT.length, suggestions: matches.slice(0, 3) };
+  }
+  if (asked <= SCRIPT.length) {
+    return { reply: SCRIPT[Math.max(0, asked - 1)], readyToBuild: asked >= SCRIPT.length, suggestions: [] };
+  }
   return {
     reply:
       "Thank you, that gives me a good picture. Press “Build my itinerary” and I'll suggest activities around your health appointments — you can change or remove anything. Or choose “Talk to a person” whenever you like.",
     readyToBuild: true,
+    suggestions: [],
   };
 }

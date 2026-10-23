@@ -125,28 +125,8 @@ export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
     include: { itinerary: true },
   });
 
-  const place = async (component: string, dayOffset: number, time: string, addedBy: AddedBy, branch?: string) => {
-    const c = await prisma.component.findFirstOrThrow({
-      where: { name: component },
-      select: { id: true, price: true, priceUnit: true, currency: true, vendorId: true },
-    });
-    const b = branch
-      ? await prisma.branch.findFirstOrThrow({ where: { vendorId: c.vendorId, name: branch }, select: { id: true } })
-      : await prisma.branch.findFirst({ where: { vendorId: c.vendorId }, select: { id: true } });
-    const [h, m] = time.split(":").map(Number);
-    const startsAt = new Date(elenaStart.getTime() + dayOffset * 86_400_000 + (h * 60 + m) * 60_000);
-    await prisma.itineraryItem.create({
-      data: {
-        itineraryId: trip.itinerary!.id,
-        componentId: c.id,
-        branchId: b?.id ?? null,
-        startsAt,
-        addedBy,
-        price: blockPrice(c.price, c.priceUnit, trip.travellers),
-        currency: c.currency,
-      },
-    });
-  };
+  const place = (component: string, dayOffset: number, time: string, addedBy: AddedBy, branch?: string) =>
+    placeBlock(prisma, { itineraryId: trip.itinerary!.id, start: elenaStart, travellers: trip.travellers }, component, dayOffset, time, addedBy, branch);
 
   // Health core (TEAM) — the client sees these fixed.
   await place("Comprehensive Blood Panel", 0, "08:00", "TEAM", "Fort Kochi");
@@ -167,14 +147,17 @@ export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
   });
 
   // ----------------------------------------------------------------- Marc
-  await prisma.trip.create({
+  // Confirmed and part-booked, so the portal shows ✓✓ and the green tick.
+  const marcStart = ctx.daysFromToday(75);
+  const marcTrip = await prisma.trip.create({
     data: {
       clientId: marc.id,
       name: "A week on the Malabar coast",
-      startDate: ctx.daysFromToday(75),
+      startDate: marcStart,
       endDate: ctx.daysFromToday(81),
       travellers: 2,
-      itinerary: { create: {} },
+      status: "BOOKING",
+      itinerary: { create: { confirmedAt: ctx.daysFromToday(-3) } },
       requirements: {
         create: {
           summary: "Cardiac screening for one traveller, then backwaters and food for both.",
@@ -183,7 +166,53 @@ export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
         },
       },
     },
+    include: { itinerary: true },
+  });
+  const marcAt = { itineraryId: marcTrip.itinerary!.id, start: marcStart, travellers: marcTrip.travellers };
+  const cardiac = await placeBlock(prisma, marcAt, "Cardiac Health Assessment", 0, "09:00", "TEAM");
+  const cruise = await placeBlock(prisma, marcAt, "Private Backwater Day Cruise", 1, "09:00", "CLIENT");
+  const dinner = await placeBlock(prisma, marcAt, "Dinner at Malabar Spice Table", 2, "19:30", "CLIENT");
+  await placeBlock(prisma, marcAt, "Kathakali Performance with Make-Up Demonstration", 3, "17:30", "CLIENT");
+  await prisma.booking.createMany({
+    data: [
+      { itineraryItemId: cardiac, status: "CONFIRMED", vendorReference: "DEMO-001" },
+      { itineraryItemId: cruise, status: "CONFIRMED" },
+      { itineraryItemId: dinner, status: "REQUESTED" },
+    ],
   });
 
   console.log(`  clients: 2 · trips: 2${ctx.passwordHash ? " · staff: 2" : ""}`);
+}
+
+async function placeBlock(
+  prisma: PrismaClient,
+  at: { itineraryId: string; start: Date; travellers: number },
+  component: string,
+  dayOffset: number,
+  time: string,
+  addedBy: AddedBy,
+  branch?: string,
+): Promise<string> {
+  const c = await prisma.component.findFirstOrThrow({
+    where: { name: component },
+    select: { id: true, price: true, priceUnit: true, currency: true, vendorId: true },
+  });
+  const b = branch
+    ? await prisma.branch.findFirstOrThrow({ where: { vendorId: c.vendorId, name: branch }, select: { id: true } })
+    : await prisma.branch.findFirst({ where: { vendorId: c.vendorId }, select: { id: true } });
+  const [h, m] = time.split(":").map(Number);
+  const startsAt = new Date(at.start.getTime() + dayOffset * 86_400_000 + (h * 60 + m) * 60_000);
+  const item = await prisma.itineraryItem.create({
+    data: {
+      itineraryId: at.itineraryId,
+      componentId: c.id,
+      branchId: b?.id ?? null,
+      startsAt,
+      addedBy,
+      price: blockPrice(c.price, c.priceUnit, at.travellers),
+      currency: c.currency,
+    },
+    select: { id: true },
+  });
+  return item.id;
 }
