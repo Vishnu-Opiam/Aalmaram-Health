@@ -37,8 +37,9 @@ import { refreshUrl } from "@/lib/refresh-url";
  * which also keeps the team's health core out of the client's reach.
  */
 
-const itineraryUrl = (tripId: string, hash = "") =>
-  `${refreshUrl(`/trip/itinerary?trip=${encodeURIComponent(tripId)}`)}${hash}`;
+// `just` marks the block a client just added (or `moved`), so the page can show where it went.
+const itineraryUrl = (tripId: string, hash = "", just?: string, moved = false) =>
+  `${refreshUrl(`/trip/itinerary?trip=${encodeURIComponent(tripId)}${just ? `&just=${encodeURIComponent(just)}${moved ? "&moved=1" : ""}` : ""}`)}${hash}`;
 
 export async function addClientBlockAction(_prev: FormState, formData: FormData): Promise<FormState> {
   return runAction("portal.block.add", formData, async () => {
@@ -52,7 +53,7 @@ export async function addClientBlockAction(_prev: FormState, formData: FormData)
       actorLabel: client.name,
       metadata: { blockId: block.id, componentId: input.componentId, addedBy: "CLIENT" },
     });
-    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`));
+    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`, block.id));
   });
 }
 
@@ -69,7 +70,7 @@ export async function placeClientIdeaAction(_prev: FormState, formData: FormData
       actorLabel: client.name,
       metadata: { blockId: block.id, componentId: input.componentId, addedBy: "CLIENT" },
     });
-    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`));
+    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`, block.id));
   });
 }
 
@@ -85,7 +86,7 @@ export async function moveClientBlockAction(_prev: FormState, formData: FormData
       actorLabel: client.name,
       metadata: { blockId: input.blockId },
     });
-    return successState("Moved.", itineraryUrl(tripId, `#day-${input.day}`));
+    return successState("Moved.", itineraryUrl(tripId, `#day-${input.day}`, input.blockId, true));
   });
 }
 
@@ -101,7 +102,9 @@ export async function removeClientBlockAction(_prev: FormState, formData: FormDa
       actorLabel: client.name,
       metadata: { blockId: input.blockId },
     });
-    return successState("Removed.", itineraryUrl(tripId));
+    // Back to the same day, so the client sees what changed.
+    const day = String(formData.get("day") ?? "");
+    return successState("Removed.", itineraryUrl(tripId, /^\d{4}-\d{2}-\d{2}$/.test(day) ? `#day-${day}` : ""));
   });
 }
 
@@ -131,12 +134,13 @@ export async function confirmItineraryAction(_prev: FormState, formData: FormDat
       what: `${client.name} confirmed their itinerary (${blocks} activities). Next: collect payment, then book.`,
       adminUrl: `${env().APP_URL.replace(/\/$/, "")}/admin/trips/${trip.id}`,
     });
-    return successState("Thank you — your itinerary is confirmed.", itineraryUrl(trip.id));
+    // Home shows what happens next (payment, then booking).
+    return successState("Thank you — your itinerary is confirmed.", refreshUrl(`/trip?trip=${encodeURIComponent(trip.id)}`));
   });
 }
 
 // ---------------------------------------------------------------------------
-// AI: suggestions, chat, "Build my itinerary", "Talk to a person"
+// AI: suggestions, chat, "Suggest things for my free days", "Ask … to get in touch"
 // ---------------------------------------------------------------------------
 
 /** Ideas for a "+" in the client's builder. */
@@ -220,7 +224,7 @@ export async function talkToPersonAction(_prev: FormState, formData: FormData): 
     await notifyManager(client.id, trip, "Client asked for a person", `${client.name} would like to talk to a person. Please get in touch.`);
     return successState(
       "We've let your relationship manager know — they will be in touch shortly.",
-      itineraryUrl(trip.id),
+      refreshUrl(`/trip/chat?trip=${encodeURIComponent(trip.id)}&asked=1`),
     );
   });
 }

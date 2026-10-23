@@ -56,6 +56,32 @@
   --color-info-50: #eef2f7;
   --color-info-200: #c5d3e4;
   --color-info-600: #3a5b83;
+
+  /* Client portal: backwater night for the dark pill and hero, and one tint
+     per kind of activity (health · wellness · culture). */
+  --color-forest-950: #0b1f1a;
+  --color-forest-900: #12302a;
+  --color-forest-800: #1b4239;
+  --color-lagoon-50: #ecf5f6;
+  --color-lagoon-100: #d3e8ea;
+  --color-lagoon-600: #1f6670;
+  --color-lagoon-700: #174f57;
+  --color-leaf-50: #eff6ea;
+  --color-leaf-100: #dcebd0;
+  --color-leaf-600: #3f6d2b;
+  --color-leaf-700: #30541f;
+  --color-marigold-50: #fdf6e8;
+  --color-marigold-100: #fae9c6;
+  --color-marigold-300: #f0c470;
+  --color-marigold-500: #d68f1f;
+  --color-marigold-700: #87560b;
+}
+
+/* Portal fonts are loaded by next/font on the /trip layout; `inline` makes
+   the utilities read those variables where they are set, not on :root. */
+@theme inline {
+  --font-display: var(--font-portal-display), "Iowan Old Style", Georgia, serif;
+  --font-body: var(--font-portal-body), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -161,5 +187,76 @@
     padding-left: 1rem;
     color: var(--color-ink-500);
     font-style: italic;
+  }
+}
+
+/* Client portal motion: things settle into place, panels slide in. Kept short
+   and subtle; the reduced-motion rule above switches all of it off. */
+@keyframes portal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes portal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes portal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes portal-just-added {
+  0% {
+    box-shadow: 0 0 0 0 rgb(214 143 31 / 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 16px rgb(214 143 31 / 0);
+  }
+}
+
+@layer components {
+  .portal-rise {
+    animation: portal-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .portal-panel {
+    animation: portal-panel-in 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .portal-fade {
+    animation: portal-fade-in 0.25s ease-out both;
+  }
+  .portal-just-added {
+    animation: portal-just-added 1.4s ease-out 0.4s 2;
+  }
+  .portal-card {
+    background: white;
+    border: 1px solid var(--color-sand-200);
+    border-radius: 1.75rem;
+    box-shadow:
+      0 1px 2px rgb(23 21 18 / 0.04),
+      0 18px 40px -28px rgb(18 48 42 / 0.35);
+  }
+  /* The report reads larger in the portal. */
+  .portal-prose {
+    font-size: 18px;
+  }
+  .portal-prose h1,
+  .portal-prose h2,
+  .portal-prose h4 {
+    font-family: var(--font-portal-display), var(--font-serif);
   }
 }

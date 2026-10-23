@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { param } from "@/lib/utils";
 
-/** Booking status now lives on the itinerary board; old links land there. */
+/** Booking status now shows on Day by day; old links land there. */
 export default async function CalendarPage({
   searchParams,
 }: {

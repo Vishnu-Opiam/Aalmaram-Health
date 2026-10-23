@@ -4,20 +4,23 @@
 
 Aalmaram Health brings clients (mostly international, 50+) to Kerala for
 preventive health care, with wellness and culture woven around it. The team
-fixes the **health core** of a trip; the client builds the rest in a
-drag-and-drop itinerary that shows the cost as they go, with AI suggestions;
-then confirms. Domain model: [`docs/platform/class-diagram.md`](docs/platform/class-diagram.md).
+fixes the **health core** of a trip; the client adds the rest day by day,
+sees the cost as they go, takes AI suggestions if they like, then confirms. Domain model: [`docs/platform/class-diagram.md`](docs/platform/class-diagram.md).
 
 Two interfaces over one data model:
 
 - **Admin** (`/admin`) — for the team: what we offer (modules → catalogues →
   vendors with branches and practitioners → components), clients, trips,
   requirements, conversations, the health-core builder, the Feed and AI runs.
-- **Client portal** (`/trip`) — large and simple: **Feed** and **Itinerary**, a
-  one-look board (a column per day, a short card per activity, details on tap)
-  with AI **Ideas for you** to drag onto a day, the assistant docked at the
-  bottom, and booking status on each card: ✓✓ once confirmed, a green ✓ once
-  the provider has confirmed.
+- **Client portal** (`/trip`) — designed for 50+ clients (reasoning and stress
+  test in [`docs/platform/portal-ux.md`](docs/platform/portal-ux.md)). Four
+  labelled tabs: **My trip** (what happens next, the health appointments, the
+  relationship manager, a note from them, the travel guide, a taste of
+  Kerala), **Day by day** (the plan read like a printed itinerary; tap for
+  details; "Add something" guides through ideas → kind → when; nothing needs a
+  drag), **Ask us** (the relationship manager first, then the assistant) and
+  **Kerala** (the Feed). Booking status in words with Vishnu's ticks: ✓✓ "Being
+  booked", green ✓ "Booked".
 
 Payment, the booking agent and in-trip features come next (PLAN.md Phases 5–8);
 staff record booking outcomes by hand for now.
@@ -34,13 +37,15 @@ staff record booking outcomes by hand for now.
    and the itinerary with her health core. Try **Suggest activities (AI)**.
 4. **Clients** → Elena → *Send invitation link*; copy the `/trip/access/…` URL
    from the server console or `.mail.log` and open it in a private window.
-5. As Elena: the **Feed**, then **Plan my itinerary** — press **+** on a day,
-   pick Culture → Restaurants → a dinner, watch the total; drag a card to
-   another day; type "I love art" in the assistant at the bottom and add the
-   idea it offers (or drag one from **Ideas for you**); **Build my itinerary**;
-   finally **Confirm my itinerary** — every card gets ✓✓. Back in admin the
-   trip is awaiting payment; set a block's **Booking** to *Confirmed by
-   provider* and the client's card turns into a green ✓.
+5. As Elena: **My trip** shows step 1 of 5, her health appointments and her
+   contact. **Plan my days** → *Add something to Day 2* → Culture & sights →
+   Restaurants → a dinner → Evening → **Add to my trip**, and watch the total;
+   open it → *Change day or time* to move it. In **Ask us**, tap *Art and
+   dance* and add the idea it offers; *Suggest things for my free days*;
+   finally **Review and confirm** → *Yes, confirm my trip* — My trip moves to
+   step 3 and every activity shows ✓✓. Back in admin the trip is awaiting
+   payment; set a block's **Booking** to *Confirmed by provider* and the
+   client sees a green ✓ "Booked".
 6. *Marc Dubois (demo client)* has a confirmed, part-booked trip: invite him to
    see the ticks straight away.
 
@@ -96,10 +101,10 @@ Single Next.js App Router application. Server Components read, Server Actions wr
 ```
 src/
   app/admin/…              admin screens; one actions.ts per area (trips, vendors, feed…)
-  app/trip/(portal)/…      client portal: Feed, Itinerary board (/calendar and /chat redirect to it)
+  app/trip/(portal)/…      client portal: My trip, Day by day (+ /confirm), Ask us, Kerala (/calendar redirects)
   app/trip/access/[token]  portal sign-in link → session cookie
   components/builder/      the staff itinerary builder (and the add panel the portal reuses)
-  components/portal/       the client's trip board, chat dock and progress ticks
+  components/portal/       the client's day list, panels, chat, contact card and Kerala scene
   domain/                  framework-free business logic, unit-tested
     vendors/               profile checklist, durations, price units
     trips/                 status machine, block rules and pricing, module mix,
@@ -178,13 +183,11 @@ itineraries, blocks, requirements and conversations cascade with the client.
   candidates, and anything invalid (unknown ids, clashes, outside the day) is
   dropped.
 - **"+" suggestions** — deterministic ranking of what fits the gap.
-- **Ideas for you** — the board's side rail: what the client said in the chat
-  ("I love art" → Kathakali), then must-haves, then the module mix. Dropping an
-  idea on a day picks a time that suits it. Health is never suggested to the
-  client: the team arranges the health core.
-- **Chat** — a discovery assistant docked under the board, with "Build my
-  itinerary" and "Talk to a person"; it answers wishes with up to three ideas
-  (ids validated against what it was offered) to add or drag onto a day. It never gives medical advice: prompts forbid it and every model
+- **Chat** — a discovery assistant on **Ask us**, with ready-made questions to
+  tap and "Suggest things for my free days"; it answers wishes ("I love art" →
+  Kathakali) with up to three ideas (ids validated against what it was offered)
+  that go onto a chosen day at a time that suits them. Health is never
+  suggested to the client: the team arranges the health core. It never gives medical advice: prompts forbid it and every model
   sentence passes `src/domain/ai/safety.ts` before it is stored or shown.
 
 ---
@@ -220,10 +223,11 @@ From the latest run (2026-10-22):
 
 The Playwright golden path: admin creates a client and trip → records a 40/30/30
 mix → places the blood test at the Fort Kochi branch (€370 for two) → invites the
-client → client lands on the Feed → can't touch the health core → adds a dinner
-priced for two (total €405) → drags it to another day → tells the assistant "I
-love this art" and adds the Kathakali it offers → *Build my itinerary* adds
-suggestions around the health core → confirms (✓✓) → admin sees the trip
+client → client lands on My trip → can't touch the health core, and Back closes
+the details → adds a dinner priced for two (total €405) → moves it to another day
+with buttons → tells the assistant "I love this art" and adds the Kathakali it
+offers → *Suggest things for my free days* adds suggestions around the health
+core → reviews and confirms (✓✓) → admin sees the trip
 awaiting payment and records a booking → the client sees the green ✓. A second spec covers vendor, branch,
 practitioner, catalogue and component administration.
 

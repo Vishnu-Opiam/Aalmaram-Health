@@ -336,38 +336,6 @@ export function interestMatches(
 }
 
 /**
- * The board's "Ideas for you": things not yet in the trip that fit a free
- * part of some day, ranked by what the client said in the chat, then their
- * must-haves, then the module mix. Health stays with the team.
- */
-export function tripIdeas(input: PlannerInput, interests: { componentId: string; term: string }[], limit = 6): SlotSuggestion[] {
-  const blocks = input.existing.map((b) => ({ day: b.day, start: b.start, end: b.end }));
-  const deficits = new Map(mixDeficits(input, []).map((d) => [d.moduleId, d.deficit]));
-  const said = new Map(interests.map((i) => [i.componentId, i.term]));
-
-  return candidateComponents(input)
-    .filter((c) => !/health|medical/i.test(c.moduleName))
-    .filter((c) => input.days.some((day) => fitStart(c, freeGaps(day, blocks)) !== null))
-    .map((c) => {
-      const term = said.get(c.id);
-      const must = input.mustHaves.find((t) => matches(c, t));
-      const deficit = deficits.get(c.moduleId) ?? 0;
-      const score = (term ? 200 : 0) + (must ? 100 : 0) + Math.max(-20, Math.min(40, deficit));
-      const reason = term
-        ? `You mentioned ${term}.`
-        : must
-          ? `You asked for ${must.toLowerCase()}.`
-          : deficit > 5
-            ? mixReason(c.moduleName)
-            : "Fits a free part of your trip.";
-      return { c, score, reason };
-    })
-    .sort((a, b) => b.score - a.score || a.c.name.localeCompare(b.c.name))
-    .slice(0, limit)
-    .map((x) => ({ componentId: x.c.id, reason: x.reason }));
-}
-
-/**
  * Start time for something dropped on a day: the first free gap that suits
  * it, else straight after the day's last activity (the builder then shows an
  * overlap warning and the client can change the time).

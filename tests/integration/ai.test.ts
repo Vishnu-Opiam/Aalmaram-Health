@@ -4,7 +4,6 @@ import { Prisma } from "@prisma/client";
 import { createClientRecord, createInventory, createTrip, prisma, resetDatabase } from "./helpers";
 import { addBlock } from "@/lib/services/itinerary-blocks";
 import {
-  boardIdeas,
   draftItinerary,
   extractRequirements,
   loadChat,
@@ -149,7 +148,7 @@ describe("AI layer with the fake provider (integration)", () => {
     expect(await loadChat(trip.id, other.id)).toEqual([]);
   });
 
-  it("answers “I love art” with ideas from the catalogue, and puts them first on the board", async () => {
+  it("answers “I love art” with ideas from the catalogue, never health", async () => {
     const { client, trip, kathakali } = await setup();
     const reply = await sendChatMessage(trip.id, client.id, "I love this art. Can I see it while I'm there?");
     expect(reply.suggestions.map((s) => s.componentId)).toEqual([kathakali.id]);
@@ -157,7 +156,6 @@ describe("AI layer with the fake provider (integration)", () => {
     // Health is never offered, even when asked about directly.
     const health = await sendChatMessage(trip.id, client.id, "Could I add a blood panel?");
     expect(health.suggestions).toEqual([]);
-    expect((await boardIdeas(trip.id, client.id))[0]).toEqual({ componentId: kathakali.id, reason: "You mentioned art." });
   });
 
   it("drops an idea on a day at a suitable time, only on the client's own open trip", async () => {

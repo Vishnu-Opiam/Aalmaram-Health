@@ -14,7 +14,6 @@ import {
   minutesToTime,
   startOnDay,
   suggestForSlot,
-  tripIdeas,
   validatePicks,
   type PlannerInput,
   type SlotSuggestion,
@@ -266,20 +265,8 @@ export async function suggestionsForSlot(tripId: string, scope: BlockScope, day:
 }
 
 // ---------------------------------------------------------------------------
-// The portal board: "Ideas for you" and drop-on-a-day
+// The portal: an idea from the chat placed on a day
 // ---------------------------------------------------------------------------
-
-async function clientChatLines(tripId: string, clientId: string): Promise<string[]> {
-  return (await loadChat(tripId, clientId)).filter((m) => m.role === "client").map((m) => m.text);
-}
-
-/** Ideas for the board's side rail, led by what the client has said in the chat. */
-export async function boardIdeas(tripId: string, clientId: string): Promise<SlotSuggestion[]> {
-  const scope = { kind: "client" as const, clientId };
-  const [ctx, said] = await Promise.all([loadPlanningContext(tripId, scope), clientChatLines(tripId, clientId)]);
-  const input = plannerInput(ctx, { excludeAi: false });
-  return tripIdeas(input, interestMatches(said, input.components));
-}
 
 /**
  * The client dropped an idea on a day (or pressed "Add"): we choose the time

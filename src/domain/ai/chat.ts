@@ -47,7 +47,7 @@ const SCRIPT = [
 ];
 
 export const SUGGESTION_REPLY =
-  "That sounds lovely. Here are some things you might enjoy — press “Add” on any of them, or drag one onto a day. Nothing is booked until you confirm your trip.";
+  "That sounds lovely. Here are some things you might enjoy — press “Add to my trip” on any of them and choose a day. Nothing is booked until you confirm your trip.";
 
 /**
  * Deterministic assistant for the fake provider: offers what the client's
@@ -66,7 +66,7 @@ export function scriptedReply(messages: ChatMessage[], matches: string[] = []): 
   }
   return {
     reply:
-      "Thank you, that gives me a good picture. Press “Build my itinerary” and I'll suggest activities around your health appointments — you can change or remove anything. Or choose “Talk to a person” whenever you like.",
+      "Thank you, that gives me a good picture. Press “Suggest things for my free days” and I'll add ideas around your health appointments — you can change or remove anything. Or ask your personal contact to get in touch whenever you like.",
     readyToBuild: true,
     suggestions: [],
   };

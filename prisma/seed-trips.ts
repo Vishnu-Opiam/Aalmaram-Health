@@ -90,7 +90,7 @@ export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
         create: {
           adminNotes: "Demo. Health core front-loaded so results arrive before departure.",
           clientNotes:
-            "Elena — your health appointments are in place for the first three mornings. Everything else is yours to shape: press + on any day to add something.",
+            "Elena — your health appointments are in place for the first three mornings. Everything else is yours to shape: choose “Add something” on any day, or ask me.",
         },
       },
       requirements: {

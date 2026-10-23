@@ -5,7 +5,6 @@ import {
   interestMatches,
   startOnDay,
   suggestForSlot,
-  tripIdeas,
   validatePicks,
   type PlannerComponent,
   type PlannerInput,
@@ -235,20 +234,6 @@ describe("board ideas", () => {
     ]);
     expect(interestMatches(["my heart"], components)).toEqual([]);
     expect(interestMatches(["just the lot of them"], components)).toEqual([]);
-  });
-
-  it("ranks what the client said first, skips health and what is already planned", () => {
-    const input = base({ mustHaves: [] });
-    const ideas = tripIdeas(input, [{ componentId: "walk", term: "walks" }]);
-    expect(ideas[0]).toEqual({ componentId: "walk", reason: "You mentioned walks." });
-    const ids = ideas.map((i) => i.componentId);
-    expect(ids).not.toContain("blood");
-    expect(ids).not.toContain("panchakarma");
-    const withWalk = base({
-      mustHaves: [],
-      existing: [...base().existing, { day: "2026-12-07", start: 600, end: 750, moduleId: "c", componentId: "walk" }],
-    });
-    expect(tripIdeas(withWalk, []).map((i) => i.componentId)).not.toContain("walk");
   });
 
   it("drops an idea at a time that suits it, or after the day's last block", () => {

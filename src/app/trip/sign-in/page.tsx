@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentClient } from "@/lib/auth/guards";
 import { Alert } from "@/components/ui/primitives";
+import { PortalBrand } from "@/components/portal/ui";
 import { param } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Access your journey" };
+export const metadata: Metadata = { title: "Open your trip" };
 
 const MESSAGES: Record<string, { tone: "warning" | "danger"; text: string }> = {
   invalid: {
@@ -17,7 +18,7 @@ const MESSAGES: Record<string, { tone: "warning" | "danger"; text: string }> = {
   },
   inactive: {
     tone: "warning",
-    text: "This journey is no longer active. Please contact your Aalmaram coordinator.",
+    text: "This trip is no longer active. Please contact your Aalmaram coordinator.",
   },
   rate_limited: {
     tone: "warning",
@@ -41,14 +42,12 @@ export default async function TripSignInPage({
   const message = MESSAGES[error];
 
   return (
-    <div className="mx-auto max-w-xl px-5 py-20">
-      <p className="text-[11px] uppercase tracking-[0.14em] text-ink-400">
-        Your journey
-      </p>
-      <h1 className="mt-2 font-serif text-3xl leading-tight tracking-tight text-ink-900">
+    <div className="mx-auto max-w-xl px-5 py-12 sm:py-16">
+      <PortalBrand />
+      <h1 className="mt-10 font-display text-[38px] font-semibold leading-tight tracking-tight text-ink-900">
         Open your personal link
       </h1>
-      <p className="mt-4 text-[15px] leading-relaxed text-ink-600">
+      <p className="mt-4 text-[19px] leading-relaxed text-ink-700">
         Your Aalmaram coordinator sends you a personal link by email. Opening
         that link is how you reach your trip - there is no password to
         remember.
@@ -60,11 +59,11 @@ export default async function TripSignInPage({
         </Alert>
       )}
 
-      <div className="mt-8 rounded-lg border border-sand-200 bg-white p-6">
-        <h2 className="text-sm font-semibold text-ink-900">
+      <div className="portal-card mt-8 p-6 sm:p-7">
+        <h2 className="text-[19px] font-semibold text-ink-900">
           Cannot find your link?
         </h2>
-        <p className="mt-2 text-[13px] leading-relaxed text-ink-500">
+        <p className="mt-2 text-[17px] leading-relaxed text-ink-700">
           Search your inbox for an email from Aalmaram Health. If you still
           cannot find it, reply to any message from your coordinator and we will
           send a new one. For your security we cannot issue a link from this

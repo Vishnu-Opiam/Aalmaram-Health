@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { PortalBrand, pill } from "@/components/portal/ui";
 
 export default function TripError({
   error,
@@ -14,21 +15,22 @@ export default function TripError({
   }, [error]);
 
   return (
-    <div className="mx-auto max-w-xl px-5 py-20 text-center">
-      <h1 className="font-serif text-2xl text-ink-900">
-        We could not load your journey
+    <div className="mx-auto max-w-xl px-5 py-12 text-center sm:py-16">
+      <PortalBrand />
+      <h1 className="mt-10 font-display text-[32px] font-semibold text-ink-900">
+        We could not load your trip
       </h1>
-      <p className="mt-3 text-[15px] leading-relaxed text-ink-500">
+      <p className="mt-3 text-[18px] leading-relaxed text-ink-700">
         Something went wrong on our side. Please try again, and contact your
         Aalmaram coordinator if it keeps happening.
       </p>
       {error.digest && (
-        <p className="mt-3 text-xs text-ink-400">Reference: {error.digest}</p>
+        <p className="mt-3 text-[16px] text-ink-600">Reference: {error.digest}</p>
       )}
       <button
         type="button"
         onClick={reset}
-        className="mt-6 inline-flex h-10 items-center justify-center rounded-md bg-teal-600 px-5 text-sm font-medium text-white hover:bg-teal-700"
+        className={pill("primary", "mt-6")}
       >
         Try again
       </button>
