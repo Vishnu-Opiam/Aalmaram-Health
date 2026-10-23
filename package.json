@@ -12,6 +12,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:content": "tsx prisma/seed.ts --content-only",
     "db:studio": "prisma studio",
+    "admin:create": "tsx prisma/create-admin.ts",
     "dev": "next dev -p 3000",
     "build": "prisma generate && next build",
     "start": "next start -p 3000",
