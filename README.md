@@ -219,7 +219,9 @@ Vercel with Neon Postgres (Marketplace). **Pushing to `main` deploys
 production.** Set `DATABASE_URL`, `SESSION_SECRET` (32+ chars), `APP_URL`,
 `EMAIL_TRANSPORT=log` (until a provider is chosen), and for real AI
 `AI_PROVIDER=gateway` (+ a gateway key or OIDC). Migrate with
-`npm run db:deploy`. Never set `SEED_ADMIN_*` in production.
+`npm run db:deploy`. Never set `SEED_ADMIN_*` in production; create staff
+logins with `ADMIN_PASSWORD='…' npm run admin:create -- <email> "<name>"`
+(re-running it resets that account's password).
 
 The Phase 2 migration backfills existing data: every itinerary becomes a trip,
 items become timed blocks, intake text becomes the trip's requirements.
