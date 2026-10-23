@@ -209,6 +209,13 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-10-23** · `feat/portal-ux-redesign` · Investor demo video (no app code changed). `demo/script.md` (8 scenes,
+  Vishnu's ElevenLabs voiceover) and `demo/tools/`: Playwright recorder (in-page cursor, eased scroll, 2x captures
+  at 4x slow motion against the production build and the reset `aalmaram_e2e` database), Whisper scene finder and
+  an OpenCV compositor (background, window frame, camera zooms, voice placed per scene). Output 1:35, 1080p60;
+  media stays local (`demo/out/`, `demo/vo/` ignored). The address bar shows the live domain, which only has this
+  UI once PR #7 and this branch are deployed.
+
 - **2026-10-23** · `feat/portal-ux-redesign` · Vishnu: the portal's UX is confusing for older clients. Researched
   the audience (NN/g senior usability, touch-accuracy studies, medical-travel trust surveys, our 14–15 Oct calls),
   wrote the UX plan and stress test (`docs/platform/portal-ux.md`: 3 personas × 15 situations; v1 and v2 rejected),
