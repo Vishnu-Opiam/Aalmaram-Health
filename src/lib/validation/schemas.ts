@@ -313,6 +313,18 @@ export const blockRemoveSchema = z.object({
   blockId: requiredText("Block"),
 });
 
+/** The board: drop an idea on a day; the server picks the time. */
+export const blockPlaceSchema = z.object({
+  tripId: requiredText("Trip"),
+  componentId: requiredText("Component"),
+  day: requiredDate("day"),
+});
+
+export const bookingStatusSchema = z.object({
+  blockId: requiredText("Block"),
+  status: z.enum(["PENDING", "REQUESTED", "CONFIRMED", "DECLINED", "CANCELLED"]),
+});
+
 export const itineraryNotesSchema = z.object({
   adminNotes: optionalText(4000),
   clientNotes: optionalText(4000),

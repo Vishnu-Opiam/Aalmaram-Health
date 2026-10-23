@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   draftPlan,
   freeGaps,
+  interestMatches,
+  startOnDay,
   suggestForSlot,
+  tripIdeas,
   validatePicks,
   type PlannerComponent,
   type PlannerInput,
@@ -217,6 +220,49 @@ describe("medical safety", () => {
   });
 });
 
+describe("board ideas", () => {
+  it("matches the client's everyday words, never health", () => {
+    const components = [
+      ...base().components,
+      comp("cardiac", "h", { name: "Cardiac Health Assessment", tags: ["heart", "art"] }),
+    ];
+    const art = interestMatches(["I love this art, can I see it?"], components);
+    expect(art.map((m) => m.componentId)).toEqual(["kathakali"]);
+    expect(art[0].term).toBe("art");
+    expect(interestMatches(["Massages please", "and some walks"], components).map((m) => m.componentId).sort()).toEqual([
+      "massage",
+      "walk",
+    ]);
+    expect(interestMatches(["my heart"], components)).toEqual([]);
+    expect(interestMatches(["just the lot of them"], components)).toEqual([]);
+  });
+
+  it("ranks what the client said first, skips health and what is already planned", () => {
+    const input = base({ mustHaves: [] });
+    const ideas = tripIdeas(input, [{ componentId: "walk", term: "walks" }]);
+    expect(ideas[0]).toEqual({ componentId: "walk", reason: "You mentioned walks." });
+    const ids = ideas.map((i) => i.componentId);
+    expect(ids).not.toContain("blood");
+    expect(ids).not.toContain("panchakarma");
+    const withWalk = base({
+      mustHaves: [],
+      existing: [...base().existing, { day: "2026-12-07", start: 600, end: 750, moduleId: "c", componentId: "walk" }],
+    });
+    expect(tripIdeas(withWalk, []).map((i) => i.componentId)).not.toContain("walk");
+  });
+
+  it("drops an idea at a time that suits it, or after the day's last block", () => {
+    const input = base();
+    // Evening things go to the evening; the blood test at 08:00 pushes a morning yoga to 09:00.
+    expect(startOnDay(input, "kathakali", "2026-12-06")).toBe(18 * 60 + 30);
+    expect(startOnDay(input, "yoga", "2026-12-06")).toBe(9 * 60);
+    const full = base({
+      existing: [{ day: "2026-12-06", start: 8 * 60, end: 21 * 60, moduleId: "c", componentId: "x" }],
+    });
+    expect(startOnDay(full, "yoga", "2026-12-06")).toBe(20 * 60 + 30);
+  });
+});
+
 describe("chat transcript", () => {
   it("round-trips messages, keeping line breaks but not blank lines", () => {
     let t = appendToTranscript("", { role: "client", text: "Hello\n\n\nthere" });
@@ -232,5 +278,14 @@ describe("chat transcript", () => {
     expect(one.readyToBuild).toBe(false);
     const three = scriptedReply(Array.from({ length: 3 }, () => ({ role: "client" as const, text: "x" })));
     expect(three.readyToBuild).toBe(true);
+  });
+
+  it("offers what the client asked for, but never alongside a medical question", () => {
+    const art = scriptedReply([{ role: "client", text: "I love art" }], ["kathakali"]);
+    expect(art.suggestions).toEqual(["kathakali"]);
+    expect(findMedicalClaims(art.reply)).toEqual([]);
+    const medical = scriptedReply([{ role: "client", text: "Should I stop my medication?" }], ["kathakali"]);
+    expect(medical.reply).toBe(MEDICAL_DEFLECTION);
+    expect(medical.suggestions).toEqual([]);
   });
 });

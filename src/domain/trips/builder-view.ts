@@ -1,4 +1,5 @@
-import type { AddedBy, TripStatus } from "@prisma/client";
+import type { AddedBy, BookingStatus, TripStatus } from "@prisma/client";
+import type { BlockProgress } from "@/domain/bookings/status";
 
 /**
  * The itinerary builder's view model, shared by the admin trip page and the
@@ -52,6 +53,10 @@ export type BuilderBlock = {
   practitioners: PractitionerInfo[];
   note: string | null;
   overlaps: boolean;
+  /** Planned → ✓✓ confirmed → green ✓ booked. */
+  progress: BlockProgress;
+  /** Staff only (null for the client): the booking's own status. */
+  bookingStatus: BookingStatus | null;
 };
 
 export type BuilderDay = {

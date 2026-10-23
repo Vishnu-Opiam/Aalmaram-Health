@@ -62,9 +62,9 @@ async function addFromLibrary(
   path: [string, string, string],
   opts: { branch?: string; time: string },
 ) {
-  const dayCard = page.locator(`#day-${day}`);
-  await dayCard.getByRole("button", { name: /^Add something on day/ }).first().click();
-  const panel = dayCard.getByRole("region", { name: "Add to this day" });
+  await page.locator(`#day-${day}`).getByRole("button", { name: /^Add something on day/ }).first().click();
+  // Staff open it inline in the day; the client's board opens it in a sheet.
+  const panel = page.getByRole("region", { name: "Add to this day" });
   // Suggestions may list the same experience; browse the library explicitly.
   const browse = panel.getByRole("region", { name: "Browse" });
   await browse.getByRole("button", { name: path[0], exact: true }).click();
@@ -141,60 +141,68 @@ test("golden path: trip → health core → client builds → confirm", async ({
     await expect(client.getByRole("heading", { name: TRIP_NAME })).toBeVisible();
   });
 
+  const card = (day: string, title: string) =>
+    client.locator(`#day-${day}`).getByRole("button", { name: new RegExp(`${title}.*Open details`) });
+
   await test.step("the health core is fixed for the client", async () => {
-    const core = client.locator(`#day-${DAY_1} article`, { hasText: "Comprehensive Blood Panel" });
-    await expect(core).toContainText("arranged by your team");
-    await expect(core.getByRole("button", { name: "Remove" })).toHaveCount(0);
-    await expect(core.getByRole("button", { name: "Change time" })).toHaveCount(0);
+    await card(DAY_1, "Comprehensive Blood Panel").click();
+    const sheet = client.getByRole("dialog");
+    await expect(sheet).toContainText("Arranged by your team");
+    await expect(sheet.getByRole("button", { name: "Remove" })).toHaveCount(0);
+    await expect(sheet.getByRole("button", { name: /Change day or time/ })).toHaveCount(0);
+    await sheet.getByRole("button", { name: "Close" }).click();
+    await expect(card(DAY_1, "Comprehensive Blood Panel")).toHaveAccessibleName(/arranged by your team/);
   });
 
   await test.step("client adds a dinner and sees the total update", async () => {
     await addFromLibrary(client, DAY_2, ["Heritage & Culture", "Restaurants", "Dinner at Malabar Spice Table"], {
       time: "19:30",
     });
-    const dinner = client.locator(`#day-${DAY_2} article`, { hasText: "Dinner at Malabar Spice Table" });
-    await expect(dinner).toContainText("19:30");
+    await expect(card(DAY_2, "Dinner at Malabar Spice Table")).toContainText("19:30");
     // Priced for two: one table for the two travellers.
-    await expect(dinner).toContainText("€35.00");
+    await card(DAY_2, "Dinner at Malabar Spice Table").click();
+    await expect(client.getByRole("dialog")).toContainText("€35.00");
+    await client.getByRole("dialog").getByRole("button", { name: "Close" }).click();
     await expect(client.getByText("€405.00").first()).toBeVisible();
   });
 
   await test.step("client drags the dinner to another day", async () => {
-    const dinner = client.locator(`#day-${DAY_2} article`, { hasText: "Dinner at Malabar Spice Table" });
     const before = client.url();
-    await dinner.dragTo(client.locator(`#day-${DAY_3} section`));
+    await card(DAY_2, "Dinner at Malabar Spice Table").dragTo(client.locator(`#day-${DAY_3}`));
     await client.waitForURL((url) => url.toString() !== before, { timeout: 30_000 });
-    await expect(client.locator(`#day-${DAY_3} article`, { hasText: "Dinner at Malabar Spice Table" })).toContainText(
-      "19:30",
-    );
-    await expect(client.locator(`#day-${DAY_2} article`)).toHaveCount(0);
+    await expect(card(DAY_3, "Dinner at Malabar Spice Table")).toContainText("19:30");
+    await expect(client.locator(`#day-${DAY_2}`).getByRole("button", { name: /Open details/ })).toHaveCount(0);
   });
 
-  await test.step("client chats with the assistant and gets suggestions", async () => {
-    await client.getByRole("link", { name: "Chat" }).click();
-    await expect(client).toHaveURL(/\/trip\/chat/);
-    for (const text of [
-      "I'd like a check-up while I'm there.",
-      "I love Kathakali and the backwaters, and some yoga.",
-      "Slowly please, with free afternoons.",
-    ]) {
+  await test.step("client tells the assistant what they love and adds its idea", async () => {
+    await client.getByLabel("Your message").fill("I love this art. Can I see Kathakali?");
+    await client.getByRole("button", { name: "Send" }).click();
+    const ideas = client.getByRole("list", { name: "Ideas from the assistant" });
+    await expect(ideas).toContainText("Kathakali Performance");
+    await ideas.getByRole("button", { name: "Add" }).first().click();
+    await clickAndSettle(client, ideas.getByRole("button", { name: "Day 4" }));
+    await expect(card(isoDay(63), "Kathakali Performance")).toContainText("18:30");
+  });
+
+  await test.step("client asks the assistant to build the rest", async () => {
+    for (const text of ["I'd like a check-up while I'm there.", "Slowly please, with free afternoons.", "Some yoga would be nice."]) {
       await client.getByLabel("Your message").fill(text);
       await client.getByRole("button", { name: "Send" }).click();
       await expect(client.getByText(text)).toBeVisible();
     }
-    await expect(client.getByText(/Build my itinerary/).first()).toBeVisible();
     await clickAndSettle(client, client.getByRole("button", { name: "Build my itinerary" }));
     await expect(client).toHaveURL(/\/trip\/itinerary/);
-    await expect(client.getByText("Suggested").first()).toBeVisible();
-    // The health core and the client's own dinner survive the AI draft.
-    await expect(client.locator("article", { hasText: "Comprehensive Blood Panel" })).toContainText("arranged by your team");
-    await expect(client.locator(`#day-${DAY_3} article`, { hasText: "Dinner at Malabar Spice Table" })).toBeVisible();
+    await expect(client.getByRole("button", { name: /, suggested\./ }).first()).toBeVisible();
+    // The health core and the client's own choices survive the AI draft.
+    await expect(card(DAY_1, "Comprehensive Blood Panel")).toBeVisible();
+    await expect(card(DAY_3, "Dinner at Malabar Spice Table")).toBeVisible();
   });
 
-  await test.step("client confirms and the itinerary locks", async () => {
+  await test.step("client confirms: every activity shows the double tick", async () => {
     client.once("dialog", (dialog) => dialog.accept());
     await clickAndSettle(client, client.getByRole("button", { name: "Confirm my itinerary" }));
-    await expect(client.getByRole("heading", { name: "Confirmed" })).toBeVisible();
+    await expect(client.getByRole("region", { name: "Trip status" })).toContainText("Confirmed");
+    await expect(card(DAY_1, "Comprehensive Blood Panel")).toHaveAccessibleName(/Confirmed — we are booking it/);
     await expect(client.getByRole("button", { name: /^Add something/ })).toHaveCount(0);
   });
 
@@ -202,5 +210,14 @@ test("golden path: trip → health core → client builds → confirm", async ({
     await page.goto(tripUrl);
     await expect(page.getByText("The client confirmed this itinerary")).toBeVisible();
     await expect(page.getByText("Awaiting payment").first()).toBeVisible();
+  });
+
+  await test.step("staff record a booking and the client sees the green tick", async () => {
+    const block = page.locator(`#day-${DAY_1} article`, { hasText: "Comprehensive Blood Panel" });
+    await block.getByLabel("Booking").selectOption("CONFIRMED");
+    await clickAndSettle(page, block.getByRole("button", { name: "Save" }));
+    await client.reload();
+    await expect(card(DAY_1, "Comprehensive Blood Panel")).toHaveAccessibleName(/Booked and ready/);
+    await expect(client.getByRole("region", { name: "Trip status" })).toContainText("1 of");
   });
 });

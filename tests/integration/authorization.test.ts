@@ -145,6 +145,10 @@ describe("client portal authorization (integration)", () => {
       where: { id: core.id },
       data: { internalNotes: "INTERNAL-ITEM-NOTE", clientFacingNotes: "Visible to the client." },
     });
+    await prisma.itinerary.update({ where: { tripId: trip.id }, data: { confirmedAt: new Date() } });
+    await prisma.booking.create({
+      data: { itineraryItemId: core.id, status: "DECLINED", vendorReference: "SECRET-VENDOR-REF" },
+    });
 
     const serialised = JSON.stringify(await loadBuilderTrip(trip.id, { kind: "client", clientId: client.id }));
     for (const secret of [
@@ -156,6 +160,8 @@ describe("client portal authorization (integration)", () => {
       "secret@vendor.demo",
       "+91 SECRET",
       "SECRET-VENDOR-NOTE",
+      "SECRET-VENDOR-REF",
+      "DECLINED",
     ]) {
       expect(serialised).not.toContain(secret);
     }
