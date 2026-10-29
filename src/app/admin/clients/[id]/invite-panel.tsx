@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
-import { Alert } from "@/components/ui/primitives";
+import { useActionState, useState } from "react";
+import { Alert, Button, Input } from "@/components/ui/primitives";
 import {
   FormFeedback,
   SubmitButton,
@@ -11,9 +11,8 @@ import { idleState } from "@/lib/validation/form";
 import { issueClientInviteAction } from "../actions";
 
 /**
- * The raw invitation token is never rendered here. The admin sends the link by
- * email; the development email transport prints it to the server console and
- * .mail.log, which is how it is retrieved locally.
+ * The token is stored hashed, so the link is shown once, right after it is
+ * issued, and only while email is log-only (otherwise it goes by email).
  */
 export function InvitePanel({
   clientId,
@@ -30,11 +29,12 @@ export function InvitePanel({
 }) {
   const [state, action] = useActionState(issueClientInviteAction, idleState);
   useActionRedirect(state);
+  const [copiedLink, setCopiedLink] = useState<string | null>(null);
   const expired = expiresAt ? new Date(expiresAt) < new Date() : false;
 
   return (
     <div className="space-y-3">
-      {!issuedAt && (
+      {!issuedAt && !state.link && (
         <Alert tone="info">
           This client has no portal access yet. Send an invitation so they can
           see the feed and build their itinerary.
@@ -62,6 +62,29 @@ export function InvitePanel({
       )}
 
       <FormFeedback state={state} />
+
+      {state.link && (
+        <div className="space-y-1.5">
+          <label htmlFor="invite-link" className="text-xs text-ink-400">
+            Portal link: copy it and send it to the client
+          </label>
+          <div className="flex gap-2">
+            <Input id="invite-link" readOnly value={state.link} onFocus={(e) => e.currentTarget.select()} />
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                // Clipboard can be refused; selecting the text leaves Ctrl+C.
+                const select = () => (document.getElementById("invite-link") as HTMLInputElement).select();
+                navigator.clipboard.writeText(state.link!).then(() => setCopiedLink(state.link!), select);
+              }}
+            >
+              {copiedLink === state.link ? "Copied" : "Copy"}
+            </Button>
+          </div>
+        </div>
+      )}
 
       <form action={action}>
         <input type="hidden" name="clientId" value={clientId} />

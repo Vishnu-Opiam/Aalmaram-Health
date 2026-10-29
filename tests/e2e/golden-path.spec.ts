@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 /**
@@ -21,7 +19,6 @@ const RUN = Date.now();
 const CLIENT_NAME = `Golden Path Client ${RUN}`;
 const CLIENT_EMAIL = `golden.path.${RUN}@example.com`;
 const TRIP_NAME = `Golden path trip ${RUN}`;
-const MAIL_LOG = path.join(process.cwd(), ".mail.log");
 
 function isoDay(offset: number): string {
   const now = new Date();
@@ -47,13 +44,6 @@ async function clickAndSettle(page: Page, target: Locator) {
   await target.click();
   await page.waitForURL((url) => url.toString() !== before, { timeout: 30_000 });
   await page.waitForLoadState("load");
-}
-
-function latestInviteUrlFromMailLog(): string {
-  const contents = fs.readFileSync(MAIL_LOG, "utf8");
-  const last = [...contents.matchAll(/https?:\/\/\S+\/trip\/access\/([A-Za-z0-9_-]+)/g)].at(-1);
-  if (!last) throw new Error("No invitation link found in .mail.log");
-  return last[0];
 }
 
 /** Opens the "+" at the start of a day and adds an experience from the library. */
@@ -125,15 +115,19 @@ test("golden path: trip → health core → client builds → confirm", async ({
     await expect(block).toContainText("€370.00");
   });
 
+  let inviteUrl = "";
   await test.step("admin invites the client", async () => {
     await page.getByRole("link", { name: CLIENT_NAME }).click();
-    await clickAndSettle(page, page.getByRole("button", { name: /Send invitation/ }));
+    await page.getByRole("button", { name: /Send invitation/ }).click();
+    // Staff copy the link from the page: email is log-only.
+    inviteUrl = await page.getByLabel(/Portal link/).inputValue();
+    expect(inviteUrl).toMatch(/\/trip\/access\/[A-Za-z0-9_-]{20,}$/);
   });
 
   const client = await (await browser.newContext()).newPage();
 
   await test.step("client opens their link and lands on My trip", async () => {
-    await client.goto(latestInviteUrlFromMailLog());
+    await client.goto(inviteUrl);
     await expect(client).toHaveURL(/\/trip$/);
     await expect(client.getByRole("link", { name: "My trip", exact: true })).toHaveAttribute("aria-current", "page");
     await expect(client.getByRole("heading", { name: TRIP_NAME })).toBeVisible();

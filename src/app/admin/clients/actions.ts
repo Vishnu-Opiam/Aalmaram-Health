@@ -162,6 +162,14 @@ export async function issueClientInviteAction(
       clientName: client.name,
       inviteUrl,
     });
+    // No real email goes out with the log transport (prod too, for now), so the
+    // admin gets the link to pass on. No redirect: a reload would lose it.
+    if (env().EMAIL_TRANSPORT === "log") {
+      return {
+        ...successState(`New link for ${client.name}. Any previous link is now invalid.`),
+        link: inviteUrl,
+      };
+    }
     return successState(
       `Invitation link sent to ${client.email}. Any previous link is now invalid.`,
       refreshUrl(`/admin/clients/${clientId}`),
