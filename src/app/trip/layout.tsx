@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
+import { Figtree, Fraunces } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: { default: "Your trip", template: "%s · Aalmaram Health" },
   robots: { index: false, follow: false, nocache: true },
 };
 
+// Figtree: open, large x-height body text that stays readable at a glance.
+// Fraunces: a warm display serif for headings, so the portal reads like a
+// well-made travel letter rather than software.
+const body = Figtree({ subsets: ["latin"], variable: "--font-portal-body", display: "swap" });
+const display = Fraunces({ subsets: ["latin"], variable: "--font-portal-display", display: "swap", axes: ["opsz"] });
+
 /**
- * Client portal shell.
- *
- * Deliberately spare: no navigation chrome, no internal vocabulary, generous
- * whitespace. The client should feel like they are reading a letter, not
- * operating software.
+ * Client portal shell: fonts, base size and the standing disclaimer. 18 px
+ * body text throughout — the clients are mostly 50+.
  */
 export default function TripLayout({
   children,
@@ -18,36 +23,25 @@ export default function TripLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-sand-50">
+    <div className={cn(body.variable, display.variable, "flex min-h-screen flex-col bg-sand-50 font-body text-[18px] text-ink-800")}>
       <a
         href="#trip-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:shadow"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-5 focus:py-3 focus:text-[17px] focus:shadow"
       >
         Skip to content
       </a>
-
-      <header className="border-b border-sand-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5">
-          <p className="font-serif text-lg tracking-tight text-ink-900">
-            Aalmaram Health
-          </p>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ink-400">
-            Kerala
-          </p>
-        </div>
-      </header>
 
       <main id="trip-content" className="flex-1">
         {children}
       </main>
 
-      <footer className="border-t border-sand-200 bg-white">
-        <div className="mx-auto max-w-5xl px-5 py-8">
-          <p className="text-xs leading-relaxed text-ink-400">
-            This page is personal to you. Aalmaram Health coordinates your
-            journey with independent providers in Kerala; it does not provide
-            medical advice, diagnosis or treatment. Clinical decisions rest with
-            the providers who care for you.
+      {/* Bottom padding on phones leaves room for the portal's tab bar. */}
+      <footer className="border-t border-sand-200 pb-24 md:pb-0">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <p className="max-w-3xl text-[16px] leading-relaxed text-ink-600">
+            This page is personal to you. Aalmaram Health coordinates your trip with independent providers in Kerala;
+            it does not provide medical advice, diagnosis or treatment. Clinical decisions rest with the providers who
+            care for you.
           </p>
         </div>
       </footer>

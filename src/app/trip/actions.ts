@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { requireClient } from "@/lib/auth/guards";
 import { destroyClientSession } from "@/lib/auth/session";
 import { env } from "@/lib/env";
-import { blockAddSchema, blockMoveSchema, blockRemoveSchema } from "@/lib/validation/schemas";
+import { blockAddSchema, blockMoveSchema, blockPlaceSchema, blockRemoveSchema } from "@/lib/validation/schemas";
 import { parseForm, runAction, successState, type FormState } from "@/lib/validation/form";
 import { ACTIVITY_ACTIONS, logActivity } from "@/lib/services/activity-log";
 import {
@@ -15,7 +15,14 @@ import {
   moveBlock,
   removeBlock,
 } from "@/lib/services/itinerary-blocks";
-import { draftItinerary, extractRequirements, sendChatMessage, suggestionsForSlot } from "@/lib/services/ai-planning";
+import {
+  draftItinerary,
+  extractRequirements,
+  placeOnDay,
+  sendChatMessage,
+  suggestionsForSlot,
+} from "@/lib/services/ai-planning";
+import type { SlotSuggestion } from "@/domain/ai/planner";
 import type { ChatMessage } from "@/domain/ai/chat";
 import { chatMessageSchema } from "@/lib/validation/schemas";
 import { enforceRateLimit } from "@/lib/rate-limit";
@@ -30,8 +37,9 @@ import { refreshUrl } from "@/lib/refresh-url";
  * which also keeps the team's health core out of the client's reach.
  */
 
-const itineraryUrl = (tripId: string, hash = "") =>
-  `${refreshUrl(`/trip/itinerary?trip=${encodeURIComponent(tripId)}`)}${hash}`;
+// `just` marks the block a client just added (or `moved`), so the page can show where it went.
+const itineraryUrl = (tripId: string, hash = "", just?: string, moved = false) =>
+  `${refreshUrl(`/trip/itinerary?trip=${encodeURIComponent(tripId)}${just ? `&just=${encodeURIComponent(just)}${moved ? "&moved=1" : ""}` : ""}`)}${hash}`;
 
 export async function addClientBlockAction(_prev: FormState, formData: FormData): Promise<FormState> {
   return runAction("portal.block.add", formData, async () => {
@@ -45,7 +53,24 @@ export async function addClientBlockAction(_prev: FormState, formData: FormData)
       actorLabel: client.name,
       metadata: { blockId: block.id, componentId: input.componentId, addedBy: "CLIENT" },
     });
-    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`));
+    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`, block.id));
+  });
+}
+
+/** An idea dropped on a day (or "Add" pressed): the server picks the time. */
+export async function placeClientIdeaAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("portal.block.place", formData, async () => {
+    const client = await requireClient();
+    const input = parseForm(blockPlaceSchema, formData);
+    const block = await placeOnDay(input.tripId, { kind: "client", clientId: client.id }, input.componentId, input.day);
+    await logActivity({
+      action: ACTIVITY_ACTIONS.BLOCK_ADDED,
+      entityType: "Trip",
+      entityId: input.tripId,
+      actorLabel: client.name,
+      metadata: { blockId: block.id, componentId: input.componentId, addedBy: "CLIENT" },
+    });
+    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`, block.id));
   });
 }
 
@@ -61,7 +86,7 @@ export async function moveClientBlockAction(_prev: FormState, formData: FormData
       actorLabel: client.name,
       metadata: { blockId: input.blockId },
     });
-    return successState("Moved.", itineraryUrl(tripId, `#day-${input.day}`));
+    return successState("Moved.", itineraryUrl(tripId, `#day-${input.day}`, input.blockId, true));
   });
 }
 
@@ -77,7 +102,9 @@ export async function removeClientBlockAction(_prev: FormState, formData: FormDa
       actorLabel: client.name,
       metadata: { blockId: input.blockId },
     });
-    return successState("Removed.", itineraryUrl(tripId));
+    // Back to the same day, so the client sees what changed.
+    const day = String(formData.get("day") ?? "");
+    return successState("Removed.", itineraryUrl(tripId, /^\d{4}-\d{2}-\d{2}$/.test(day) ? `#day-${day}` : ""));
   });
 }
 
@@ -107,12 +134,13 @@ export async function confirmItineraryAction(_prev: FormState, formData: FormDat
       what: `${client.name} confirmed their itinerary (${blocks} activities). Next: collect payment, then book.`,
       adminUrl: `${env().APP_URL.replace(/\/$/, "")}/admin/trips/${trip.id}`,
     });
-    return successState("Thank you — your itinerary is confirmed.", itineraryUrl(trip.id));
+    // Home shows what happens next (payment, then booking).
+    return successState("Thank you — your itinerary is confirmed.", refreshUrl(`/trip?trip=${encodeURIComponent(trip.id)}`));
   });
 }
 
 // ---------------------------------------------------------------------------
-// AI: suggestions, chat, "Build my itinerary", "Talk to a person"
+// AI: suggestions, chat, "Suggest things for my free days", "Ask … to get in touch"
 // ---------------------------------------------------------------------------
 
 /** Ideas for a "+" in the client's builder. */
@@ -121,7 +149,12 @@ export async function suggestForClientSlot(tripId: string, day: string, time: st
   return suggestionsForSlot(tripId, { kind: "client", clientId: client.id }, day, time);
 }
 
-export type ChatState = { messages: ChatMessage[]; readyToBuild: boolean; error: string | null };
+export type ChatState = {
+  messages: ChatMessage[];
+  readyToBuild: boolean;
+  suggestions: SlotSuggestion[];
+  error: string | null;
+};
 
 export async function sendChatMessageAction(prev: ChatState, formData: FormData): Promise<ChatState> {
   try {
@@ -174,7 +207,7 @@ export async function buildMyItineraryAction(_prev: FormState, formData: FormDat
       metadata: { added, by: "client" },
     });
     await notifyManager(client.id, trip, "AI draft ready", `${client.name} asked the assistant for an itinerary: ${added} suggested activities were added around the health core. Please review.`);
-    return successState(`${added} suggestions added to your itinerary.`, itineraryUrl(trip.id, "#itinerary"));
+    return successState(`${added} suggestions added to your itinerary.`, itineraryUrl(trip.id));
   });
 }
 
@@ -191,7 +224,7 @@ export async function talkToPersonAction(_prev: FormState, formData: FormData): 
     await notifyManager(client.id, trip, "Client asked for a person", `${client.name} would like to talk to a person. Please get in touch.`);
     return successState(
       "We've let your relationship manager know — they will be in touch shortly.",
-      refreshUrl(`/trip/chat?trip=${encodeURIComponent(trip.id)}`),
+      refreshUrl(`/trip/chat?trip=${encodeURIComponent(trip.id)}&asked=1`),
     );
   });
 }

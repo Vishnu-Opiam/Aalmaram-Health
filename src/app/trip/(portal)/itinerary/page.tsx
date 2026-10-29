@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import { FileText, Lock, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { requireClientPage } from "@/lib/auth/guards";
 import { AppLink as Link } from "@/components/ui/primitives";
-import { ItineraryBuilder } from "@/components/builder/itinerary-builder";
+import { TripDays } from "@/components/portal/trip-days";
+import { TripSwitcher } from "@/components/portal/trip-switcher";
+import { firstName, pill } from "@/components/portal/ui";
+import { formatMoney } from "@/domain/itineraries/pricing";
 import { loadBuilderTrip, loadLibrary } from "@/domain/trips/queries";
 import { loadPortalTrips, pickTrip } from "@/domain/trips/portal";
 import { formatDateRange, parseDateInput } from "@/domain/shared/dates";
 import { prisma } from "@/lib/db";
-import { renderMarkdown } from "@/lib/markdown";
-import { cn, param } from "@/lib/utils";
+import { param, pluralise } from "@/lib/utils";
 import {
   addClientBlockAction,
-  confirmItineraryAction,
+  buildMyItineraryAction,
   moveClientBlockAction,
   removeClientBlockAction,
   suggestForClientSlot,
 } from "../../actions";
-import { ConfirmPanel } from "./confirm-panel";
 
-export const metadata: Metadata = { title: "Your itinerary" };
+export const metadata: Metadata = { title: "Day by day" };
 
 export default async function ItineraryPage({
   searchParams,
@@ -26,128 +27,97 @@ export default async function ItineraryPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const client = await requireClientPage();
+  const params = await searchParams;
   const trips = await loadPortalTrips(client.id);
-  const current = pickTrip(trips, param(await searchParams, "trip") || undefined);
+  const current = pickTrip(trips, param(params, "trip") || undefined);
 
   if (!current) {
     return (
-      <div className="mx-auto max-w-3xl px-5 py-16">
-        <h1 className="font-serif text-4xl text-ink-900">Your itinerary</h1>
-        <p className="mt-5 text-[17px] text-ink-600">
-          Your relationship manager is setting up your trip. It will appear here as soon as your dates are agreed.
+      <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
+        <h1 className="font-display text-[40px] font-semibold text-ink-900">Day by day</h1>
+        <p className="mt-4 text-[19px] leading-relaxed text-ink-700">
+          Your relationship manager is setting up your trip. Your days will appear here as soon as your dates are agreed.
         </p>
       </div>
     );
   }
 
-  const [trip, library, extras] = await Promise.all([
+  const [trip, library, manager] = await Promise.all([
     loadBuilderTrip(current.id, { kind: "client", clientId: client.id }),
     loadLibrary(),
-    prisma.itinerary.findUnique({
-      where: { tripId: current.id },
-      select: { clientNotes: true, report: { select: { title: true, content: true, status: true } } },
-    }),
+    prisma.client.findUnique({ where: { id: client.id }, select: { relationshipManager: { select: { name: true } } } }),
   ]);
   if (!trip) return null;
-  const report = extras?.report?.status === "PUBLISHED" ? extras.report : null;
+  const contact = manager?.relationshipManager ? firstName(manager.relationshipManager.name) : "your team";
+  const blocks = trip.days.flatMap((d) => d.blocks);
+  const booked = blocks.filter((b) => b.progress === "booked").length;
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:py-14">
-      {trips.length > 1 && (
-        <nav aria-label="Your trips" className="mb-6 flex flex-wrap gap-2">
-          {trips.map((t) => (
-            <Link
-              key={t.id}
-              href={`/trip/itinerary?trip=${t.id}`}
-              aria-current={t.id === trip.id ? "page" : undefined}
-              className={cn(
-                "rounded-full border px-4 py-2 text-[15px]",
-                t.id === trip.id ? "border-teal-600 bg-teal-600 text-white" : "border-sand-300 bg-white text-ink-700",
-              )}
-            >
-              {t.name}
-            </Link>
-          ))}
-        </nav>
-      )}
+    <div className="mx-auto max-w-4xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
+      <TripSwitcher trips={trips} currentId={trip.id} path="/trip/itinerary" />
 
-      <header>
-        <p className="text-[13px] uppercase tracking-[0.14em] text-ink-400">Your itinerary</p>
-        <h1 className="mt-2 font-serif text-[2.1rem] leading-tight tracking-tight text-ink-900 sm:text-[2.5rem]">
-          {trip.name}
-        </h1>
-        <p className="mt-2 text-[17px] text-ink-600">
-          {formatDateRange(parseDateInput(trip.startDate), parseDateInput(trip.endDate))} · {trip.travellers}{" "}
-          {trip.travellers === 1 ? "traveller" : "travellers"}
-        </p>
-        {extras?.clientNotes && (
-          <div className="mt-6 border-l-2 border-brass-300 pl-5">
-            <p className="whitespace-pre-wrap font-serif text-[18px] leading-relaxed text-ink-700">{extras.clientNotes}</p>
-            <p className="mt-2 text-[14px] text-ink-400">Your relationship manager</p>
+      <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
+        <div className="min-w-0 max-w-2xl">
+          <p className="text-[17px] font-semibold text-ink-600">Day by day</p>
+          <h1 className="mt-1 font-display text-[34px] font-semibold leading-[1.1] tracking-tight text-ink-900 sm:text-[42px]">
+            {trip.name}
+          </h1>
+          <p className="mt-3 text-[18px] text-ink-700">
+            {formatDateRange(parseDateInput(trip.startDate), parseDateInput(trip.endDate))} ·{" "}
+            {pluralise(trip.travellers, "traveller")}
+          </p>
+        </div>
+        <section aria-label="Trip total" className="portal-card flex flex-wrap items-center gap-x-6 gap-y-3 px-6 py-5">
+          <div>
+            <p className="text-[16px] text-ink-600">{pluralise(trip.blockCount, "activity", "activities")} · total</p>
+            <p className="text-[28px] font-semibold tabular-nums leading-tight text-ink-900" aria-live="polite">
+              {formatMoney(trip.total, trip.currency)}
+            </p>
           </div>
-        )}
+          {trip.editable ? (
+            trip.blockCount > 0 && (
+              <Link href={`/trip/itinerary/confirm?trip=${trip.id}`} className={pill("primary")}>
+                Review and confirm <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              </Link>
+            )
+          ) : (
+            <p className="text-[17px] font-semibold text-ink-800" role="status">
+              {booked === blocks.length && blocks.length > 0
+                ? "Everything is booked"
+                : trip.status === "AWAITING_PAYMENT" && booked === 0
+                  ? "Confirmed · payment next"
+                  : `${booked} of ${blocks.length} booked`}
+            </p>
+          )}
+        </section>
       </header>
 
-      {trip.editable && (
-        <Link
-          href={`/trip/chat?trip=${trip.id}`}
-          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-teal-200 bg-teal-50 px-5 py-3 text-[16px] font-medium text-teal-700 hover:bg-teal-100"
-        >
-          <MessageCircle className="h-5 w-5 shrink-0" aria-hidden="true" />
-          Not sure where to start? Tell our assistant what you enjoy and it will suggest a plan.
-        </Link>
-      )}
-
-      <div className="mt-8">
-        <ItineraryBuilder
+      <div className="mt-6">
+        <TripDays
           trip={trip}
           library={library}
-          variant="client"
+          contactName={contact}
+          justId={param(params, "just") || null}
+          justMoved={param(params, "moved") === "1"}
           actions={{
             add: addClientBlockAction,
             move: moveClientBlockAction,
             remove: removeClientBlockAction,
+            build: buildMyItineraryAction,
             suggest: suggestForClientSlot,
           }}
         />
       </div>
 
-      <div className="mt-10">
-        {trip.editable ? (
-          <ConfirmPanel
-            tripId={trip.id}
-            total={trip.total}
-            currency={trip.currency}
-            blockCount={trip.blockCount}
-            action={confirmItineraryAction}
-          />
-        ) : (
-          <section className="rounded-lg border border-teal-200 bg-teal-50 p-6">
-            <h2 className="flex items-center gap-2 font-serif text-2xl text-ink-900">
-              <Lock className="h-5 w-5 text-teal-600" aria-hidden="true" /> Confirmed
-            </h2>
-            <p className="mt-2 text-[16px] leading-relaxed text-ink-700">
-              {trip.status === "AWAITING_PAYMENT"
-                ? "Thank you. Your relationship manager will be in touch about payment; once it is received we book each activity and you will see it confirmed here."
-                : "Your itinerary is locked. For any change, please contact your relationship manager."}
-            </p>
-          </section>
-        )}
-      </div>
-
-      {report && (
-        <section aria-labelledby="report-heading" className="mt-12">
-          <h2 id="report-heading" className="flex items-center gap-2 font-serif text-2xl text-ink-900">
-            <FileText className="h-5 w-5 text-brass-500" aria-hidden="true" /> What to expect
-          </h2>
-          <div className="mt-5 rounded-lg border border-sand-200 bg-white px-6 py-7 sm:px-10">
-            <article
-              className="prose-report"
-              // Server-side Markdown renderer escapes all HTML before applying a fixed tag whitelist.
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(report.content, 2) }}
-            />
-          </div>
-        </section>
+      {trip.editable && trip.blockCount > 0 && (
+        <div className="portal-card mt-8 flex flex-wrap items-center justify-between gap-4 p-6">
+          <p className="max-w-lg text-[18px] leading-relaxed text-ink-800">
+            Happy with your days? Review the whole trip and its price, then confirm. Nothing is booked until you do.
+          </p>
+          <Link href={`/trip/itinerary/confirm?trip=${trip.id}`} className={pill("primary")}>
+            Review and confirm <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          </Link>
+        </div>
       )}
     </div>
   );

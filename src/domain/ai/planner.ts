@@ -272,3 +272,79 @@ export function suggestForSlot(input: PlannerInput, day: string, start: number, 
 
 export const minutesToTime = (m: number) =>
   `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+
+// ---------------------------------------------------------------------------
+// The portal board: "Ideas for you", interests from the chat, drop on a day
+// ---------------------------------------------------------------------------
+
+const STOPWORDS = new Set(
+  "the and for with that this there would like love can could just visit some about what want into also very really much more have from your you our are was were will them they lot any see".split(" "),
+);
+
+// Everyday words clients use → the words our components are tagged with.
+const SYNONYMS: Record<string, string[]> = {
+  art: ["performance", "kathakali"],
+  arts: ["performance", "kathakali"],
+  dance: ["performance", "kathakali"],
+  theatre: ["performance", "kathakali"],
+  music: ["performance"],
+  history: ["heritage", "history"],
+  boat: ["backwaters", "boat", "canoe"],
+  lake: ["backwaters"],
+  spa: ["massage", "wellness"],
+  relax: ["relaxation", "massage", "restorative"],
+  eat: ["food", "dinner"],
+  cook: ["cooking"],
+  walk: ["walking"],
+  nature: ["nature"],
+  spice: ["spice"],
+};
+
+const singular = (word: string) => (word.length > 3 ? word.replace(/s$/, "") : word);
+
+function words(text: string): string[] {
+  return text.toLowerCase().match(/[a-z]+/g) ?? [];
+}
+
+/**
+ * Components the client's own words point at ("I love this art" → Kathakali),
+ * best first, with the word that matched. Health is left to the team: the
+ * client's health core is arranged by staff, and we never suggest a clinical
+ * service from what someone says about themselves.
+ */
+export function interestMatches(
+  texts: string[],
+  components: PlannerComponent[],
+): { componentId: string; term: string }[] {
+  const terms = new Map<string, string>();
+  for (const word of texts.flatMap(words)) {
+    if (word.length < 3 || STOPWORDS.has(word)) continue;
+    const root = singular(word);
+    for (const key of [root, ...(SYNONYMS[word] ?? SYNONYMS[root] ?? [])]) if (!terms.has(key)) terms.set(key, word);
+  }
+  return components
+    .filter((c) => !/health|medical/i.test(c.moduleName))
+    .map((c) => {
+      // Name and tags only, as with must-haves: a category name is too broad.
+      const own = new Set([c.name, ...c.tags].flatMap(words).map(singular));
+      const hits = [...terms.keys()].filter((t) => own.has(t));
+      return { c, hits };
+    })
+    .filter((x) => x.hits.length > 0)
+    .sort((a, b) => b.hits.length - a.hits.length || a.c.name.localeCompare(b.c.name))
+    .map((x) => ({ componentId: x.c.id, term: terms.get(x.hits[0])! }));
+}
+
+/**
+ * Start time for something dropped on a day: the first free gap that suits
+ * it, else straight after the day's last activity (the builder then shows an
+ * overlap warning and the client can change the time).
+ */
+export function startOnDay(input: PlannerInput, componentId: string, day: string): number {
+  const component = input.components.find((c) => c.id === componentId);
+  const blocks = input.existing.map((b) => ({ day: b.day, start: b.start, end: b.end }));
+  const fitted = component ? fitStart(component, freeGaps(day, blocks)) : null;
+  if (fitted !== null) return fitted;
+  const lastEnd = Math.max(DAY_START + 60, ...blocks.filter((b) => b.day === day).map((b) => b.end));
+  return Math.min(Math.ceil(lastEnd / 30) * 30, 20 * 60 + 30);
+}

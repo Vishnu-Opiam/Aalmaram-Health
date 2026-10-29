@@ -29,3 +29,7 @@ next-env.d.ts
 
 # Human inputs (meeting transcripts) stay local; the repo is public
 docs/platform/inputs/
+
+# Demo video: renders, frames and voiceover stay local (demo/script.md)
+demo/out/
+demo/vo/

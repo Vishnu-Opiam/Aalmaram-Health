@@ -6,6 +6,7 @@ import { Badge, Button, Select } from "@/components/ui/primitives";
 import { FormFeedback, SubmitButton, useActionRedirect } from "@/components/ui/form-status";
 import { formatMoney } from "@/domain/itineraries/pricing";
 import { formatDuration } from "@/domain/vendors/profile";
+import { BOOKING_TRANSITIONS, bookingStatusLabel } from "@/domain/bookings/status";
 import { formatLongDate, parseDateInput } from "@/domain/shared/dates";
 import type { BuilderBlock, BuilderDay, BuilderTrip, Library } from "@/domain/trips/builder-view";
 import { idleState, type FormState } from "@/lib/validation/form";
@@ -14,7 +15,7 @@ import { AddPanel, type SuggestFn } from "./add-panel";
 
 type Action = (prev: FormState, formData: FormData) => Promise<FormState>;
 
-export type BuilderActions = { add: Action; move: Action; remove: Action; suggest?: SuggestFn };
+export type BuilderActions = { add: Action; move: Action; remove: Action; suggest?: SuggestFn; setBooking?: Action };
 
 /**
  * The itinerary builder: a day-by-day timeline with "+" between blocks and
@@ -388,6 +389,9 @@ function BlockCard({
             )}
           </div>
 
+          {!trip.editable && actions.setBooking && block.bookingStatus && (
+            <BookingControl block={block} action={actions.setBooking} />
+          )}
           {changing && <ChangeForm block={block} trip={trip} action={actions.move} big={big} />}
           {open && <BlockDetails block={block} big={big} />}
         </div>
@@ -396,7 +400,7 @@ function BlockCard({
   );
 }
 
-function BlockDetails({ block, big }: { block: BuilderBlock; big: boolean }) {
+export function BlockDetails({ block, big }: { block: BuilderBlock; big: boolean }) {
   const text = big ? "text-[15px]" : "text-[13px]";
   return (
     <div className={cn("mt-3 space-y-3 rounded-md bg-sand-50 p-4 leading-relaxed text-ink-700", text)}>
@@ -450,7 +454,7 @@ function BlockDetails({ block, big }: { block: BuilderBlock; big: boolean }) {
   );
 }
 
-function ChangeForm({ block, trip, action, big }: { block: BuilderBlock; trip: BuilderTrip; action: Action; big: boolean }) {
+export function ChangeForm({ block, trip, action, big }: { block: BuilderBlock; trip: BuilderTrip; action: Action; big: boolean }) {
   const [state, dispatch] = useActionState(action, idleState);
   useActionRedirect(state);
   const size = big ? "lg" : "sm";
@@ -499,7 +503,7 @@ function ChangeForm({ block, trip, action, big }: { block: BuilderBlock; trip: B
   );
 }
 
-function RemoveButton({ blockId, title, action, big }: { blockId: string; title: string; action: Action; big: boolean }) {
+export function RemoveButton({ blockId, title, action, big }: { blockId: string; title: string; action: Action; big: boolean }) {
   const [state, dispatch] = useActionState(action, idleState);
   useActionRedirect(state);
   return (
@@ -518,7 +522,36 @@ function RemoveButton({ blockId, title, action, big }: { blockId: string; title:
   );
 }
 
-function nextHalfHour(time: string): string {
+/** Staff record the provider's answer; the client sees the green tick on CONFIRMED. */
+function BookingControl({ block, action }: { block: BuilderBlock; action: Action }) {
+  const [state, dispatch] = useActionState(action, idleState);
+  useActionRedirect(state);
+  const current = block.bookingStatus!;
+  const options = [current, ...BOOKING_TRANSITIONS[current]];
+  return (
+    <form action={dispatch} className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+      <input type="hidden" name="blockId" value={block.id} />
+      <label className="flex items-center gap-2 font-medium text-ink-700">
+        Booking
+        <Select name="status" defaultValue={current} className="h-8 w-auto text-xs" disabled={options.length === 1}>
+          {options.map((s) => (
+            <option key={s} value={s}>
+              {bookingStatusLabel(s)}
+            </option>
+          ))}
+        </Select>
+      </label>
+      {options.length > 1 && (
+        <SubmitButton size="sm" variant="secondary" pendingLabel="Saving…">
+          Save
+        </SubmitButton>
+      )}
+      {state.status === "error" && <FormFeedback state={state} className="w-full" />}
+    </form>
+  );
+}
+
+export function nextHalfHour(time: string): string {
   const [h, m] = time.split(":").map(Number);
   const minutes = Math.min(22 * 60, Math.ceil((h * 60 + m + 30) / 30) * 30);
   return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;

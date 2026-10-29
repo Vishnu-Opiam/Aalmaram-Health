@@ -10,7 +10,9 @@ import {
   draftPicksSchema,
   draftPlan,
   freeGaps,
+  interestMatches,
   minutesToTime,
+  startOnDay,
   suggestForSlot,
   validatePicks,
   type PlannerInput,
@@ -23,7 +25,7 @@ import { normaliseMix } from "@/domain/trips/module-mix";
 import { blockDay, blockPrice, toBlockStart } from "@/domain/trips/blocks";
 import { assertItineraryEditable } from "@/domain/trips/status";
 import { addDays, daysBetweenInclusive, formatDateRange, toDateInputValue } from "@/domain/shared/dates";
-import { loadTripForMutation, type BlockScope } from "./itinerary-blocks";
+import { addBlock, loadTripForMutation, type BlockScope } from "./itinerary-blocks";
 
 /**
  * The AI layer on top of the model (class diagram: "the agent is not an
@@ -263,6 +265,32 @@ export async function suggestionsForSlot(tripId: string, scope: BlockScope, day:
 }
 
 // ---------------------------------------------------------------------------
+// The portal: an idea from the chat placed on a day
+// ---------------------------------------------------------------------------
+
+/**
+ * The client dropped an idea on a day (or pressed "Add"): we choose the time
+ * and, for providers with several locations, the first one — both can be
+ * changed on the block afterwards.
+ */
+export async function placeOnDay(tripId: string, scope: BlockScope, componentId: string, day: string) {
+  const ctx = await loadPlanningContext(tripId, scope);
+  const input = plannerInput(ctx, { excludeAi: false });
+  const component = ctx.components.find((c) => c.id === componentId);
+  if (!component) throw conflict("That experience is not available at the moment.");
+  if (!input.days.includes(day)) throw conflict("Please choose a day of your trip.");
+  return addBlock({
+    tripId: ctx.trip.id,
+    scope,
+    componentId,
+    branchId: component.vendor.branches[0]?.id ?? null,
+    day,
+    time: minutesToTime(startOnDay(input, componentId, day)),
+    addedBy: scope.kind === "client" ? "CLIENT" : "TEAM",
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Client chat
 // ---------------------------------------------------------------------------
 
@@ -275,14 +303,21 @@ export async function loadChat(tripId: string, clientId: string): Promise<ChatMe
 }
 
 export async function sendChatMessage(tripId: string, clientId: string, text: string) {
-  const trip = await loadTripForMutation(tripId, { kind: "client", clientId });
-  const client = await prisma.client.findUniqueOrThrow({ where: { id: clientId }, select: { name: true } });
+  const scope = { kind: "client" as const, clientId };
+  const ctx = await loadPlanningContext(tripId, scope);
+  const trip = ctx.trip;
   const existing = await prisma.conversation.findFirst({
     where: { tripId: trip.id, clientId, channel: "AI_CHAT" },
     select: { id: true, transcript: true },
   });
   const transcript = appendToTranscript(existing?.transcript ?? "", { role: "client", text });
   const messages = parseTranscript(transcript);
+
+  // What the assistant may offer: experiences not yet in the trip, never health.
+  const input = plannerInput(ctx, { excludeAi: false });
+  const inTrip = new Set(input.existing.map((b) => b.componentId));
+  const offered = input.components.filter((c) => !inTrip.has(c.id) && !/health|medical/i.test(c.moduleName));
+  const matches = interestMatches([text], offered);
 
   const { data } = await generateStructured({
     task: "CLIENT_CHAT",
@@ -291,12 +326,13 @@ export async function sendChatMessage(tripId: string, clientId: string, text: st
     prompt: chatPrompt.buildPrompt({
       tripName: trip.name,
       dates: formatDateRange(trip.startDate, trip.endDate),
-      transcript: minimisePii(transcript, [client.name]),
+      transcript: minimisePii(transcript, [ctx.details.client.name]),
+      experiences: offered.map((c) => ({ id: c.id, name: c.name, tags: c.tags })),
     }),
     promptVersion: chatPrompt.PROMPT_VERSION,
     model: "fast",
-    fake: () => scriptedReply(messages),
-    logOutput: (d) => ({ readyToBuild: d.readyToBuild, turn: messages.length }),
+    fake: () => scriptedReply(messages, matches.map((m) => m.componentId)),
+    logOutput: (d) => ({ readyToBuild: d.readyToBuild, suggestions: d.suggestions, turn: messages.length }),
     entity: { type: "Trip", id: trip.id },
   });
 
@@ -309,5 +345,18 @@ export async function sendChatMessage(tripId: string, clientId: string, text: st
       data: { clientId, tripId: trip.id, channel: "AI_CHAT", occurredAt: new Date(), transcript: updated },
     });
   }
-  return { messages: parseTranscript(updated), readyToBuild: data.readyToBuild };
+  // Ids the model invented are dropped; a deflected reply offers nothing.
+  const offeredIds = new Set(offered.map((c) => c.id));
+  const term = new Map(matches.map((m) => [m.componentId, m.term]));
+  const suggestions: SlotSuggestion[] =
+    reply === MEDICAL_DEFLECTION
+      ? []
+      : [...new Set(data.suggestions)]
+          .filter((id) => offeredIds.has(id))
+          .slice(0, 3)
+          .map((componentId) => ({
+            componentId,
+            reason: term.has(componentId) ? `You mentioned ${term.get(componentId)}.` : "Suggested from our chat.",
+          }));
+  return { messages: parseTranscript(updated), readyToBuild: data.readyToBuild, suggestions };
 }

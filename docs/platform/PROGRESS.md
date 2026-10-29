@@ -7,9 +7,9 @@
 
 ## Current focus
 
-- Phase: MVP (Phases 1–4) built; next are human reviews of the four stacked PRs, then Phase 5 (payment)
-- Branch: `feat/phase-1-vendor-profile` → `feat/phase-2-trips` → `feat/phase-3-portal` → `feat/phase-4-ai`
-- Last updated: 2026-10-22
+- Phase: MVP (Phases 1–4) merged; client portal re-planned for 50+ clients (`docs/platform/portal-ux.md`)
+- Branch: `feat/portal-ux-redesign` (stacked on `feat/portal-workflow-board`, PR #7, not yet merged)
+- Last updated: 2026-10-23
 
 ## Phase 0 — Foundations
 - [x] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
@@ -44,7 +44,7 @@
 - [x] P3.4 Drag-and-drop itinerary builder with running cost
 - [x] P3.5 Block detail (component + provider)
 - [x] P3.6 Prices shown to the client
-- [~] P3.7 50+ accessibility pass (large type and targets, click alternative to drag, nothing on hover; no formal audit yet)
+- [~] P3.7 50+ accessibility pass (UX plan + stress test in `docs/platform/portal-ux.md`; 18 px type, ≥ 48 px targets, no drag, Back closes panels; no formal audit yet)
 - [x] P3.8 Tests
 
 ## Phase 4 — AI: conversation → requirements → itinerary (MVP)
@@ -65,12 +65,12 @@
 - [ ] P5.6 Tests
 
 ## Phase 6 — Booking
-- [ ] P6.1 Schema + booking status machine
+- [~] P6.1 Schema + booking status machine — `Booking` + status machine built; `BookingEvent` waits for P6.3
 - [ ] P6.2 One booking per block when the trip enters BOOKING
 - [ ] P6.3 AI-drafted vendor emails, staff send, BookingEvents (`BOOKING_AUTO_SEND` off)
-- [ ] P6.4 Vendor replies recorded by staff (optional AI parse)
+- [~] P6.4 Vendor replies recorded by staff (optional AI parse) — status recorded per block on the admin trip page; no reply text or AI parse yet
 - [ ] P6.5 Booking board + overdue cron (flags only)
-- [ ] P6.6 Client calendar / green tick
+- [x] P6.6 Client calendar / green tick — on the itinerary board itself (✓✓ confirmed, green ✓ booked)
 - [ ] P6.7 Declines and changes via the relationship manager
 - [ ] P6.8 Trip READY + client notified
 - [ ] P6.9 Tests
@@ -168,6 +168,19 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-22 | `AiRun.output` holds ids, counts and flags only (no summaries, reasons or transcript text); the logger now also redacts `transcript`, `summary`, `prompt`, `reply`. | CLAUDE.md §4 privacy rules. |
 | 2026-10-22 | AI drafts choose a provider's first active branch (by city); the client can change it with "Change time". | The client picks the branch near where they stay; the AI doesn't know that yet. |
 | 2026-10-22 | `src/lib/services/itinerary-recommendation.ts` (null stub) removed; suggestions live in `ai-planning.ts` + `domain/ai/planner.ts`. | Dead code once P4.3 landed. |
+| 2026-10-23 | Client itinerary is a board: a column per day, short cards, details in a side sheet; Calendar and Chat tabs fold into it (`/trip/calendar`, `/trip/chat` redirect). | Vishnu: see everything in one look, not a long PDF-like report; status and chat belong on the same page. |
+| 2026-10-23 | The client sees three booking states only: planned (nothing), ✓✓ (itinerary confirmed), green ✓ (booking CONFIRMED). REQUESTED and DECLINED read as ✓✓. | Vishnu's double tick / big green tick; booking detail stays internal (P6.6). |
+| 2026-10-23 | `Booking` lands now (P6.1 shape, no `BookingEvent`); staff set its status per block; the row is created on the first recorded outcome, not on entering BOOKING. Not gated on payment yet. | The green tick needs real data; payment (Phase 5) and the agent (P6.3) are not built. Gate on `Trip.status = BOOKING` when payments land. |
+| 2026-10-23 | Client-side AI ideas (rail, chat) never include Health & Medical components; matching uses the client's words plus a small synonym map ("art" → performance, Kathakali). | The team arranges the health core; suggesting clinical services from what someone says about themselves edges toward medical advice. |
+| 2026-10-23 | Dropping an idea on a day: the server picks the first gap that suits its time of day (else after the day's last block) and the provider's first branch; both editable on the card. | No time picker in a drag; matches the AI-draft branch decision of 22 Oct. |
+| 2026-10-23 | **Client portal restructured** around four labelled tabs: **My trip** (home: what happens next, health appointments, contact, note, travel guide, Kerala teaser), **Day by day** (vertical day list), **Ask us** (relationship manager, then assistant), **Kerala** (the Feed, moved to `/trip/kerala`). Supersedes the 23 Oct board (day columns, ideas rail, docked chat). | Vishnu's review: the board was "inefficient … confusing" for older clients. Reasoning and a 15-scenario stress test in `docs/platform/portal-ux.md`; rejected v1 (bigger board) and v2 (list + docked chat). |
+| 2026-10-23 | **No drag-and-drop in the client portal.** Add = guided panel (ideas for the day → kind → option → Morning / Afternoon / Evening or an exact time); move = "Change day or time" with day buttons; remove asks in place. Staff builder unchanged. | Older adults' touch errors (missing, slipping off targets); Nivedith's "big items, as simple as possible". |
+| 2026-10-23 | Detail and add panels are kept in the URL (`?item=` / `?add=`) through the history API, so the browser's Back button closes them. | Back is the "undo" older users reach for; leaving the page by accident was the likeliest error. |
+| 2026-10-23 | Confirm happens on a review page (`/trip/itinerary/confirm`: every activity and price, what happens next), not in a browser pop-up; it then lands on My trip at step 3 "Payment". | One deliberate decision with the whole picture; `window.confirm` is easy to miss or misread. |
+| 2026-10-23 | The relationship manager is shown as a person (name, initials, email, "Ask … to get in touch" = the existing talk-to-person action) on My trip and Ask us. No staff phone or photo yet — see Blockers. | Trust is the top factor in medical travel; a premium, relationship-led service. |
+| 2026-10-23 | Portal tabs are plain links (full page loads); other portal links stay `AppLink`. | A tab click right after a page load sometimes did nothing in the e2e run (1 in 4) — the client-router flakiness the README already notes. Tabs must always work. |
+| 2026-10-23 | Portal look: Figtree body at 18 px and Fraunces headings (`next/font`), pill buttons ≥ 52 px, tokens forest / lagoon (health) / leaf (wellness) / marigold (culture), no text lighter than ink-600; an original SVG Kerala scene instead of stock photos; short, reduced-motion-aware animations. Admin styling unchanged. | Vishnu's reference designs for fonts, colour and motion; legibility for 50+ readers; no licensing questions. |
+| 2026-10-23 | The "Ideas for you" rail and its `boardIdeas` / `tripIdeas` are removed; ideas now come per day (slot suggestions in "Add something") and from the chat. `client-chat` prompt bumped to `.2` for the new button names. | Three competing "add" paths were part of the confusion; dead code otherwise. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans
@@ -188,12 +201,40 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-15 | P6.1 | Booking ↔ vendor was briefly called "many-to-many"; the diagram resolves it as booking → one block → one component → one vendor (at the chosen branch). Please confirm. (§12.3) | |
 | 2026-10-15 | P8.2, X.2 | Health dossier: what goes in (vendor reports, doctor notes?), who compiles it, and EU clients' consent for Kerala clinics holding their data (T&C). (§12.3) | |
 | 2026-10-15 | X.6 | The MVP chatbot shows its itinerary at once. Before real clients, must staff approve an AI itinerary before the client sees it? | |
+| 2026-10-23 | P3.7 | Older clients will want to **phone** their relationship manager. May we add `phone` (and WhatsApp) and a photo to staff (`User`), shown to their clients on My trip and Ask us? Small schema change; until then the portal shows name and email. | |
+| 2026-10-23 | P3.1 | Real **photography** (providers, places) would do more for trust than the illustrated scene. Who supplies it, and may we use vendors' own images? | |
 | 2026-10-15 | — | Croatian / German / Slovenian website translations — which website? Outside this plan. (§12.3) | |
 
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-10-23** · `feat/portal-ux-redesign` · Investor demo video (no app code changed). `demo/script.md` (8 scenes,
+  Vishnu's ElevenLabs voiceover) and `demo/tools/`: Playwright recorder (in-page cursor, eased scroll, 2x captures
+  at 4x slow motion against the production build and the reset `aalmaram_e2e` database), Whisper scene finder and
+  an OpenCV compositor (background, window frame, camera zooms, voice placed per scene). Output 1:35, 1080p60;
+  media stays local (`demo/out/`, `demo/vo/` ignored). The address bar shows the live domain, which only has this
+  UI once PR #7 and this branch are deployed.
+
+- **2026-10-23** · `feat/portal-ux-redesign` · Vishnu: the portal's UX is confusing for older clients. Researched
+  the audience (NN/g senior usability, touch-accuracy studies, medical-travel trust surveys, our 14–15 Oct calls),
+  wrote the UX plan and stress test (`docs/platform/portal-ux.md`: 3 personas × 15 situations; v1 and v2 rejected),
+  then rebuilt the client portal: My trip home (step tracker, appointments, contact card, note, guide, Kerala),
+  Day by day list with details / guided add / change / remove panels (URL-backed, Back closes), review-and-confirm
+  page, Ask us page, Kerala page, new portal type and colour, SVG Kerala scene. Removed the board, docked chat and
+  ideas rail. New `src/domain/trips/journey.ts` (+ unit tests). Tests: typecheck ✓, 147 unit + integration ✓,
+  e2e 2/2 ✓ (golden path rewritten for the new flows; one earlier run hit a tab click that did nothing — tabs are
+  now plain links, three runs green since). Checked in the browser pane at 1440 px and 375 px as the demo client:
+  home, day list, details, add, move, remove, Back, chat ideas, review, confirm. Lint not run (not configured).
+  Not done: formal accessibility audit, staff phone/photo (Blockers), real photos. Next: Vishnu's review.
+
+- **2026-10-23** · `feat/portal-workflow-board` · Vishnu's portal feedback: itinerary as a one-look workflow board
+  (day columns, compact cards, tap for details), AI "Ideas for you" rail with drag-and-drop, the assistant docked at
+  the bottom and able to offer items from what the client types ("I love art"), ✓✓ / green ✓ booking status on each
+  card. Added `Booking` (migration `booking`), `src/domain/bookings/status.ts`, a staff booking control on the admin
+  trip page, and seed data (Marc's trip confirmed and part-booked). Tests: typecheck ✓, 144 unit + integration ✓,
+  e2e golden path updated (results in the PR). Not done: native HTML5 drag only (on touch screens "Add" → day chips
+  is the path), `BookingEvent`, payment gating. Next: human review of the PR.
 - **2026-10-15** · `claude/optimistic-haslett-e831b1` · Docs only: PLAN.md and PROGRESS.md revised to the class diagram v1 and the 14–15 Oct decisions (no code or schema changes). Tests not run (nothing executable changed). Next: P0.1 baseline, then Phase 1 in the build order of PLAN.md §4.
 - **2026-10-22 · MVP build plan** (goal: a demo Vishnu can show — admin vendor tool + client Feed + builder with cost + AI chat → itinerary).
   Stacked branches, one per phase, each from the previous: `feat/phase-1-vendor-profile` → `feat/phase-2-trips` →

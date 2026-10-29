@@ -3,7 +3,17 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { createClientRecord, createInventory, createTrip, prisma, resetDatabase } from "./helpers";
 import { addBlock } from "@/lib/services/itinerary-blocks";
-import { draftItinerary, extractRequirements, loadChat, sendChatMessage, suggestionsForSlot } from "@/lib/services/ai-planning";
+import {
+  draftItinerary,
+  extractRequirements,
+  loadChat,
+  placeOnDay,
+  sendChatMessage,
+  suggestionsForSlot,
+} from "@/lib/services/ai-planning";
+import { confirmItinerary } from "@/lib/services/itinerary-blocks";
+import { setBookingStatus } from "@/lib/services/bookings";
+import { loadBuilderTrip } from "@/domain/trips/queries";
 import { generateStructured } from "@/lib/ai";
 import { blockEndsAt } from "@/domain/trips/blocks";
 
@@ -136,6 +146,51 @@ describe("AI layer with the fake provider (integration)", () => {
     const other = await createClientRecord({ email: "intruder@example.com" });
     await expect(sendChatMessage(trip.id, other.id, "hello")).rejects.toMatchObject({ code: "FORBIDDEN" });
     expect(await loadChat(trip.id, other.id)).toEqual([]);
+  });
+
+  it("answers “I love art” with ideas from the catalogue, never health", async () => {
+    const { client, trip, kathakali } = await setup();
+    const reply = await sendChatMessage(trip.id, client.id, "I love this art. Can I see it while I'm there?");
+    expect(reply.suggestions.map((s) => s.componentId)).toEqual([kathakali.id]);
+    expect(reply.suggestions[0].reason).toBe("You mentioned art.");
+    // Health is never offered, even when asked about directly.
+    const health = await sendChatMessage(trip.id, client.id, "Could I add a blood panel?");
+    expect(health.suggestions).toEqual([]);
+  });
+
+  it("drops an idea on a day at a suitable time, only on the client's own open trip", async () => {
+    const { client, trip, kathakali } = await setup();
+    const scope = { kind: "client" as const, clientId: client.id };
+    const { id } = await placeOnDay(trip.id, scope, kathakali.id, "2026-03-02");
+    const block = await prisma.itineraryItem.findUniqueOrThrow({ where: { id } });
+    expect(block.addedBy).toBe("CLIENT");
+    expect(block.startsAt.toISOString()).toBe("2026-03-02T18:30:00.000Z");
+
+    await expect(placeOnDay(trip.id, scope, kathakali.id, "2026-04-01")).rejects.toMatchObject({ code: "CONFLICT" });
+    const other = await createClientRecord({ email: "intruder2@example.com" });
+    await expect(placeOnDay(trip.id, { kind: "client", clientId: other.id }, kathakali.id, "2026-03-02")).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    });
+    await confirmItinerary(trip.id, scope);
+    await expect(placeOnDay(trip.id, scope, kathakali.id, "2026-03-03")).rejects.toMatchObject({ code: "CONFLICT" });
+  });
+
+  it("records bookings once confirmed and shows the client ✓✓ then the green tick", async () => {
+    const { client, trip, core } = await setup();
+    const scope = { kind: "client" as const, clientId: client.id };
+    await expect(setBookingStatus(core.id, "CONFIRMED")).rejects.toMatchObject({ code: "CONFLICT" });
+    expect((await loadBuilderTrip(trip.id, scope))!.days[0].blocks[0].progress).toBe("planned");
+
+    await confirmItinerary(trip.id, scope);
+    expect((await loadBuilderTrip(trip.id, scope))!.days[0].blocks[0].progress).toBe("confirmed");
+
+    await setBookingStatus(core.id, "REQUESTED");
+    await setBookingStatus(core.id, "CONFIRMED");
+    await expect(setBookingStatus(core.id, "REQUESTED")).rejects.toMatchObject({ code: "CONFLICT" });
+    const seen = (await loadBuilderTrip(trip.id, scope))!.days[0].blocks[0];
+    expect(seen.progress).toBe("booked");
+    expect(seen.bookingStatus).toBeNull();
+    expect((await loadBuilderTrip(trip.id, { kind: "staff" }))!.days[0].blocks[0].bookingStatus).toBe("CONFIRMED");
   });
 
   it("records INVALID_OUTPUT when a result fails its schema", async () => {

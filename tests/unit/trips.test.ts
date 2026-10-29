@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import type { BookingStatus } from "@prisma/client";
+import { BOOKING_TRANSITIONS, blockProgress, canTransitionBooking } from "@/domain/bookings/status";
 import type { TripStatus } from "@prisma/client";
 import {
   blockEndsAt,
@@ -162,5 +164,36 @@ describe("module mix", () => {
       { moduleId: "h", percent: 75 },
       { moduleId: "c", percent: 25 },
     ]);
+  });
+});
+
+describe("booking status machine", () => {
+  it("books, declines and re-requests, and never leaves CANCELLED", () => {
+    expect(canTransitionBooking("PENDING", "REQUESTED")).toBe(true);
+    expect(canTransitionBooking("REQUESTED", "CONFIRMED")).toBe(true);
+    expect(canTransitionBooking("REQUESTED", "DECLINED")).toBe(true);
+    expect(canTransitionBooking("DECLINED", "REQUESTED")).toBe(true);
+    expect(canTransitionBooking("DECLINED", "CONFIRMED")).toBe(false);
+    expect(canTransitionBooking("CONFIRMED", "PENDING")).toBe(false);
+    for (const to of Object.keys(BOOKING_TRANSITIONS) as BookingStatus[]) {
+      expect(canTransitionBooking("CANCELLED", to)).toBe(to === "CANCELLED");
+    }
+  });
+
+  it("any live booking can be cancelled", () => {
+    for (const from of ["PENDING", "REQUESTED", "DECLINED", "CONFIRMED"] as BookingStatus[]) {
+      expect(canTransitionBooking(from, "CANCELLED")).toBe(true);
+    }
+  });
+});
+
+describe("blockProgress", () => {
+  it("shows nothing while planning, ✓✓ once confirmed, the green tick once the provider confirms", () => {
+    expect(blockProgress(false, null)).toBe("planned");
+    expect(blockProgress(false, "CONFIRMED")).toBe("planned");
+    expect(blockProgress(true, null)).toBe("confirmed");
+    expect(blockProgress(true, "REQUESTED")).toBe("confirmed");
+    expect(blockProgress(true, "DECLINED")).toBe("confirmed");
+    expect(blockProgress(true, "CONFIRMED")).toBe("booked");
   });
 });
