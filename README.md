@@ -36,7 +36,7 @@ staff record booking outcomes by hand for now.
 3. **Trips** → Elena's trip: requirements (40/30/30 mix), the discovery call,
    and the itinerary with her health core. Try **Suggest activities (AI)**.
 4. **Clients** → Elena → *Send invitation link*; copy the `/trip/access/…` URL
-   from the server console or `.mail.log` and open it in a private window.
+   shown under the button (Copy) and open it in a private window.
 5. As Elena: **My trip** shows step 1 of 5, her health appointments and her
    contact. **Plan my days** → *Add something to Day 2* → Culture & sights →
    Restaurants → a dinner → Evening → **Add to my trip**, and watch the total;

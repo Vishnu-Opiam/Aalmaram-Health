@@ -24,6 +24,8 @@ export type FormState = {
    * useActionRedirect().
    */
   redirectTo?: string;
+  /** A link the admin must copy by hand (the client invite, while email is log-only). */
+  link?: string;
 };
 
 export const idleState: FormState = {

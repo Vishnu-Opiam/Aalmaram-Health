@@ -209,6 +209,11 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-10-29** · `feat/admin-invite-link` · Staff can copy a client's portal link from the client page: prod
+  sends no real email yet, so the link used to be reachable only in server logs. Shown once after issuing, only
+  while `EMAIL_TRANSPORT=log`; the token stays hashed. Also imported 18 vendors from Vendor List.xlsx into prod and
+  applied the `booking` migration there (both at Vishnu's request). Tests: typecheck ✓, 147 unit + integration ✓,
+  e2e 2 passed (golden path now copies the link from the admin page). Next: Vishnu creates Nivedith's prod login.
 - **2026-10-23** · `feat/portal-ux-redesign` · Investor demo video (no app code changed). `demo/script.md` (8 scenes,
   Vishnu's ElevenLabs voiceover) and `demo/tools/`: Playwright recorder (in-page cursor, eased scroll, 2x captures
   at 4x slow motion against the production build and the reset `aalmaram_e2e` database), Whisper scene finder and
