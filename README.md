@@ -7,8 +7,12 @@ preventive health care, with wellness and culture woven around it. The team
 fixes the **health core** of a trip; the client adds the rest day by day,
 sees the cost as they go, takes AI suggestions if they like, then confirms. Domain model: [`docs/platform/class-diagram.md`](docs/platform/class-diagram.md).
 
-Two interfaces over one data model:
+A public homepage and two interfaces over one data model:
 
+- **Homepage** (`/`) — the public landing page: what this is, how it works,
+  why Kerala, explore by need (indicative prices), is it safe, is it right for
+  you, learn, pricing, a free call with a person and FAQ. Copy lives in
+  `src/app/(site)/content.ts` and is placeholder until Nivedith rewrites it.
 - **Admin** (`/admin`) — for the team: what we offer (modules → catalogues →
   vendors with branches and practitioners → components), clients, trips,
   requirements, conversations, the health-core builder, the Feed and AI runs.
@@ -100,6 +104,7 @@ Single Next.js App Router application. Server Components read, Server Actions wr
 
 ```
 src/
+  app/(site)/              public homepage (copy in content.ts)
   app/admin/…              admin screens; one actions.ts per area (trips, vendors, feed…)
   app/trip/(portal)/…      client portal: My trip, Day by day (+ /confirm), Ask us, Kerala (/calendar redirects)
   app/trip/access/[token]  portal sign-in link → session cookie

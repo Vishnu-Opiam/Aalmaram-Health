@@ -15,6 +15,8 @@ const schema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   EMAIL_TRANSPORT: z.enum(["log", "smtp"]).default("log"),
   EMAIL_FROM: z.string().default("Aalmaram Health <no-reply@aalmaram.example>"),
+  // Homepage "Book a free call" target; unset until the team picks an inbox.
+  CONTACT_EMAIL: z.string().email().optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   // AI: "fake" (deterministic, offline) unless explicitly switched to the gateway.
   AI_PROVIDER: z.enum(["fake", "gateway"]).default("fake"),
