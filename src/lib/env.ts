@@ -39,3 +39,10 @@ export function env() {
 }
 
 export const isProduction = () => env().NODE_ENV === "production";
+
+/**
+ * Homepage "Book a free call" target; unset until the team picks an inbox.
+ * Read on its own because the homepage is prerendered at build time, where
+ * DATABASE_URL and SESSION_SECRET need not exist.
+ */
+export const contactEmail = () => z.string().email().optional().catch(undefined).parse(process.env.CONTACT_EMAIL || undefined);

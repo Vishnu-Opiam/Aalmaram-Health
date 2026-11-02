@@ -9,7 +9,7 @@
 
 - Phase: MVP (Phases 1–4) merged; client portal re-planned for 50+ clients (`docs/platform/portal-ux.md`)
 - Branch: `feat/portal-ux-redesign` (stacked on `feat/portal-workflow-board`, PR #7, not yet merged)
-- Last updated: 2026-10-23
+- Last updated: 2026-11-02 (public homepage, `feat/public-homepage`)
 
 ## Phase 0 — Foundations
 - [x] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
@@ -89,6 +89,15 @@
 - [ ] P8.4 Client history + plan next trip
 - [ ] P8.5 Business reports (incl. AI block keep rate)
 - [ ] P8.6 Tests
+
+## Website — public site (Nivedith, 2 Nov 2026; notes in `inputs/2026-11-02-website-call-notes.md`)
+- [x] W.1 Homepage / landing page at `/` (placeholder copy; one CTA: a free call)
+- [ ] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care)
+- [ ] W.3 Safety & quality page with the formal vetting process — needs Nivedith's vetting process
+- [ ] W.4 How it works, About / our network & team pages
+- [ ] W.5 Explore on the website (interactive, by need) and a services chatbot
+- [ ] W.6 Practical guide, journeys & stories, guides & articles
+- [ ] W.7 (later) Country selector that personalises waits, costs, travel time and shared history
 
 ## Phase X — Hardening (before real clients)
 - [ ] X.1 Real email + NotificationLog
@@ -178,6 +187,10 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-23 | Detail and add panels are kept in the URL (`?item=` / `?add=`) through the history API, so the browser's Back button closes them. | Back is the "undo" older users reach for; leaving the page by accident was the likeliest error. |
 | 2026-10-23 | Confirm happens on a review page (`/trip/itinerary/confirm`: every activity and price, what happens next), not in a browser pop-up; it then lands on My trip at step 3 "Payment". | One deliberate decision with the whole picture; `window.confirm` is easy to miss or misread. |
 | 2026-10-23 | The relationship manager is shown as a person (name, initials, email, "Ask … to get in touch" = the existing talk-to-person action) on My trip and Ask us. No staff phone or photo yet — see Blockers. | Trust is the top factor in medical travel; a premium, relationship-led service. |
+| 2026-11-02 | Homepage lives in an `(site)` route group at `/`; `/` no longer redirects to `/admin` or `/login` (staff sign-in moves to the footer, clients use "My trip"). Copy sits in `content.ts`. | Nivedith: homepage doubles as the landing page; content will be rewritten, so keep it in one file. |
+| 2026-11-02 | Site keeps `noindex` (root layout) for now. | Copy and prices are placeholders; switch indexing on when Nivedith signs off the content. |
+| 2026-11-02 | "Book a free call" opens a `mailto:` to `CONTACT_EMAIL`; unset, it shows "Call booking opens soon". No scheduler or CRM. | No inbox or booking tool chosen yet; no paid services provisioned by the agent. |
+| 2026-11-02 | Tiles use icons, not provider photos; the safety box mentions GDPR only as "our privacy notice … is being prepared", not as a compliance claim. | Copyright concerns raised in the call; CLAUDE.md §4 forbids claiming compliance. |
 | 2026-10-23 | Portal tabs are plain links (full page loads); other portal links stay `AppLink`. | A tab click right after a page load sometimes did nothing in the e2e run (1 in 4) — the client-router flakiness the README already notes. Tabs must always work. |
 | 2026-10-23 | Portal look: Figtree body at 18 px and Fraunces headings (`next/font`), pill buttons ≥ 52 px, tokens forest / lagoon (health) / leaf (wellness) / marigold (culture), no text lighter than ink-600; an original SVG Kerala scene instead of stock photos; short, reduced-motion-aware animations. Admin styling unchanged. | Vishnu's reference designs for fonts, colour and motion; legibility for 50+ readers; no licensing questions. |
 | 2026-10-23 | The "Ideas for you" rail and its `boardIdeas` / `tripIdeas` are removed; ideas now come per day (slot suggestions in "Add something") and from the chat. `client-chat` prompt bumped to `.2` for the new button names. | Three competing "add" paths were part of the confusion; dead code otherwise. |
@@ -203,11 +216,25 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-15 | X.6 | The MVP chatbot shows its itinerary at once. Before real clients, must staff approve an AI itinerary before the client sees it? | |
 | 2026-10-23 | P3.7 | Older clients will want to **phone** their relationship manager. May we add `phone` (and WhatsApp) and a photo to staff (`User`), shown to their clients on My trip and Ask us? Small schema change; until then the portal shows name and email. | |
 | 2026-10-23 | P3.1 | Real **photography** (providers, places) would do more for trust than the illustrated scene. Who supplies it, and may we use vendors' own images? | |
+| 2026-11-02 | W.1 | Which inbox (or booking tool, e.g. a calendar link) should "Book a free call" go to? Set `CONTACT_EMAIL` on Vercel once decided. | |
+| 2026-11-02 | W.1 | Indicative "from" prices on the Explore tiles are placeholders — please confirm or replace each. | |
+| 2026-11-02 | W.1 | Homepage copy is placeholder (Nivedith will rewrite); privacy notice text for European clients is needed before the GDPR line can link anywhere. | |
+| 2026-11-02 | W.3 | The formal vendor vetting process (today it is personal knowledge; Europeans will want criteria). | |
 | 2026-10-15 | — | Croatian / German / Slovenian website translations — which website? Outside this plan. (§12.3) | |
 
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
+
+- **2026-11-02** · `feat/public-homepage` · Nivedith's website call (Vishnu's recording, transcribed locally; notes in
+  `inputs/2026-11-02-website-call-notes.md`). Built W.1: public homepage at `/` — hero (what is this, who it's for,
+  concierge not a clinic, one line on waits and costs), How it works (4 steps), Why Kerala preview, Explore tiles by
+  need (health check, heart, joints, dental, eyes, Ayurveda, culture: line, time, what you receive, indicative price),
+  Is it safe, Is this right for you, Learn (coming soon), Transparent pricing, free-call CTA, FAQ. Slim sticky menu,
+  "My trip" and "Free call" in the header, staff sign-in in the footer. Tests: typecheck ✓, 149 unit + integration ✓
+  (new copy guardrail test: no outcome claims), build ✓, e2e 3/3 ✓ (new homepage spec; inventory failed once, passed
+  on the next two runs). Checked in the browser pane at 1280 px and 375 px (fixed a 3 px header overflow).
+  Next: Nivedith's review of the copy, then W.2 Why Kerala.
 
 - **2026-10-23** · `feat/portal-ux-redesign` · Investor demo video (no app code changed). `demo/script.md` (8 scenes,
   Vishnu's ElevenLabs voiceover) and `demo/tools/`: Playwright recorder (in-page cursor, eased scroll, 2x captures
