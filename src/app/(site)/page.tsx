@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CalendarCheck, Check, X } from "lucide-react";
 import { KeralaScene } from "@/components/portal/kerala-scene";
 import { KIND, pill } from "@/components/portal/ui";
-import { env } from "@/lib/env";
+import { contactEmail } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { FAQ, GUIDES, HERO, NEEDS, PRICING, RIGHT_FOR_YOU, SAFETY, STEPS, WHY_KERALA } from "./content";
 
@@ -31,7 +31,7 @@ function Section({ id, title, intro, tint, children }: { id: string; title: stri
  * safety and how-it-works are previews; each becomes its own page later.
  */
 export default function HomePage() {
-  const contact = env().CONTACT_EMAIL;
+  const contact = contactEmail();
   const callHref = contact ? `mailto:${contact}?subject=${encodeURIComponent("Free call with Aalmaram Health")}` : "#talk";
 
   return (
