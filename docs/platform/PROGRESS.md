@@ -39,7 +39,7 @@
 
 ## Phase 3 — Client portal: Feed + itinerary builder (MVP)
 - [x] P3.1 FeedPost + admin feed manager (add / hide / import)
-- [!] P3.2 Automated feed ingestion — build the seam now; real sources blocked on a sourcing decision
+- [~] P3.2 Automated feed ingestion — vendors' Instagram built (Graph API + Haiku curation, daily cron); needs Meta credentials on Vercel; tourism / news sources still open
 - [x] P3.3 Portal shell + Feed page
 - [x] P3.4 Drag-and-drop itinerary builder with running cost
 - [x] P3.5 Block detail (component + provider)
@@ -194,6 +194,9 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-23 | Portal tabs are plain links (full page loads); other portal links stay `AppLink`. | A tab click right after a page load sometimes did nothing in the e2e run (1 in 4) — the client-router flakiness the README already notes. Tabs must always work. |
 | 2026-10-23 | Portal look: Figtree body at 18 px and Fraunces headings (`next/font`), pill buttons ≥ 52 px, tokens forest / lagoon (health) / leaf (wellness) / marigold (culture), no text lighter than ink-600; an original SVG Kerala scene instead of stock photos; short, reduced-motion-aware animations. Admin styling unchanged. | Vishnu's reference designs for fonts, colour and motion; legibility for 50+ readers; no licensing questions. |
 | 2026-10-23 | The "Ideas for you" rail and its `boardIdeas` / `tripIdeas` are removed; ideas now come per day (slot suggestions in "Add something") and from the chat. `client-chat` prompt bumped to `.2` for the new button names. | Three competing "add" paths were part of the confusion; dead code otherwise. |
+| 2026-11-03 | **Client login = email + a password staff set** (Vishnu's request), replacing the emailed token link. `accessToken*` columns dropped; `Client.passwordHash` / `passwordSetAt`; a reset rejects sessions issued before it. The password is never emailed. | The link was easy to lose and forward. Rejected: client self-service sign-up and reset (no email provider yet, and staff own the relationship). |
+| 2026-11-03 | **Explore tab** in the portal (`/trip/explore`): every active component by module, searchable, with a detail sheet (what's included, locations, provider). It links to Day by day rather than adding blocks itself. | Vishnu: a nice interactive way for clients to explore the components. One add path stays (the 23 Oct lesson that competing add paths confused older clients). |
+| 2026-11-03 | **P3.2 vendor Instagram → Feed**: daily cron + "Fetch new posts now" on /admin/feed; Haiku (`AI_MODEL_FAST`) features or hides each **new** post with a reason; hidden ones are stored so staff can flip them; stored posts are never re-judged. | Vishnu asked for Haiku to choose what to display, so featuring is automatic, a deliberate exception to the human-in-the-loop guardrail. It's bounded: the prompt hides selling and health claims and hides when unsure, and staff can overrule any post. Official Graph API, not scraping (Instagram's terms; scrapers break). The model judges captions only, not images. |
 | 2026-10-15 | `CLAUDE.md` still describes the Sept plan (journeys, In-/Post-Journey, Vendor Profile 2.0 question bank, CURATOR / OPS roles). PLAN.md wins for *what* until CLAUDE.md is updated. **Resolved 2026-10-15**: CLAUDE.md and KICKOFF_PROMPT.md updated to match PLAN.md. | CLAUDE.md §8; updating it was outside this docs change. |
 
 ## Blockers / questions for humans
@@ -205,7 +208,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-09-17 | — | See PLAN.md §6 open questions 7–8 | |
 | 2026-10-15 | P1.8 | Nivedith's curated list of trusted vendors (one per module to start) — he'll share access. | |
 | 2026-10-15 | P3.4 | Health core: may the client move or remove the team's (`TEAM`) blocks? The plan assumes they are locked. (notebook §10) | |
-| 2026-10-15 | P3.2 | Feed: how may we source vendors' Instagram posts (scraping vs official API / embeds, and their terms)? Which Kerala Tourism and news sources, and who decides what counts as "positive"? | |
+| 2026-10-15 | P3.2 | Feed: how may we source vendors' Instagram posts (scraping vs official API / embeds, and their terms)? Which Kerala Tourism and news sources, and who decides what counts as "positive"? | 2026-11-03 (Vishnu): vendors' Instagram, with Claude Haiku choosing what to show. Built on the official Graph API (not scraping). Still needed: a Meta app + our Instagram business account → `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_BUSINESS_ACCOUNT_ID`, and `CRON_SECRET` on Vercel; vendors on business/creator accounts. Tourism/news sources still open. |
 | 2026-10-15 | P3.4, P3.5 | When a component has several practitioners, can the client choose one? (notebook §12.3) | |
 | 2026-10-15 | P5.2, P5.3 | "They pay … a fee also" [?] — is there an Aalmaram service fee on top of vendor prices, alongside the vendor commission and transparent pricing (notebook §7)? (§12.3) | |
 | 2026-10-15 | P5.4, P6.7 | Cancellation / refund policy once the client has paid. (§12.3) | |

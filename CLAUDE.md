@@ -206,8 +206,9 @@ next step) when any of these happen:
 ## 10. Useful facts
 
 - Demo admin (local only): `admin@aalmaram.test` / `Aalmaram!Demo1`.
-- Client portal locally: client page → Portal access → Send invitation → copy the
-  `/trip/access/<token>` URL from the server console or `.mail.log`.
+- Client portal locally: `/trip/sign-in` as `elena.fischer@example.com` with the demo
+  admin password (the seed gives demo clients that password); for any other client,
+  client page → Portal access → set a password.
 - E2E uses its own database `aalmaram_e2e` (see `scripts/e2e-db.mjs`).
 - AI lives in `src/lib/ai/` (model calls, prompts) and `src/lib/services/ai-planning.ts`
   (requirements, draft itinerary, slot suggestions, client chat); planner logic in `src/domain/ai/`.

@@ -1,11 +1,4 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  accessTokenExpiry,
-  buildInviteUrl,
-  generateAccessToken,
-  hashAccessToken,
-  safeEqualHex,
-} from "@/lib/auth/access-token";
 import { hashPassword, verifyPassword, verifyPasswordSafely } from "@/lib/auth/password";
 import {
   __resetRateLimits,
@@ -13,55 +6,12 @@ import {
   enforceRateLimit,
 } from "@/lib/rate-limit";
 import { AppError } from "@/lib/errors";
+import { clientPasswordSchema } from "@/lib/validation/schemas";
 
-describe("client portal access tokens", () => {
-  it("generates high-entropy, URL-safe tokens", () => {
-    const token = generateAccessToken();
-    expect(token.length).toBeGreaterThanOrEqual(43); // 32 bytes base64url
-    expect(token).toMatch(/^[A-Za-z0-9_-]+$/);
-  });
-
-  it("never generates the same token twice", () => {
-    const tokens = new Set(
-      Array.from({ length: 200 }, () => generateAccessToken()),
-    );
-    expect(tokens.size).toBe(200);
-  });
-
-  it("hashes deterministically, and the hash does not reveal the token", () => {
-    const token = generateAccessToken();
-    const hash = hashAccessToken(token);
-    expect(hashAccessToken(token)).toBe(hash);
-    expect(hash).toMatch(/^[0-9a-f]{64}$/);
-    expect(hash).not.toContain(token);
-  });
-
-  it("produces different hashes for different tokens", () => {
-    expect(hashAccessToken("a")).not.toBe(hashAccessToken("b"));
-  });
-
-  it("expires tokens 60 days out", () => {
-    const from = new Date("2026-01-01T00:00:00.000Z");
-    expect(accessTokenExpiry(from).toISOString()).toBe(
-      "2026-03-02T00:00:00.000Z",
-    );
-  });
-
-  it("compares hex digests safely and rejects mismatched lengths", () => {
-    const a = hashAccessToken("token-a");
-    expect(safeEqualHex(a, a)).toBe(true);
-    expect(safeEqualHex(a, hashAccessToken("token-b"))).toBe(false);
-    expect(safeEqualHex(a, "abcd")).toBe(false);
-    expect(safeEqualHex("", "")).toBe(false);
-  });
-
-  it("builds an invite URL without a double slash", () => {
-    expect(buildInviteUrl("http://localhost:3000/", "TOKEN")).toBe(
-      "http://localhost:3000/trip/access/TOKEN",
-    );
-    expect(buildInviteUrl("http://localhost:3000", "TOKEN")).toBe(
-      "http://localhost:3000/trip/access/TOKEN",
-    );
+describe("client portal password rules", () => {
+  it("requires at least 10 characters", () => {
+    expect(clientPasswordSchema.safeParse({ clientId: "c1", password: "short" }).success).toBe(false);
+    expect(clientPasswordSchema.safeParse({ clientId: "c1", password: "Kerala-2026" }).success).toBe(true);
   });
 });
 

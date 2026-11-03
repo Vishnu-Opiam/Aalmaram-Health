@@ -17,14 +17,17 @@ A public homepage and two interfaces over one data model:
   vendors with branches and practitioners → components), clients, trips,
   requirements, conversations, the health-core builder, the Feed and AI runs.
 - **Client portal** (`/trip`) — designed for 50+ clients (reasoning and stress
-  test in [`docs/platform/portal-ux.md`](docs/platform/portal-ux.md)). Four
-  labelled tabs: **My trip** (what happens next, the health appointments, the
+  test in [`docs/platform/portal-ux.md`](docs/platform/portal-ux.md)). Clients
+  sign in with their email and a password staff set for them. Five labelled
+  tabs: **My trip** (what happens next, the health appointments, the
   relationship manager, a note from them, the travel guide, a taste of
   Kerala), **Day by day** (the plan read like a printed itinerary; tap for
   details; "Add something" guides through ideas → kind → when; nothing needs a
-  drag), **Ask us** (the relationship manager first, then the assistant) and
-  **Kerala** (the Feed). Booking status in words with Vishnu's ticks: ✓✓ "Being
-  booked", green ✓ "Booked".
+  drag), **Explore** (every experience we offer, by area or search, each with
+  its provider), **Ask us** (the relationship manager first, then the
+  assistant) and **Kerala** (the Feed: vendors' Instagram posts picked by the
+  AI, Kerala Tourism and good news). Booking status in words with Vishnu's
+  ticks: ✓✓ "Being booked", green ✓ "Booked".
 
 Payment, the booking agent and in-trip features come next (PLAN.md Phases 5–8);
 staff record booking outcomes by hand for now.
@@ -39,8 +42,10 @@ staff record booking outcomes by hand for now.
    Guides (demo)* shows the "missing fields" list.
 3. **Trips** → Elena's trip: requirements (40/30/30 mix), the discovery call,
    and the itinerary with her health core. Try **Suggest activities (AI)**.
-4. **Clients** → Elena → *Send invitation link*; copy the `/trip/access/…` URL
-   from the server console or `.mail.log` and open it in a private window.
+4. In a private window open `/trip/sign-in` as Elena: `elena.fischer@example.com`
+   with the demo password above (the seed gives demo clients the admin's
+   password; on a real client, **Clients** → the client → *Portal access* →
+   type a password → *Create login*, then share it with them).
 5. As Elena: **My trip** shows step 1 of 5, her health appointments and her
    contact. **Plan my days** → *Add something to Day 2* → Culture & sights →
    Restaurants → a dinner → Evening → **Add to my trip**, and watch the total;
@@ -50,8 +55,11 @@ staff record booking outcomes by hand for now.
    step 3 and every activity shows ✓✓. Back in admin the trip is awaiting
    payment; set a block's **Booking** to *Confirmed by provider* and the
    client sees a green ✓ "Booked".
-6. *Marc Dubois (demo client)* has a confirmed, part-booked trip: invite him to
-   see the ticks straight away.
+6. *Marc Dubois (demo client)* (`marc.dubois@example.com`) has a confirmed,
+   part-booked trip: sign in as him to see the ticks straight away.
+7. **Feed** → *Fetch new posts now*: without Instagram credentials it pulls
+   demo posts for each vendor with an Instagram link; the assistant features
+   two and hides the promotion and the health claim, each with its reason.
 
 ---
 
@@ -106,8 +114,9 @@ Single Next.js App Router application. Server Components read, Server Actions wr
 src/
   app/(site)/              public homepage (copy in content.ts)
   app/admin/…              admin screens; one actions.ts per area (trips, vendors, feed…)
-  app/trip/(portal)/…      client portal: My trip, Day by day (+ /confirm), Ask us, Kerala (/calendar redirects)
-  app/trip/access/[token]  portal sign-in link → session cookie
+  app/trip/(portal)/…      client portal: My trip, Day by day (+ /confirm), Explore, Ask us, Kerala (/calendar redirects)
+  app/trip/sign-in         client email + password sign-in
+  app/api/cron/feed        daily vendor Instagram → Feed run (vercel.json)
   components/builder/      the staff itinerary builder (and the add panel the portal reuses)
   components/portal/       the client's day list, panels, chat, contact card and Kerala scene
   domain/                  framework-free business logic, unit-tested
@@ -200,8 +209,9 @@ itineraries, blocks, requirements and conversations cascade with the client.
 ## Security and privacy
 
 - **Admin auth** — bcrypt, HS256 JWT in an `httpOnly` cookie, rate-limited login.
-- **Client portal auth** — a 32-byte token delivered by email; only its SHA-256
-  hash is stored; exchanged for a session cookie and dropped from the URL.
+- **Client portal auth** — email and a password staff set (bcrypt, 10+
+  characters, never emailed), the same rate-limited, non-enumerating login as
+  staff. Resetting the password invalidates every earlier client session.
 - **Ownership is proved server-side, always.** The portal derives the client
   from the session; every trip and block id from the browser is re-checked.
   Integration tests cover cross-client access in both directions.
@@ -217,18 +227,19 @@ itineraries, blocks, requirements and conversations cascade with the client.
 
 ## Testing
 
-From the latest run (2026-10-22):
+From the latest run (2026-11-03):
 
 | Suite                       | Result                     |
 | --------------------------- | -------------------------- |
-| Unit + integration (Vitest) | **134 passed** (10 files)  |
-| End-to-end (Playwright)     | **2 passed**               |
+| Unit + integration (Vitest) | **150 passed** (14 files)  |
+| End-to-end (Playwright)     | **3 passed**               |
 | `tsc --noEmit`              | clean                      |
 | `next build`                | succeeds                   |
 
 The Playwright golden path: admin creates a client and trip → records a 40/30/30
-mix → places the blood test at the Fort Kochi branch (€370 for two) → invites the
-client → client lands on My trip → can't touch the health core, and Back closes
+mix → places the blood test at the Fort Kochi branch (€370 for two) → creates the
+client's login → a wrong password is refused → client signs in and lands on My
+trip → filters and searches Explore and reads about a provider → can't touch the health core, and Back closes
 the details → adds a dinner priced for two (total €405) → moves it to another day
 with buttons → tells the assistant "I love this art" and adds the Kathakali it
 offers → *Suggest things for my free days* adds suggestions around the health
@@ -258,8 +269,11 @@ items become timed blocks, intake text becomes the trip's requirements.
 - Payment, the booking agent and in-trip features are not built (PLAN.md
   Phases 5–8). Staff record each booking's outcome by hand, and recording is
   not yet gated on payment.
-- The Feed is curated by hand (add, hide, JSON import); automated Instagram /
-  news ingestion waits on a sourcing decision.
+- Vendors' Instagram reaches the Feed only once `INSTAGRAM_ACCESS_TOKEN` and
+  `INSTAGRAM_BUSINESS_ACCOUNT_ID` are set, and only for vendors on business or
+  creator accounts. The AI judges captions, not the images. Instagram image
+  URLs expire, so the daily run refreshes them. Kerala Tourism and news are
+  still added by hand.
 - Staff roles are stored but not enforced: every staff member can do everything.
 - AI drafts pick a provider's first branch; the client can change it.
 - No evals have been run against a real model yet (no gateway key).

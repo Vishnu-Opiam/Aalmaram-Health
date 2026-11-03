@@ -13,6 +13,8 @@ export const ACTIVITY_ACTIONS = {
   CLIENT_CREATED: "client.created",
   CLIENT_UPDATED: "client.updated",
   CLIENT_INVITED: "client.invited",
+  CLIENT_PASSWORD_SET: "client.password_set",
+  FEED_INGESTED: "feed.ingested",
   CLIENT_PORTAL_SIGNED_IN: "client.portal_signed_in",
   VENDOR_CREATED: "vendor.created",
   VENDOR_UPDATED: "vendor.updated",
@@ -67,6 +69,7 @@ export type ActivityEntity =
   | "Practitioner"
   | "Trip"
   | "Conversation"
+  | "FeedPost"
   | "Module"
   | "Catalogue"
   | "Component"
@@ -119,7 +122,9 @@ const ACTION_LABELS: Record<string, string> = {
   "client.created": "Client created",
   "client.updated": "Client details updated",
   "client.invited": "Portal invitation sent",
-  "client.portal_signed_in": "Client opened their portal",
+  "client.password_set": "Portal login set",
+  "client.portal_signed_in": "Client signed in to their portal",
+  "feed.ingested": "Instagram posts fetched for the feed",
   "vendor.created": "Vendor created",
   "vendor.updated": "Vendor updated",
   "branch.created": "Branch added",

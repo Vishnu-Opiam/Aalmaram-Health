@@ -124,26 +124,3 @@ export function sendStaffTripNotice(input: {
     body: [input.what, "", `Open the trip: ${input.adminUrl}`].join("\n"),
   });
 }
-
-export function sendClientInviteEmail(input: {
-  to: string;
-  clientName: string;
-  inviteUrl: string;
-}) {
-  return notify({
-    to: input.to,
-    subject: "Your Aalmaram Health journey portal",
-    body: [
-      `Dear ${input.clientName},`,
-      "",
-      "Here is your personal link to the Aalmaram Health journey portal, where you can see what's happening in Kerala and build your trip with us.",
-      "",
-      input.inviteUrl,
-      "",
-      "This link is personal to you. Please do not forward it.",
-      "",
-      "Warm regards,",
-      "The Aalmaram Health team",
-    ].join("\n"),
-  });
-}

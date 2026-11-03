@@ -1,11 +1,20 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { requireClient } from "@/lib/auth/guards";
-import { destroyClientSession } from "@/lib/auth/session";
+import { verifyPasswordSafely } from "@/lib/auth/password";
+import { createClientSession, destroyClientSession } from "@/lib/auth/session";
 import { env } from "@/lib/env";
-import { blockAddSchema, blockMoveSchema, blockPlaceSchema, blockRemoveSchema } from "@/lib/validation/schemas";
+import { AppError } from "@/lib/errors";
+import {
+  blockAddSchema,
+  blockMoveSchema,
+  blockPlaceSchema,
+  blockRemoveSchema,
+  loginSchema,
+} from "@/lib/validation/schemas";
 import { parseForm, runAction, successState, type FormState } from "@/lib/validation/form";
 import { ACTIVITY_ACTIONS, logActivity } from "@/lib/services/activity-log";
 import {
@@ -226,6 +235,39 @@ export async function talkToPersonAction(_prev: FormState, formData: FormData): 
       "We've let your relationship manager know — they will be in touch shortly.",
       refreshUrl(`/trip/chat?trip=${encodeURIComponent(trip.id)}&asked=1`),
     );
+  });
+}
+
+/** Email + the password staff set for the client. Mirrors the admin login. */
+export async function clientSignInAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("portal.sign_in", formData, async () => {
+    const input = parseForm(loginSchema, formData);
+    const h = await headers();
+    const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
+    enforceRateLimit(`${ip}:portal-login`, 10, 5 * 60_000);
+    enforceRateLimit(`client-account:${input.email}`, 5, 5 * 60_000);
+
+    const client = await prisma.client.findUnique({
+      where: { email: input.email },
+      select: { id: true, status: true, passwordHash: true },
+    });
+    const passwordOk = await verifyPasswordSafely(input.password, client?.passwordHash);
+    // One message for every failure, so the form cannot tell which emails have accounts.
+    if (!client || !passwordOk || client.status === "ARCHIVED") {
+      logger.warn("failed portal login attempt");
+      throw new AppError("UNAUTHENTICATED", "That email and password combination is not recognised.");
+    }
+
+    await createClientSession(client.id);
+    await prisma.client.update({ where: { id: client.id }, data: { lastPortalLoginAt: new Date() } });
+    await logActivity({
+      action: ACTIVITY_ACTIONS.CLIENT_PORTAL_SIGNED_IN,
+      entityType: "Client",
+      entityId: client.id,
+      actorUserId: null,
+      actorLabel: "Client",
+    });
+    return { status: "success", message: null, fieldErrors: {}, redirectTo: "/trip" } satisfies FormState;
   });
 }
 

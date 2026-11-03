@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
 import { notFound, validation } from "@/lib/errors";
-import { clientSchema } from "@/lib/validation/schemas";
+import { clientPasswordSchema, clientSchema } from "@/lib/validation/schemas";
 import { parseDateInput } from "@/domain/shared/dates";
 import {
   parseForm,
@@ -12,14 +12,7 @@ import {
   type FormState,
 } from "@/lib/validation/form";
 import { ACTIVITY_ACTIONS, logActivity } from "@/lib/services/activity-log";
-import {
-  accessTokenExpiry,
-  buildInviteUrl,
-  generateAccessToken,
-  hashAccessToken,
-} from "@/lib/auth/access-token";
-import { env } from "@/lib/env";
-import { sendClientInviteEmail } from "@/lib/services/notifications";
+import { hashPassword } from "@/lib/auth/password";
 import { refreshUrl } from "@/lib/refresh-url";
 
 type ClientInput = ReturnType<typeof parseForm<typeof clientSchema>>;
@@ -113,58 +106,46 @@ export async function updateClientAction(
 }
 
 /**
- * Issues a fresh portal invitation link.
- *
- * Rotating the token invalidates any previous link, which is the intended
- * behaviour if a link is thought to have leaked.
+ * Creates or resets the client's portal login. The password is never emailed:
+ * staff share it with the client directly. A reset signs out every session
+ * issued before it (see clientSessionIsCurrent).
  */
-export async function issueClientInviteAction(
+export async function setClientPasswordAction(
   _prev: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  return runAction("client.invite", formData, async () => {
+  return runAction("client.set_password", formData, async () => {
     const user = await requireUser();
-    const clientId = String(formData.get("clientId") ?? "");
+    const input = parseForm(clientPasswordSchema, formData);
 
     const client = await prisma.client.findUnique({
-      where: { id: clientId },
-      select: { id: true, name: true, email: true },
+      where: { id: input.clientId },
+      select: { id: true, email: true, passwordHash: true },
     });
     if (!client) throw notFound("That client");
 
-    const token = generateAccessToken();
-    const now = new Date();
-
+    const passwordHash = await hashPassword(input.password);
     await prisma.$transaction(async (tx) => {
       await tx.client.update({
-        where: { id: clientId },
-        data: {
-          accessTokenHash: hashAccessToken(token),
-          accessTokenIssuedAt: now,
-          accessTokenExpiresAt: accessTokenExpiry(now),
-        },
+        where: { id: client.id },
+        data: { passwordHash, passwordSetAt: new Date() },
       });
       await logActivity(
         {
-          action: ACTIVITY_ACTIONS.CLIENT_INVITED,
+          action: ACTIVITY_ACTIONS.CLIENT_PASSWORD_SET,
           entityType: "Client",
-          entityId: clientId,
+          entityId: client.id,
           actorUserId: user.id,
           actorLabel: user.name,
+          metadata: { reset: client.passwordHash !== null },
         },
         tx,
       );
     });
 
-    const inviteUrl = buildInviteUrl(env().APP_URL, token);
-    await sendClientInviteEmail({
-      to: client.email,
-      clientName: client.name,
-      inviteUrl,
-    });
     return successState(
-      `Invitation link sent to ${client.email}. Any previous link is now invalid.`,
-      refreshUrl(`/admin/clients/${clientId}`),
+      `Login saved. Share the password with the client; they sign in with ${client.email}.`,
+      refreshUrl(`/admin/clients/${client.id}`),
     );
   });
 }

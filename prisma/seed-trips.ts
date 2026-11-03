@@ -42,10 +42,14 @@ export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
     (await prisma.module.findMany({ select: { id: true, name: true } })).map((m) => [m.name, m.id]),
   );
 
+  // Demo clients sign in with the demo password (development only; content-only seeds get no login).
+  const login = ctx.passwordHash ? { passwordHash: ctx.passwordHash, passwordSetAt: new Date() } : {};
+
   const elena = await prisma.client.upsert({
     where: { email: "elena.fischer@example.com" },
-    update: { relationshipManagerId: ctx.adminId },
+    update: { relationshipManagerId: ctx.adminId, ...login },
     create: {
+      ...login,
       name: "Elena Fischer (demo client)",
       email: "elena.fischer@example.com",
       phone: "+49 30 000 0000",
@@ -60,8 +64,9 @@ export async function seedClientsAndTrips(prisma: PrismaClient, ctx: Ctx) {
 
   const marc = await prisma.client.upsert({
     where: { email: "marc.dubois@example.com" },
-    update: { relationshipManagerId: rm.id },
+    update: { relationshipManagerId: rm.id, ...login },
     create: {
+      ...login,
       name: "Marc Dubois (demo client)",
       email: "marc.dubois@example.com",
       phone: "+33 1 00 00 00 00",

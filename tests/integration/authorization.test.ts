@@ -6,9 +6,10 @@ import {
   prisma,
   resetDatabase,
 } from "./helpers";
-import { loadBuilderTrip } from "@/domain/trips/queries";
+import { loadBuilderTrip, loadLibrary } from "@/domain/trips/queries";
 import { addBlock, moveBlock, removeBlock } from "@/lib/services/itinerary-blocks";
-import { hashAccessToken, generateAccessToken } from "@/lib/auth/access-token";
+import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import { clientSessionIsCurrent } from "@/lib/auth/session";
 
 /**
  * The security requirements that matter most in this product:
@@ -187,37 +188,38 @@ describe("client portal authorization (integration)", () => {
     expect(serialised).not.toContain("PRIVATE-BRIEF");
   });
 
-  it("stores only the hash of a portal token, and finds the client by that hash", async () => {
-    const client = await createClientRecord({ email: "token@example.com" });
-    const token = generateAccessToken();
-
+  it("stores only a bcrypt hash of the client's portal password", async () => {
+    const client = await createClientRecord({ email: "login@example.com" });
     await prisma.client.update({
       where: { id: client.id },
-      data: { accessTokenHash: hashAccessToken(token) },
+      data: { passwordHash: await hashPassword("Kerala-trip-2026"), passwordSetAt: new Date() },
     });
-
     const stored = await prisma.client.findUniqueOrThrow({ where: { id: client.id } });
-    expect(stored.accessTokenHash).not.toBe(token);
-    expect(stored.accessTokenHash).toMatch(/^[0-9a-f]{64}$/);
-
-    const found = await prisma.client.findUnique({ where: { accessTokenHash: hashAccessToken(token) } });
-    expect(found?.id).toBe(client.id);
-
-    const wrong = await prisma.client.findUnique({
-      where: { accessTokenHash: hashAccessToken(generateAccessToken()) },
-    });
-    expect(wrong).toBeNull();
+    expect(stored.passwordHash).not.toContain("Kerala-trip-2026");
+    expect(await verifyPassword("Kerala-trip-2026", stored.passwordHash!)).toBe(true);
+    expect(await verifyPassword("wrong-password", stored.passwordHash!)).toBe(false);
   });
 
-  it("keeps portal tokens unique across clients", async () => {
-    const a = await createClientRecord({ email: "ta@example.com" });
-    const b = await createClientRecord({ email: "tb@example.com" });
-    const token = generateAccessToken();
+  it("keeps the explore library free of vendor contact details and internal fields", async () => {
+    const { componentA } = await createInventory();
+    await prisma.vendor.update({
+      where: { id: componentA.vendorId },
+      data: { email: "PRIVATE@vendor.example", phone: "PRIVATE-PHONE", contactName: "PRIVATE-CONTACT", notes: "PRIVATE-NOTES" },
+    });
+    await prisma.component.update({ where: { id: componentA.id }, data: { source: "PRIVATE-SOURCE" } });
+    const serialised = JSON.stringify(await loadLibrary());
+    expect(serialised).toContain(componentA.id);
+    expect(serialised).not.toContain("PRIVATE");
+  });
+});
 
-    await prisma.client.update({ where: { id: a.id }, data: { accessTokenHash: hashAccessToken(token) } });
-
-    await expect(
-      prisma.client.update({ where: { id: b.id }, data: { accessTokenHash: hashAccessToken(token) } }),
-    ).rejects.toMatchObject({ code: "P2002" });
+describe("client portal sessions", () => {
+  it("are rejected once the password has been reset after they were issued", () => {
+    const setAt = new Date("2026-11-03T10:00:00.500Z");
+    const at = Math.floor(setAt.getTime() / 1000);
+    expect(clientSessionIsCurrent(at, setAt)).toBe(true);
+    expect(clientSessionIsCurrent(at + 60, setAt)).toBe(true);
+    expect(clientSessionIsCurrent(at - 1, setAt)).toBe(false);
+    expect(clientSessionIsCurrent(at + 60, null)).toBe(false);
   });
 });

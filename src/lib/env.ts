@@ -21,6 +21,12 @@ const schema = z.object({
   AI_GATEWAY_API_KEY: z.string().optional(),
   AI_MODEL_REASONING: z.string().default("anthropic/claude-sonnet-5.5"),
   AI_MODEL_FAST: z.string().default("anthropic/claude-haiku-5.5"),
+  // Vendor Instagram for the Feed, via the Instagram Graph API's business
+  // discovery. Unset: development uses demo posts, production reports it.
+  INSTAGRAM_ACCESS_TOKEN: z.string().optional(),
+  INSTAGRAM_BUSINESS_ACCOUNT_ID: z.string().optional(),
+  // Vercel Cron sends it as a bearer token; the cron route refuses without it.
+  CRON_SECRET: z.string().min(16).optional(),
 });
 
 let cached: z.infer<typeof schema> | null = null;

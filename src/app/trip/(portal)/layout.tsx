@@ -6,7 +6,7 @@ import { signOutClientAction } from "../actions";
 import { PortalNav } from "./portal-nav";
 
 /**
- * The client's four places: My trip (home), Day by day, Ask us and Kerala.
+ * The client's five places: My trip (home), Day by day, Explore, Ask us and Kerala.
  * Large targets and plain words — most clients are 50+ (docs/platform/portal-ux.md).
  */
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
