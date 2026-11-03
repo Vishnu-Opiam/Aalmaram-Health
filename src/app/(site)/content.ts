@@ -173,3 +173,106 @@ export const FAQ = [
 ];
 
 export const COUNTRIES = ["United Kingdom", "Austria", "Slovenia", "Germany", "Ireland", "Netherlands", "Another country"];
+
+// ---------------------------------------------------------------------------
+// Inner pages (placeholder, 3 Nov redesign) — for Nivedith to review.
+// ---------------------------------------------------------------------------
+
+/** FAQ entries by question, so pages can show the ones that belong to them. */
+export const faqFor = (questions: string[]) => FAQ.filter((item) => questions.includes(item.q));
+
+export const HOW_IT_WORKS_PAGE = {
+  title: "How it works",
+  intro: "From a first conversation to your results at home, one person looks after you. Here is what happens at each step — what you do, and what we do.",
+  steps: [
+    {
+      you: "Tell us what you are hoping for, roughly when you might travel and anything that worries you.",
+      we: "Listen, answer your questions about Kerala, our providers and costs, and explain how we work.",
+      get: "A clear idea of whether this suits you. There is no obligation.",
+    },
+    {
+      you: "Share what matters to you: dates, pace, interests — and, if you like, what your own doctor has suggested you look into.",
+      we: "Choose appointments, wellness and culture from providers we have checked, and put them with their prices on your private trip page.",
+      get: "Your own trip page, which you can open on a computer, tablet or phone.",
+    },
+    {
+      you: "Move days, add or remove things and ask anything. When you are happy, confirm and pay.",
+      we: "Answer, adjust and then book every provider once you have paid.",
+      get: "Confirmed bookings, all in one place.",
+    },
+    {
+      you: "Travel, rest and enjoy Kerala at your own pace.",
+      we: "Stay your one point of contact while you are there, and help with changes along the way.",
+      get: "Your results and reports — sent to your own doctor too, if you wish.",
+    },
+  ],
+  tripPage: [
+    { title: "Your plan, day by day", text: "Every appointment, treatment and outing, with times and places." },
+    { title: "Every price", text: "What each provider charges and our service fee, before you confirm." },
+    { title: "Ideas you can add", text: "Things to do that fit your days, from providers we already know." },
+    { title: "A line to your coordinator", text: "Ask a question or ask for a change, and a person answers." },
+  ],
+  weDont: [
+    "Give medical advice, diagnose or recommend treatment — that is for the doctors you choose to see",
+    "Book anything before you have confirmed and paid",
+    "Add a markup to providers' prices",
+  ],
+  faq: ["How do I know what it will cost?", "How do I pay?", "Can I change my plans?", "Can my own doctor be involved?"],
+};
+
+export const WHY_KERALA_PAGE = {
+  title: "Why Kerala",
+  intro: "A green strip of south-west India between the Western Ghats and the Arabian Sea — with established private hospitals, a long tradition of classical Ayurveda and some of India's best-loved places to travel.",
+  care: [
+    { title: "Established private hospitals", text: "Kochi and Thiruvananthapuram have large private hospitals and specialist clinics." },
+    { title: "Accreditation you can check", text: "NABH is India's national hospital accreditation; JCI (Joint Commission International) is an international one. Where a provider holds either, we show it to you." },
+    { title: "English spoken", text: "English is widely used by doctors and staff in Kerala's private hospitals." },
+    { title: "Prices you can see", text: "Every provider's price is on your trip page before you decide." },
+  ],
+  ayurveda: {
+    title: "Classical Ayurveda",
+    text: "Kerala is known for its classical Ayurveda tradition. A programme usually begins with a consultation with an Ayurvedic doctor, followed by daily treatments such as oil massages, simple vegetarian food and plenty of rest. Programmes often last one to three weeks.",
+    note: "Ayurveda is a traditional system. We describe what a programme involves, not what it will do for you. If you take medicines or have a health condition, please talk to your own doctor before you book.",
+  },
+  places: [
+    { title: "The backwaters", text: "Palm-lined canals and lakes around Alappuzha and Kumarakom, best seen slowly from a houseboat or canoe.", photo: PHOTOS.houseboat },
+    { title: "The tea hills", text: "Munnar's tea gardens and cool air, a few hours inland and high in the Western Ghats.", photo: PHOTOS.tea },
+    { title: "Kochi", text: "Fort Kochi's old streets and waterfront, Chinese fishing nets and centuries of trading history.", photo: PHOTOS.kochi },
+    { title: "Arts and festivals", text: "Kathakali dance-drama, temple festivals and traditional homes.", photo: PHOTOS.kathakali },
+    { title: "Food", text: "A sadya on a banana leaf, spice gardens and fresh coastal cooking." },
+    { title: "The coast", text: "Varkala's cliffs and quiet beaches further south." },
+  ] as { title: string; text: string; photo?: Photo }[],
+  seasons: [
+    { months: "December to February", text: "Dry days and cooler nights in the hills. The busiest time to visit." },
+    { months: "March to May", text: "Hot and humid before the rains arrive." },
+    { months: "June to September", text: "The south-west monsoon: heavy rain and very green landscapes. Traditionally a season for Ayurveda in Kerala, and quieter." },
+    { months: "October and November", text: "The north-east monsoon brings shorter showers as the heat eases." },
+  ],
+  travel: [
+    { title: "Airports", text: "Kochi (COK) and Thiruvananthapuram (TRV) are Kerala's main international airports." },
+    { title: "Flights", text: "From the UK and central Europe most routes have one stop, often in the Gulf. Plan on most of a day of travel." },
+    { title: "Time difference", text: "India is 5½ hours ahead of the UK in winter (4½ in summer), and 4½ hours ahead of Austria and Slovenia in winter (3½ in summer)." },
+    { title: "Visas", text: "Most visitors need a visa for India; many nationalities can apply for an e-Visa online. We point you to the official information." },
+  ],
+};
+
+export const SAFETY_PAGE = {
+  title: "Is it safe?",
+  intro: "Kerala has many good providers, but quality is uneven and their websites rarely tell you who will treat you or how experienced they are. So we look closely before we suggest anyone — and we are clear about what we do and what we don't.",
+  roles: {
+    we: ["Plan your trip and coordinate every appointment", "Check providers before we suggest them", "Book once you have confirmed and paid", "Look after you while you travel", "Send your results to you and, if you wish, your doctor"],
+    doctors: ["Examine you and give medical advice", "Recommend and carry out any treatment, with your agreement", "Give you their results and reports"],
+  },
+  beforeYouGo: [
+    { title: "Talk to your own doctor", text: "About travelling, and about any check or treatment you are considering." },
+    { title: "Take out travel insurance", text: "One that covers medical care abroad and the activities you plan." },
+    { title: "Check official travel advice", text: "In the UK, the Foreign Office (FCDO) travel advice for India; elsewhere, your own government's." },
+    { title: "Bring your records", text: "A list of your medicines and any recent reports your doctors in Kerala should see." },
+  ],
+  ifSomethingGoesWrong: [
+    { title: "One person to call", text: "Your coordinator is your first point of contact throughout your trip." },
+    { title: "Help on the ground", text: "We help you reach the right provider, change plans or rearrange your days." },
+    { title: "Tell us", text: "If something was not right, we follow it up with the provider and use what we learn when we choose providers." },
+  ],
+  faq: ["Are you a hospital or clinic?", "Is Kerala safe to travel to?", "What happens if something goes wrong?", "Can my own doctor be involved?"],
+};

@@ -13,7 +13,8 @@ A public homepage and two interfaces over one data model:
   explore by need with an interactive "your mix" (indicative £/€ prices), is it
   safe (how we vet), sample journeys, why Kerala, is it right for you, pricing,
   a free conversation with a person and FAQ. Every "book" button leads to
-  `/talk`, which records a LEAD client with a `WEBSITE` conversation. Copy lives
+  `/talk`, which records a LEAD client with a `WEBSITE` conversation. Inner
+  pages: `/how-it-works`, `/why-kerala`, `/safety`. Copy lives
   in `src/app/(site)/content.ts` and is placeholder until Nivedith rewrites it;
   motion is scroll-driven CSS in `src/app/(site)/site.css`.
 - **Admin** (`/admin`) — for the team: what we offer (modules → catalogues →

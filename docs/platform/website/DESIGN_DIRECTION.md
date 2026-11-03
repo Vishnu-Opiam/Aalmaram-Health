@@ -177,5 +177,8 @@ What landed, against the direction above. Screenshots in `screenshots/` (before:
 | `/talk` form (6 questions, big fields, errors focus a summary) → LEAD client + WEBSITE conversation + staff notice; `/talk/thanks` with what happens next; "Website requests" on the admin client page | One-click booking path that actually works | `(site)/talk/`, `lib/services/website-requests.ts` |
 | Mobile sticky "Book a free conversation" bar on the homepage | CTA one tap away | `(site)/page.tsx` |
 
-Not done yet: the separate pages in §5 (`/how-it-works`, `/why-kerala`, `/safety`, `/about`, `/journeys`, `/guide`),
-the people section, Lighthouse measured on a deployed preview.
+Second build (same day): `/how-it-works`, `/why-kerala` and `/safety`, sharing `components/site/blocks.tsx` with the
+homepage; the menu links to them and marks the current page (`aria-current`).
+
+Not done yet: `/about`, `/journeys`, `/guide`, `/learn` from §5, the people section, and Lighthouse measured on a
+deployed preview.

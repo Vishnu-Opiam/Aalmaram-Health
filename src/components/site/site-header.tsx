@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { CalendarCheck, Phone, X } from "lucide-react";
 import { AppLink as Link } from "@/components/ui/primitives";
 import { PortalBrand } from "@/components/portal/ui";
@@ -14,6 +15,8 @@ import { ctaClass, SITE_MENU } from "./nav";
  */
 export function SiteHeader({ phone }: { phone?: string }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const current = (href: string) => (href === pathname ? "page" : undefined);
   return (
     <header className="sticky top-0 z-40 border-b border-kasavu-200 bg-kasavu-50/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -26,7 +29,11 @@ export function SiteHeader({ phone }: { phone?: string }) {
           <ul className="flex items-center gap-1">
             {SITE_MENU.map((item) => (
               <li key={item.href}>
-                <a href={item.href} className="rounded-full px-3 py-2.5 text-[17px] font-medium text-ink-700 hover:bg-kasavu-100 hover:text-ink-900">
+                <a
+                  href={item.href}
+                  aria-current={current(item.href)}
+                  className="rounded-full px-3 py-2.5 text-[17px] font-medium text-ink-700 hover:bg-kasavu-100 hover:text-ink-900 aria-[current=page]:bg-kasavu-100 aria-[current=page]:text-banyan-900 aria-[current=page]:underline aria-[current=page]:underline-offset-8"
+                >
                   {item.label}
                 </a>
               </li>
@@ -67,6 +74,7 @@ export function SiteHeader({ phone }: { phone?: string }) {
             <li key={item.href}>
               <a
                 href={item.href}
+                aria-current={current(item.href)}
                 onClick={() => setOpen(false)}
                 className={cn("flex min-h-12 items-center rounded-2xl px-4 text-[19px] font-medium text-ink-900 hover:bg-kasavu-100")}
               >

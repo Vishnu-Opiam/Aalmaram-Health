@@ -50,3 +50,19 @@ test("a visitor asks for a free conversation in one click from the header", asyn
   await expect(page).toHaveURL(/\/talk\/thanks$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("we will be in touch");
 });
+
+test("How it works, Why Kerala and Is it safe? are one click from the menu", async ({ page }) => {
+  for (const [link, path, heading] of [
+    ["How it works", "/how-it-works", "Four steps, with a person beside you at each one"],
+    ["Why Kerala", "/why-kerala", "Classical Ayurveda"],
+    ["Is it safe?", "/safety", "We arrange your care. Doctors decide it, with you."],
+  ]) {
+    await page.goto("/");
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: link }).click();
+    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(link);
+    await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: link })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Book a free conversation" }).first()).toHaveAttribute("href", "/talk");
+  }
+});

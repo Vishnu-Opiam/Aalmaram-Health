@@ -93,9 +93,9 @@
 ## Website — public site (Nivedith, 2 Nov 2026; notes in `inputs/2026-11-02-website-call-notes.md`)
 - [x] W.1 Homepage / landing page at `/` (placeholder copy; one CTA: a free call)
 - [x] W.1b Redesign "Under the banyan" + `/talk` free-conversation request (direction: `website/DESIGN_DIRECTION.md`)
-- [ ] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care)
-- [ ] W.3 Safety & quality page with the formal vetting process — needs Nivedith's vetting process
-- [ ] W.4 How it works, About / our network & team pages
+- [~] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care) — built at `/why-kerala` with placeholder copy; needs Nivedith's review and our own photos
+- [~] W.3 Safety & quality page with the formal vetting process — built at `/safety`; the vetting checklist is placeholder until Nivedith's formal process exists
+- [~] W.4 How it works, About / our network & team pages — `/how-it-works` built; About waits for names and photos
 - [~] W.5 Explore on the website (interactive, by need) and a services chatbot — "Your mix" on the homepage done; chatbot not started
 - [ ] W.6 Practical guide, journeys & stories, guides & articles
 - [ ] W.7 (later) Country selector that personalises waits, costs, travel time and shared history
@@ -234,6 +234,13 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-11-03 (later)** · `feat/site-redesign` · Built the first inner pages on shared blocks
+  (`components/site/blocks.tsx`): `/how-it-works` (steps with "you / we / you receive", the trip page, what we don't
+  do, pricing), `/why-kerala` (care and accreditation explained, classical Ayurveda with a no-claims note, places,
+  seasons, getting there) and `/safety` (vetting, who does what, before you go, if something goes wrong). Menu now
+  links to them and marks the current page; homepage previews link on. All copy placeholder in `content.ts` (covered
+  by the no-outcome-claims test). Tests: typecheck ✓, 162 unit + integration ✓, e2e 5/5 ✓ (new: pages from the menu),
+  build ✓. Browser pane: all three at 1366 px and 375 px, no horizontal scroll.
 - **2026-11-03** · `feat/site-redesign` · Research (NN/g on older users and trust, Baymard, Laws of UX, WCAG 2.2,
   ASA/CAP health claims), reference study and audit → `website/DESIGN_DIRECTION.md`, approved with defaults. Built:
   new palette (kasavu / banyan / gold / laterite) and shell (all links visible on desktop, labelled "Menu" on phones,
