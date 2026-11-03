@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Check, ShieldCheck, X } from "lucide-react";
+import { Check, X } from "lucide-react";
+import { ChecklistScene } from "@/components/site/checklist-scene";
 import { Faq, MobileCta, NumberedList, PageHero, Section, TalkBand } from "@/components/site/blocks";
 import { faqFor, PHOTOS, RIGHT_FOR_YOU, SAFETY, SAFETY_PAGE as PAGE, VETTING } from "../content";
 
@@ -14,23 +15,23 @@ export default function SafetyPage() {
     <>
       <PageHero eyebrow="Safety and quality" title={PAGE.title} intro={PAGE.intro} photo={PHOTOS.spout} />
 
-      <Section id="vetting" eyebrow="How we choose providers" title="Before we include a provider, we look at" tint>
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr]">
-          <div className="site-reveal rounded-[28px] bg-white p-6 ring-1 ring-kasavu-200 sm:p-8">
-            <ShieldCheck className="h-8 w-8 text-gold-700" aria-hidden="true" />
-            <div className="mt-6">
-              <NumberedList items={VETTING} />
-            </div>
-          </div>
-          <ul className="space-y-6">
-            {SAFETY.map((item) => (
-              <li key={item.title} className="site-reveal border-b border-kasavu-200 pb-6 last:border-0">
-                <h3 className="text-[20px] font-semibold text-ink-900">{item.title}</h3>
-                <p className="mt-2 leading-relaxed text-ink-700">{item.text}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <ChecklistScene
+        id="vetting"
+        eyebrow="How we choose providers"
+        problem="A good website is not the same as a good doctor. Before we suggest anyone, we check what matters."
+        answer="We go and look."
+        items={VETTING}
+      />
+
+      <Section id="promises" eyebrow="Our commitments" title="What you can rely on" tint>
+        <ul data-stagger className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {SAFETY.map((item) => (
+            <li key={item.title} className="border-t-2 border-gold-500 pt-6">
+              <h3 className="text-[21px] font-semibold text-ink-900">{item.title}</h3>
+              <p className="mt-2 leading-relaxed text-ink-700">{item.text}</p>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section id="roles" eyebrow="Who does what" title="We arrange your care. Doctors decide it, with you.">

@@ -29,6 +29,7 @@ export const PHOTOS = {
   kochi: unsplash("1696966358360-f64c761e0cb5", "Old waterfront buildings across the water in Kochi", "Sleeba Thomas", "7FNVvI2Lezc"),
   palms: unsplash("1602216056096-3b40cc0c9944", "A houseboat between tall coconut palms", "Nature Photographer", "29ezCWtMtnM"),
   hills: unsplash("1650884986392-984358536050", "Misty green hills and tea fields", "Kevin JD", "S1nGUR7bCaM"),
+  check: unsplash("1700832082200-af7deeb63d9b", "A stethoscope and a blood pressure gauge on white linen", "Immo Wegmann", "njrDE70M2VI"),
 } satisfies Record<string, Photo>;
 
 export const HERO = {
@@ -40,6 +41,45 @@ export const HERO = {
   forWhom: "For people from the UK, Austria, Slovenia and beyond who want planned care, rest and a real trip — without arranging it alone.",
   context: "If waiting lists or private prices at home are holding you back, Kerala can be a calm, well-organised alternative.",
 };
+
+/** The homepage story: one day on the backwaters (placeholder copy). */
+export const STORY = [
+  { time: "Dawn", eyebrow: "Health · Wellness · Culture", title: "", text: "", cta: true, heading: "h1" as const },
+  {
+    time: "First light",
+    eyebrow: "Aalmaram · the banyan tree",
+    title: "Deep roots. Wide shelter.",
+    text: "Aalmaram is Malayalam for the banyan, the tree a village gathers under. We know Kerala and the people we recommend, and one person looks after every detail for you.",
+    align: "right" as const,
+  },
+  {
+    time: "Morning",
+    eyebrow: "Health",
+    title: "Clear mornings for your health",
+    text: "Check-ups and specialist consultations with experienced doctors at hospitals we have looked at closely. Results in English, for you and for your own doctor.",
+  },
+  {
+    time: "Midday",
+    eyebrow: "Wellness",
+    title: "The heat of the day is for rest",
+    text: "Classical Ayurveda and quiet retreats, with practitioners we have met. We tell you plainly what a programme involves — and make no promises about what it will do.",
+    align: "right" as const,
+  },
+  {
+    time: "Evening",
+    eyebrow: "Culture",
+    title: "Evenings are for Kerala itself",
+    text: "A houseboat on the lake, the fishing nets at sunset, Kathakali by lamplight and a sadya on a banana leaf — at your pace.",
+  },
+  {
+    time: "Night",
+    eyebrow: "One person, from first call to home",
+    title: "When the lamps come on, you are looked after",
+    text: "Your coordinator plans with you, books once you have confirmed and paid, and is there while you travel. It starts with a free conversation.",
+    align: "centre" as const,
+    cta: true,
+  },
+];
 
 export const STATEMENT =
   "We are a concierge, not a clinic. We plan check-ups, Ayurveda and time in Kerala with providers we have looked at closely — and one person looks after the details with you, from the first call until you are home.";
@@ -78,7 +118,7 @@ export type Experience = {
 };
 
 export const NEEDS: Experience[] = [
-  { kind: "health", Icon: Stethoscope, title: "Health check", line: "A full check-up with blood tests, scans and a doctor's consultation.", duration: "1–2 days", receive: "Written results in English", priceFromEur: 250 },
+  { kind: "health", Icon: Stethoscope, title: "Health check", line: "A full check-up with blood tests, scans and a doctor's consultation.", duration: "1–2 days", receive: "Written results in English", priceFromEur: 250, photo: PHOTOS.check },
   { kind: "health", Icon: HeartPulse, title: "Heart", line: "Cardiology consultation with ECG, echo and stress test as your cardiologist advises.", duration: "1–2 days", receive: "Report and consultation notes", priceFromEur: 350 },
   { kind: "health", Icon: Bone, title: "Joints", line: "Orthopaedic assessment with imaging, and physiotherapy if recommended.", duration: "1–5 days", receive: "Imaging report and care plan from the provider", priceFromEur: 300 },
   { kind: "health", Icon: Smile, title: "Dental", line: "Dental examination and planned treatment at a modern dental clinic.", duration: "2–10 days", receive: "Treatment plan and records", priceFromEur: 150 },
@@ -121,6 +161,16 @@ export const JOURNEYS: { title: string; days: number; mix: Record<MixKey, number
   { title: "A thorough check-up, then the backwaters", days: 10, mix: { health: 50, wellness: 20, culture: 30 }, line: "Two days of tests and consultations in Kochi, then a houseboat, Fort Kochi and time to rest.", fromEur: 2200, toEur: 3000, photo: PHOTOS.canoe },
   { title: "Two weeks of classical Ayurveda", days: 16, mix: { health: 10, wellness: 70, culture: 20 }, line: "A consultation and daily treatments at an Ayurveda centre, with a few gentle outings.", fromEur: 2600, toEur: 3800, photo: PHOTOS.spout },
   { title: "A heart check and Kerala's culture", days: 9, mix: { health: 40, wellness: 20, culture: 40 }, line: "A cardiology assessment, then the tea hills, a Kathakali evening and Kerala's kitchens.", fromEur: 1600, toEur: 2400, photo: PHOTOS.tea },
+];
+
+/** The first sample journey, told day by day (placeholder). */
+export const JOURNEY_DAYS: { when: string; title: string; text: string; photo?: Photo }[] = [
+  { when: "Day 1", title: "Arrive in Kochi", text: "Someone meets you at the airport. A quiet first evening in Fort Kochi, by the water.", photo: PHOTOS.kochi },
+  { when: "Days 2–3", title: "Your health check", text: "Tests, scans and a consultation, booked and explained in advance. Results in English, for you and your own doctor.", photo: PHOTOS.check },
+  { when: "Days 4–5", title: "Onto the backwaters", text: "A houseboat through palm-lined canals. Nothing to do but watch the water go by.", photo: PHOTOS.houseboat },
+  { when: "Day 6", title: "A Kathakali evening", text: "Watch the make-up go on, then a performance of Kerala's classical dance-drama.", photo: PHOTOS.kathakali },
+  { when: "Days 7–9", title: "Up to the tea hills", text: "Cool air, walks between tea gardens and time to do very little.", photo: PHOTOS.tea },
+  { when: "Day 10", title: "Home, with your results", text: "Your reports travel with you — and to your own doctor, if you wish.", photo: PHOTOS.canoe },
 ];
 
 export const RIGHT_FOR_YOU = {

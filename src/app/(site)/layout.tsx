@@ -4,6 +4,7 @@ import { AppLink as Link } from "@/components/ui/primitives";
 import { PortalBrand } from "@/components/portal/ui";
 import { SITE_MENU } from "@/components/site/nav";
 import { SiteHeader } from "@/components/site/site-header";
+import { SiteMotion } from "@/components/site/motion";
 import { contactEmail, contactPhone } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { PHOTOS } from "./content";
@@ -36,8 +37,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <main id="site-content" className="flex-1">
         {children}
       </main>
+      <SiteMotion />
 
-      <footer className="bg-banyan-950 text-kasavu-50">
+      <footer className="relative overflow-hidden bg-banyan-950 text-kasavu-50">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <PortalBrand className="[&_span]:text-kasavu-50" />
@@ -113,6 +115,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
             </Link>
           </div>
         </div>
+        <p aria-hidden="true" className="pointer-events-none -mb-[5vw] select-none whitespace-nowrap text-center font-display text-[21vw] font-medium leading-[0.85] tracking-[-0.04em] text-white/[0.06]">
+          <span data-parallax="0.25" className="inline-block">Aalmaram</span>
+        </p>
       </footer>
     </div>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Info, Sun, UtensilsCrossed, Waves } from "lucide-react";
+import { Info } from "lucide-react";
+import { JourneyScene } from "@/components/site/journey-scene";
 import { Faq, MobileCta, PageHero, photoUrl, Section, TalkBand } from "@/components/site/blocks";
 import { faqFor, HERO, PHOTOS, WHY_KERALA_PAGE as PAGE } from "../content";
 
@@ -8,8 +9,6 @@ export const metadata: Metadata = {
   title: { absolute: "Why Kerala · Aalmaram Health" },
   description: PAGE.intro,
 };
-
-const PLACE_ICONS = { Food: UtensilsCrossed, "The coast": Waves } as Record<string, typeof Sun>;
 
 /** The "beautiful page" from the 2 Nov call: Kerala itself, with the quality of care first. */
 export default function WhyKeralaPage() {
@@ -31,7 +30,7 @@ export default function WhyKeralaPage() {
 
       <section id="ayurveda" aria-labelledby="ayurveda-title" className="scroll-mt-24 bg-kasavu-100">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:gap-16">
-          <div className="site-reveal relative aspect-[4/3] overflow-hidden rounded-[28px]">
+          <div data-clip className="relative aspect-[4/3] overflow-hidden rounded-[28px]">
             <Image src={photoUrl(PHOTOS.oils.src, 1200)} alt={PHOTOS.oils.alt} fill sizes="(min-width: 1024px) 45vw, 92vw" className="site-zoom object-cover" />
           </div>
           <div className="site-reveal">
@@ -47,31 +46,25 @@ export default function WhyKeralaPage() {
         </div>
       </section>
 
-      <Section id="places" eyebrow="Places" title="Backwaters, hills, coast and history" intro="Culture is part of every trip, at the pace you choose. A few of the places our clients love.">
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {PAGE.places.map((place) => {
-            const Icon = PLACE_ICONS[place.title] ?? Sun;
-            return (
-              <li key={place.title} className="site-reveal flex flex-col overflow-hidden rounded-[28px] bg-white ring-1 ring-kasavu-200">
-                {place.photo && (
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image src={photoUrl(place.photo.src, 900)} alt={place.photo.alt} fill sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw" className="site-zoom object-cover" />
-                  </div>
-                )}
-                <div className="p-6">
-                  {!place.photo && (
-                    <span className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-laterite-50 text-laterite-600" aria-hidden="true">
-                      <Icon className="h-7 w-7" />
-                    </span>
-                  )}
-                  <h3 className="font-display text-[26px] font-medium text-banyan-900">{place.title}</h3>
-                  <p className="mt-2 leading-relaxed text-ink-700">{place.text}</p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </Section>
+      <JourneyScene
+        id="places"
+        eyebrow="Places"
+        title="Backwaters, hills, coast and history"
+        intro="Culture is part of every trip, at the pace you choose. A few of the places our clients love."
+        panels={PAGE.places.filter((p) => p.photo).map((p) => ({ when: "Kerala", ...p }))}
+        footer={
+          <ul className="space-y-6">
+            {PAGE.places
+              .filter((p) => !p.photo)
+              .map((p) => (
+                <li key={p.title}>
+                  <h3 className="font-display text-[28px] text-gold-300">{p.title}</h3>
+                  <p className="mt-2 leading-relaxed text-white/85">{p.text}</p>
+                </li>
+              ))}
+          </ul>
+        }
+      />
 
       <Section id="seasons" eyebrow="When to go" title="Kerala through the year" tint>
         <ol className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">

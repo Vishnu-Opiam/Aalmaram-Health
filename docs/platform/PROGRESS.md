@@ -192,6 +192,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-11-02 | Site keeps `noindex` (root layout) for now. | Copy and prices are placeholders; switch indexing on when Nivedith signs off the content. |
 | 2026-11-02 | "Book a free call" opens a `mailto:` to `CONTACT_EMAIL`; unset, it shows "Call booking opens soon". No scheduler or CRM. | No inbox or booking tool chosen yet; no paid services provisioned by the agent. |
 | 2026-11-02 | Tiles use icons, not provider photos; the safety box mentions GDPR only as "our privacy notice … is being prepared", not as a compliance claim. | Copyright concerns raised in the call; CLAUDE.md §4 forbids claiming compliance. |
+| 2026-11-03 | After Vishnu's review ("generic", "no parallax, no storytelling", no 2D illustrations): the homepage opens with a real-time 3D backwater (three.js 0.186.1, all geometry generated in code, no downloaded models) travelled by scroll from dawn to night, with the story chapters over it. Motion moved from CSS scroll timelines (unsupported in Firefox/older Safari) to GSAP 3.15 ScrollTrigger: pinned checklist, horizontal journey, resizing mix panels, parallax photos. The 3D chunk loads after first paint; software WebGL or slow frames drop resolution and draw only on scroll; reduced motion holds the camera still. All 2D vector art removed. | References studied frame by frame: one continuous world, camera moving through it, type set in the scene. |
 | 2026-11-03 | Site redesign "Under the banyan" approved by Vishnu with the recommended defaults: original layered hero art + Unsplash-licence place photos (credited in the footer) until we have our own; motion in scroll-driven CSS only (no GSAP/Framer), off for reduced motion, parallax desktop-only. | Lighthouse target, zero JS for motion, no licence risk in the hero. |
 | 2026-11-03 | Every "book" button goes to `/talk`, a short form that creates a LEAD client plus a `WEBSITE` conversation (new `Channel` value) and a staff notice with name + link only. An existing client's record is never changed from the public form. The `mailto:` stays as "or email us". No calendar tool. | Approved default; reuses the admin the team already has; no new service. |
 | 2026-11-03 | Prices are set in euros and shown with "≈ £" at a fixed 0.86 rate, rounded to £5 (`domain/site/prices.ts`). Plain numbers, not `Decimal`: orientation figures, never a quote or a charge. | UK is the biggest market; Decimal is for money we bill. |
@@ -234,6 +235,17 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-11-03 (rework)** · `feat/site-redesign` · Vishnu rejected the first look. Rebuilt the homepage as a scroll
+  story over a 3D backwater (`components/site/three/backwater.ts`): sky and sun from dawn to night, mirror water,
+  instanced palms and young palms, houses, two kettuvallams, Chinese fishing nets at the lake mouth, egrets, mist,
+  a lamp-lit temple, moon, stars and fireflies; chapters on glass panels (`backwater-story.tsx`). Then a pinned
+  vetting checklist that ticks itself, a pinned horizontal 10-day journey, photo panels that resize with "Your mix",
+  steps with a rolling step number, parallax photo bands, full-screen photo heroes on the inner pages and a giant
+  footer wordmark. Fixed a React/GSAP pin crash on navigation (pinned scenes now sit in React-owned wrappers).
+  Tests: typecheck ✓, 162 unit + integration ✓, build ✓; e2e: homepage, /talk and pages specs ✓; **golden-path
+  failed 4/4 runs and inventory 2/3, each at a link click right after a reload** (the client-router flakiness noted
+  on 2026-10-23, in portal/admin flows this branch does not touch) — not confirmed unrelated, needs a look.
+  Browser pane: every hour of the day at 1440 px, phone at 375 px, no horizontal scroll, no console errors.
 - **2026-11-03 (later)** · `feat/site-redesign` · Built the first inner pages on shared blocks
   (`components/site/blocks.tsx`): `/how-it-works` (steps with "you / we / you receive", the trip page, what we don't
   do, pricing), `/why-kerala` (care and accreditation explained, classical Ayurveda with a no-claims note, places,

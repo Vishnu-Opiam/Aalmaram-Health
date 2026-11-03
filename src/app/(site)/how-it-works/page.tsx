@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { X } from "lucide-react";
-import { BanyanSteps, Faq, MobileCta, NumberedList, PageHero, Section, TalkBand } from "@/components/site/blocks";
+import { Faq, MobileCta, NumberedList, PageHero, Section, TalkBand } from "@/components/site/blocks";
+import { StepsScene } from "@/components/site/steps-scene";
 import { faqFor, HOW_IT_WORKS_PAGE as PAGE, PHOTOS, PRICING, STEPS } from "../content";
 
 export const metadata: Metadata = {
@@ -34,7 +35,7 @@ export default function HowItWorksPage() {
       <PageHero eyebrow="Four steps" title={PAGE.title} intro={PAGE.intro} photo={PHOTOS.canoe} />
 
       <Section id="steps" eyebrow="Step by step" title="Four steps, with a person beside you at each one" tint>
-        <BanyanSteps steps={steps} />
+        <StepsScene steps={steps} />
       </Section>
 
       <Section id="trip-page" eyebrow="Your trip page" title="Everything in one place" intro="After the first conversation you get a private trip page. It is where your plan lives until you are home.">

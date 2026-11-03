@@ -4,7 +4,6 @@ import { AppLink as Link } from "@/components/ui/primitives";
 import { NEXT_STEPS, type Photo } from "@/app/(site)/content";
 import { contactEmail, contactPhone } from "@/lib/env";
 import { cn } from "@/lib/utils";
-import { Banyan } from "./banyan";
 import { ctaClass } from "./nav";
 
 /** Shared building blocks for the public site's pages (server components). */
@@ -57,53 +56,35 @@ export function MoreLink({ href, children }: { href: string; children: React.Rea
   );
 }
 
-/** Top of an inner page: words on the left, an optional photo on the right. */
+/** Top of an inner page: a full-screen photo that settles and drifts as you scroll, with the title over it. */
 export function PageHero({ eyebrow, title, intro, photo }: { eyebrow: string; title: string; intro: string; photo?: Photo }) {
   return (
-    <section aria-labelledby="page-title" className="bg-banyan-900 p-2 text-white sm:p-4">
-      <div className="relative isolate overflow-hidden rounded-[28px] bg-banyan-950">
-        {photo && (
-          <div className="absolute inset-0 -z-10">
-            <Image src={photoUrl(photo.src, 2000)} alt="" fill priority sizes="100vw" className="object-cover opacity-80" />
-            <div className="absolute inset-0 bg-gradient-to-r from-banyan-950/95 via-banyan-950/70 to-banyan-950/20" />
+    <section aria-labelledby="page-title" className="relative isolate flex min-h-[88svh] items-end overflow-hidden bg-banyan-950 text-white">
+      {photo && (
+        <div data-parallax="0.4" className="absolute inset-[-12%_0] -z-10">
+          <div data-zoom className="absolute inset-0">
+            <Image src={photoUrl(photo.src, 2400)} alt="" fill priority sizes="100vw" className="object-cover" />
           </div>
-        )}
-        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-10 sm:py-28 lg:px-14">
-          <Eyebrow light>{eyebrow}</Eyebrow>
-          <h1 id="page-title" className="mt-4 max-w-3xl font-display text-[40px] font-medium leading-[1.08] tracking-tight sm:text-[58px]">
+        </div>
+      )}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-banyan-950 via-banyan-950/55 to-banyan-950/10" />
+      <div className="mx-auto w-full max-w-7xl px-5 pb-16 pt-40 sm:px-8 sm:pb-24">
+        <div data-stagger>
+          <div>
+            <Eyebrow light>{eyebrow}</Eyebrow>
+          </div>
+          <h1 id="page-title" className="mt-5 max-w-4xl font-display text-[48px] font-medium leading-[1] tracking-tight sm:text-[84px] lg:text-[104px]">
             {title}
           </h1>
-          <p className="mt-6 max-w-2xl text-[19px] leading-relaxed text-white/95 sm:text-[21px]">{intro}</p>
-          <Link href="/talk" className={cn(goldCta, "mt-9")}>
-            <CalendarCheck className="h-5 w-5" aria-hidden="true" /> Book a free conversation
-          </Link>
+          <p className="mt-7 max-w-2xl text-[20px] leading-relaxed text-white/95 sm:text-[22px]">{intro}</p>
+          <div>
+            <Link href="/talk" className={cn(goldCta, "mt-10")}>
+              <CalendarCheck className="h-5 w-5" aria-hidden="true" /> Book a free conversation
+            </Link>
+          </div>
         </div>
       </div>
     </section>
-  );
-}
-
-/** Numbered steps beside the banyan that lowers a root for each (site.css). */
-export function BanyanSteps({ steps }: { steps: { title: string; text: string; children?: React.ReactNode }[] }) {
-  return (
-    <div className="site-steps grid gap-10 lg:grid-cols-[1fr_minmax(0,420px)] lg:gap-16">
-      <ol className="relative space-y-8 border-l-2 border-kasavu-200 pl-8 lg:space-y-0 lg:border-0 lg:pl-0">
-        {steps.map((step, i) => (
-          <li key={step.title} className="site-step relative lg:flex lg:min-h-[44vh] lg:items-center lg:py-10">
-            <span className="site-step-bar absolute -left-[35px] top-1 h-14 w-[4px] rounded-full bg-gold-500 lg:-left-6 lg:top-auto" aria-hidden="true" />
-            <div className="site-reveal max-w-xl">
-              <p className="font-display text-[22px] text-gold-700">Step {i + 1}</p>
-              <h3 className="mt-1 font-display text-[28px] font-medium leading-tight text-banyan-900 sm:text-[32px]">{step.title}</h3>
-              <p className="mt-3 text-[19px] leading-relaxed text-ink-700">{step.text}</p>
-              {step.children}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div className="hidden lg:block">
-        <Banyan className="sticky top-32 w-full" />
-      </div>
-    </div>
   );
 }
 

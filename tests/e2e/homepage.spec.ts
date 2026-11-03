@@ -6,15 +6,16 @@ test("homepage answers what, how, safety and cost, and offers a free conversatio
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Kerala");
   for (const name of [
+    "Deep roots. Wide shelter.",
+    /quality is uneven/,
+    "A thorough check-up, then the backwaters",
+    "Health, wellness and culture — in the proportions you choose",
     "Four steps, with a person beside you at each one",
-    "Explore by what you need",
-    "Is it safe?",
-    "What a trip can look like",
-    "Why Kerala",
+    "Good care, an old tradition, and a beautiful place to be",
     "Is this right for you?",
     "Transparent pricing",
   ]) {
-    await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name })).toBeAttached();
   }
   await expect(page.getByText(/€250 · ≈ £215/).first()).toBeVisible();
 

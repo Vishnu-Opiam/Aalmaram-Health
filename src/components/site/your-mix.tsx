@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
 import Image from "next/image";
-import { Minus, Plus } from "lucide-react";
-import { EXPERIENCES } from "@/app/(site)/content";
+import { Minus, Plus, Stethoscope } from "lucide-react";
+import { EXPERIENCES, PHOTOS } from "@/app/(site)/content";
 import { adjustMix, MIX_KEYS, MIX_PRESETS, pickExamples, type Mix } from "@/domain/site/mix";
 import { formatPrice } from "@/domain/site/prices";
 import { cn } from "@/lib/utils";
 import { describeMix, MIX_STYLE, MixBar } from "./mix-bar";
+import { MOTION } from "./motion";
+
+const PANEL_PHOTO = { health: PHOTOS.check, wellness: PHOTOS.oils, culture: PHOTOS.kathakali } as const;
 
 /**
  * Pick a starting mix, fine-tune it in 10% steps with large buttons (no
@@ -18,9 +22,48 @@ export function YourMix() {
   const [mix, setMix] = useState<Mix>(MIX_PRESETS[1].mix);
   const examples = pickExamples(mix, EXPERIENCES);
   const preset = MIX_PRESETS.find((p) => MIX_KEYS.every((k) => p.mix[k] === mix[k]));
+  const panels = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // The three panels widen and narrow with the mix, like doors sliding open.
+  useEffect(() => {
+    const animate = window.matchMedia(MOTION).matches;
+    for (const k of MIX_KEYS) {
+      const el = panels.current[k];
+      if (el) gsap.to(el, { flexGrow: Math.max(mix[k], 6), duration: animate ? 1.1 : 0, ease: "power3.inOut" });
+    }
+  }, [mix]);
 
   return (
     <div>
+      <div className="mb-10 flex h-[300px] gap-3 sm:h-[420px]" aria-hidden="true">
+        {MIX_KEYS.map((k) => {
+          const photo = PANEL_PHOTO[k];
+          return (
+            <div
+              key={k}
+              ref={(el) => {
+                panels.current[k] = el;
+              }}
+              style={{ flexGrow: Math.max(MIX_PRESETS[1].mix[k], 6), flexBasis: 0 }}
+              className={cn("relative min-w-0 overflow-hidden rounded-[28px]", MIX_STYLE[k].tile)}
+            >
+              {photo ? (
+                <Image src={`${photo.src}?auto=format&fit=crop&w=1000&q=70`} alt="" fill sizes="50vw" className="object-cover" />
+              ) : (
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#d3e8ea,#1f6670)]">
+                  <Stethoscope className="absolute right-6 top-6 h-16 w-16 text-white/80" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-7">
+                <p className="font-display text-[44px] leading-none sm:text-[72px]">{mix[k]}%</p>
+                <p className="mt-2 whitespace-nowrap text-[18px] font-semibold uppercase tracking-[0.18em]">{MIX_STYLE[k].label}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <fieldset>
         <legend className="text-[19px] font-semibold text-ink-900">1. Choose a starting point</legend>
         <div className="mt-4 grid gap-3 md:grid-cols-3">

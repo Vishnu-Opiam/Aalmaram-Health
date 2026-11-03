@@ -182,3 +182,19 @@ homepage; the menu links to them and marks the current page (`aria-current`).
 
 Not done yet: `/about`, `/journeys`, `/guide`, `/learn` from §5, the people section, and Lighthouse measured on a
 deployed preview.
+
+## 10. Rework after review (3 Nov 2026, same day)
+
+Feedback: the first build looked generic — "no parallax, no animation, no storytelling", and no flat 2D
+illustrations. What changed:
+
+- **The homepage is now one story, a day on the backwaters, in real-time 3D.** Scroll moves a canoe up a canal from
+  dawn mist, through a bright morning and midday, to sunset at the lake with its Chinese fishing nets, and night at
+  a temple lit with oil lamps. The chapters (what we are, health, wellness, culture, "talk to us") sit on glass panels
+  over the scene. Built with three.js; every model is generated in code, so there is nothing to license.
+- **Every section below moves with intent** (GSAP ScrollTrigger, works in every browser): the vetting checklist ticks
+  itself off while pinned; a 10-day journey scrolls sideways with a boat travelling the route; "Your mix" photo panels
+  slide wider and narrower with the mix; the step number rolls over as you read; photos drift and settle.
+- **No 2D illustration remains** (the SVG dawn scene and line-drawn banyan are gone).
+- Guard rails kept: content is ordinary HTML in the page (readable without WebGL or JavaScript); reduced motion holds
+  the camera and drops all scroll animation; phones get a lighter scene; software WebGL draws only when you scroll.

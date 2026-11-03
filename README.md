@@ -15,8 +15,9 @@ A public homepage and two interfaces over one data model:
   a free conversation with a person and FAQ. Every "book" button leads to
   `/talk`, which records a LEAD client with a `WEBSITE` conversation. Inner
   pages: `/how-it-works`, `/why-kerala`, `/safety`. Copy lives
-  in `src/app/(site)/content.ts` and is placeholder until Nivedith rewrites it;
-  motion is scroll-driven CSS in `src/app/(site)/site.css`.
+  in `src/app/(site)/content.ts` and is placeholder until Nivedith rewrites it.
+  The homepage story runs over a 3D backwater (`src/components/site/three/`,
+  three.js); site motion is GSAP ScrollTrigger (`src/components/site/motion.tsx`).
 - **Admin** (`/admin`) — for the team: what we offer (modules → catalogues →
   vendors with branches and practitioners → components), clients, trips,
   requirements, conversations, the health-core builder, the Feed and AI runs.
