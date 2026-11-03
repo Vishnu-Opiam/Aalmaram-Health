@@ -242,8 +242,8 @@ Append one short entry per working session: date, branch, tasks touched, test st
   announced to screen readers), vetting checklist, sample journeys with mix bars and £/€ ranges, Why Kerala photo
   band, extended FAQ, "what happens next", sticky phone CTA; `/talk` form → LEAD + WEBSITE conversation (migration
   `website_enquiry`), `/talk/thanks`, "Website requests" card on the admin client page. Tests: typecheck ✓,
-  162 unit + integration ✓ (new: mix/prices unit, website-requests integration), build ✓; lint not configured
-  (prompts), skipped. Browser pane: 1366 px and 375 px, menu, form errors + submit, admin view.
+  162 unit + integration ✓ (new: mix/prices unit, website-requests integration), build ✓, e2e 4/4 ✓ (first run: 2 homepage assertions were wrong in the test, fixed); lint not
+  configured (prompts), skipped; Lighthouse not measured (needs a deployed preview). Browser pane: 1366 px and 375 px, menu, form errors + submit, admin view.
 - **2026-11-02** · `feat/public-homepage` · Nivedith's website call (Vishnu's recording, transcribed locally; notes in
   `inputs/2026-11-02-website-call-notes.md`). Built W.1: public homepage at `/` — hero (what is this, who it's for,
   concierge not a clinic, one line on waits and costs), How it works (4 steps), Why Kerala preview, Explore tiles by

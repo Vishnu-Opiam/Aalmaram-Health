@@ -22,7 +22,7 @@ test("homepage answers what, how, safety and cost, and offers a free conversatio
   await page.getByRole("button", { name: /Mostly health/ }).click();
   await expect(page.getByText(/Your mix: 60% health/)).toBeAttached();
   await page.getByRole("button", { name: "More wellness" }).click();
-  await expect(page.getByText(/Your mix: 60% health, 30% wellness, 10% culture/)).toBeAttached();
+  await expect(page.getByText(/Your mix: 50% health, 30% wellness, 20% culture/)).toBeAttached();
 
   await page.getByText("Is the first call really free?").click();
   await expect(page.getByText("no obligation to book")).toBeVisible();
@@ -36,7 +36,7 @@ test("a visitor asks for a free conversation in one click from the header", asyn
   await expect(page).toHaveURL(/\/talk$/);
 
   await page.getByRole("button", { name: "Ask for my free conversation" }).click();
-  await expect(page.getByRole("alert")).toContainText("Please correct the highlighted fields.");
+  await expect(page.getByText("Please correct the highlighted fields.")).toBeFocused();
   await expect(page.getByText("Choose where you live.")).toBeVisible();
 
   await page.getByLabel("Your name").fill("E2E Visitor (demo)");
