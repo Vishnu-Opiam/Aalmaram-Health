@@ -41,6 +41,7 @@ const CHANNEL_LABELS = {
   EMAIL: "Email",
   WHATSAPP: "WhatsApp",
   IN_PERSON: "In person",
+  WEBSITE: "Website",
 } as const;
 
 const PACE_LABELS = { RELAXED: "Relaxed", BALANCED: "Balanced", PACKED: "Packed" } as const;
