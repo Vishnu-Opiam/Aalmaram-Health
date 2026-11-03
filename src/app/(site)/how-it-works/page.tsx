@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { X } from "lucide-react";
-import { Faq, MobileCta, NumberedList, PageHero, Section, TalkBand } from "@/components/site/blocks";
-import { StepsScene } from "@/components/site/steps-scene";
+import { Band, BookButton, ClosingCta, Faq, frame, PageHero, Photo, Points } from "@/components/site/blocks";
+import { cn } from "@/lib/utils";
 import { faqFor, HOW_IT_WORKS_PAGE as PAGE, PHOTOS, PRICING, STEPS } from "../content";
 
 export const metadata: Metadata = {
@@ -9,62 +8,63 @@ export const metadata: Metadata = {
   description: PAGE.intro,
 };
 
-function Detail({ label, text }: { label: string; text: string }) {
-  return (
-    <div className="grid gap-1 sm:grid-cols-[9rem_1fr] sm:gap-4">
-      <dt className="text-[17px] font-semibold text-gold-700">{label}</dt>
-      <dd className="leading-relaxed text-ink-800">{text}</dd>
-    </div>
-  );
-}
+// One photograph per step, of the trip the step leads to.
+const STEP_PHOTOS = [PHOTOS.lake, PHOTOS.mortar, PHOTOS.kochi, PHOTOS.canal];
 
 export default function HowItWorksPage() {
-  const steps = STEPS.map((step, i) => ({
-    ...step,
-    children: (
-      <dl className="mt-5 space-y-3 rounded-3xl bg-white p-5 ring-1 ring-kasavu-200">
-        <Detail label="You" text={PAGE.steps[i].you} />
-        <Detail label="We" text={PAGE.steps[i].we} />
-        <Detail label="You receive" text={PAGE.steps[i].get} />
-      </dl>
-    ),
-  }));
-
   return (
     <>
-      <PageHero eyebrow="Four steps" title={PAGE.title} intro={PAGE.intro} photo={PHOTOS.canoe} />
+      <PageHero title={PAGE.title} intro={PAGE.intro} photo={PHOTOS.prow} short>
+        <BookButton />
+      </PageHero>
 
-      <Section id="steps" eyebrow="Step by step" title="Four steps, with a person beside you at each one" tint>
-        <StepsScene steps={steps} />
-      </Section>
+      {/* Each step on its own row: the verb, then who does what and what you end up with. */}
+      <section aria-labelledby="steps-title" className={cn(frame, "bg-mist py-28 text-mist-ink md:py-36")}>
+        <h2 id="steps-title" data-rise className="site-head">Four steps, one person beside you</h2>
+        <ol className="mt-20 space-y-24 md:space-y-32">
+          {STEPS.map((step, i) => (
+            <li key={step.verb} data-rise className="grid gap-6 md:grid-cols-12 md:gap-x-6">
+              <p className="site-display text-[clamp(4.5rem,9vw,9rem)] md:col-span-4" aria-hidden="true">{step.verb}</p>
+              <Photo photo={STEP_PHOTOS[i]} sizes="(min-width: 768px) 25vw, 60vw" className="aspect-[4/5] w-3/5 md:order-last md:col-span-3 md:col-start-10 md:w-full" />
+              <div className="md:col-span-5 md:col-start-5">
+                <h3 className="text-[24px] font-medium">{step.title}</h3>
+                <dl className="mt-6 space-y-5">
+                  {[
+                    ["You", PAGE.steps[i].you],
+                    ["We", PAGE.steps[i].we],
+                    ["You receive", PAGE.steps[i].get],
+                  ].map(([label, text]) => (
+                    <div key={label}>
+                      <dt className="text-[16px] text-mist-muted">{label}</dt>
+                      <dd className="mt-1 leading-relaxed">{text}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-      <Section id="trip-page" eyebrow="Your trip page" title="Everything in one place" intro="After the first conversation you get a private trip page. It is where your plan lives until you are home.">
-        <div className="grid gap-10 lg:grid-cols-2">
-          <NumberedList items={PAGE.tripPage} />
-          <div className="site-reveal self-start rounded-[28px] bg-kasavu-100 p-6 sm:p-8">
-            <h3 className="text-[21px] font-semibold text-ink-900">What we don&apos;t do</h3>
-            <ul className="mt-5 space-y-4">
-              {PAGE.weDont.map((line) => (
-                <li key={line} className="flex gap-3 leading-relaxed text-ink-800">
-                  <X className="mt-1 h-5 w-5 shrink-0 text-laterite-600" aria-hidden="true" /> {line}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Section>
+      <Band id="trip-page" title="Your own trip page" intro="Open it on a computer, tablet or phone. It is where your plan lives, before, during and after your trip.">
+        <Points items={PAGE.tripPage} />
+      </Band>
 
-      <Section id="pricing" eyebrow="Prices" title="Transparent pricing" tint>
-        <NumberedList items={PRICING} />
-      </Section>
+      <Band id="charges" title="How we charge" tone="raised">
+        <Points items={PRICING} />
+        <h3 className="mt-20 text-[21px] font-medium">What we don&apos;t do</h3>
+        <ul data-rise className="mt-4 space-y-3 text-[20px] leading-snug">
+          {PAGE.weDont.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </Band>
 
-      <TalkBand />
-
-      <Section id="faq" eyebrow="Questions" title="Questions about the process">
+      <Band id="faq" title="Questions about how it works" tone="mist">
         <Faq items={faqFor(PAGE.faq)} />
-      </Section>
+      </Band>
 
-      <MobileCta />
+      <ClosingCta photo={PHOTOS.tea} />
     </>
   );
 }

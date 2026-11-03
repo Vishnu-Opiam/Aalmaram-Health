@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { Info } from "lucide-react";
-import { JourneyScene } from "@/components/site/journey-scene";
-import { Faq, MobileCta, PageHero, photoUrl, Section, TalkBand } from "@/components/site/blocks";
+import { Band, BookButton, ClosingCta, Faq, frame, PageHero, Photo, Points } from "@/components/site/blocks";
+import { cn } from "@/lib/utils";
 import { faqFor, HERO, PHOTOS, WHY_KERALA_PAGE as PAGE } from "../content";
 
 export const metadata: Metadata = {
@@ -10,91 +8,74 @@ export const metadata: Metadata = {
   description: PAGE.intro,
 };
 
-/** The "beautiful page" from the 2 Nov call: Kerala itself, with the quality of care first. */
+const PLACE_PHOTOS = { "The backwaters": PHOTOS.canal, "The coast": PHOTOS.coast, "Arts and festivals": PHOTOS.kathakaliStage, Kochi: PHOTOS.nets } as Record<string, typeof PHOTOS.lake>;
+
+/** The page that sells the place: care first, then Ayurveda, the places themselves, the seasons and the practical things. */
 export default function WhyKeralaPage() {
+  const places = PAGE.places.map((p) => ({ ...p, photo: PLACE_PHOTOS[p.title] ?? p.photo }));
   return (
     <>
-      <PageHero eyebrow="The place" title={PAGE.title} intro={PAGE.intro} photo={PHOTOS.houseboat} />
+      <PageHero title={PAGE.title} intro={PAGE.intro} photo={PHOTOS.river}>
+        <BookButton />
+      </PageHero>
 
-      <Section id="care" eyebrow="Care" title="Good private care, explained plainly" intro={HERO.context}>
-        <ul className="grid gap-5 sm:grid-cols-2">
-          {PAGE.care.map((item) => (
-            <li key={item.title} className="site-reveal rounded-[28px] bg-white p-6 ring-1 ring-kasavu-200 sm:p-8">
-              <span className="block h-px w-12 bg-gold-500" aria-hidden="true" />
-              <h3 className="mt-4 text-[21px] font-semibold text-ink-900">{item.title}</h3>
-              <p className="mt-2 leading-relaxed text-ink-700">{item.text}</p>
-            </li>
-          ))}
-        </ul>
-      </Section>
+      <Band id="care" title="Good private care, explained plainly" intro={HERO.context} tone="mist">
+        <Points items={PAGE.care} tone="mist" />
+      </Band>
 
-      <section id="ayurveda" aria-labelledby="ayurveda-title" className="scroll-mt-24 bg-kasavu-100">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:gap-16">
-          <div data-clip className="relative aspect-[4/3] overflow-hidden rounded-[28px]">
-            <Image src={photoUrl(PHOTOS.oils.src, 1200)} alt={PHOTOS.oils.alt} fill sizes="(min-width: 1024px) 45vw, 92vw" className="site-zoom object-cover" />
-          </div>
-          <div className="site-reveal">
-            <p className="text-[16px] font-semibold uppercase tracking-[0.18em] text-gold-700">Wellness</p>
-            <h2 id="ayurveda-title" className="mt-3 font-display text-[32px] font-medium leading-[1.15] tracking-tight text-banyan-900 sm:text-[42px]">
-              {PAGE.ayurveda.title}
-            </h2>
-            <p className="mt-4 text-[19px] leading-relaxed text-ink-700 md:text-[20px]">{PAGE.ayurveda.text}</p>
-            <p className="mt-6 flex gap-3 rounded-3xl bg-white p-5 leading-relaxed text-ink-800 ring-1 ring-kasavu-200">
-              <Info className="mt-1 h-5 w-5 shrink-0 text-gold-700" aria-hidden="true" /> {PAGE.ayurveda.note}
-            </p>
-          </div>
+      {/* Ayurveda: the treatment itself, large, beside a plain description. */}
+      <section aria-labelledby="ayurveda-title" className={cn(frame, "grid gap-12 py-28 md:grid-cols-12 md:gap-x-6 md:py-36")}>
+        <Photo photo={PHOTOS.dhara} sizes="(min-width: 768px) 50vw, 100vw" className="aspect-[4/5] md:col-span-6" />
+        <div data-rise className="md:col-span-5 md:col-start-8 md:self-center">
+          <h2 id="ayurveda-title" className="site-head">{PAGE.ayurveda.title}</h2>
+          <p className="site-lead mt-8">{PAGE.ayurveda.text}</p>
+          <p className="mt-8 text-[16px] leading-relaxed text-night-muted">{PAGE.ayurveda.note}</p>
         </div>
       </section>
 
-      <JourneyScene
-        id="places"
-        eyebrow="Places"
-        title="Backwaters, hills, coast and history"
-        intro="Culture is part of every trip, at the pace you choose. A few of the places our clients love."
-        panels={PAGE.places.filter((p) => p.photo).map((p) => ({ when: "Kerala", ...p }))}
-        footer={
-          <ul className="space-y-6">
-            {PAGE.places
-              .filter((p) => !p.photo)
-              .map((p) => (
-                <li key={p.title}>
-                  <h3 className="font-display text-[28px] text-gold-300">{p.title}</h3>
-                  <p className="mt-2 leading-relaxed text-white/85">{p.text}</p>
-                </li>
-              ))}
-          </ul>
-        }
-      />
-
-      <Section id="seasons" eyebrow="When to go" title="Kerala through the year" tint>
-        <ol className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {PAGE.seasons.map((season) => (
-            <li key={season.months} className="site-reveal rounded-[28px] bg-white p-6 ring-1 ring-kasavu-200">
-              <h3 className="font-display text-[22px] font-medium text-banyan-900">{season.months}</h3>
-              <p className="mt-2 leading-relaxed text-ink-700">{season.text}</p>
-            </li>
+      {/* Places: photographs at uneven sizes, alternating sides. */}
+      <section aria-labelledby="places-title" className={cn(frame, "bg-night-raised py-28 md:py-36")}>
+        <h2 id="places-title" data-rise className="site-head max-w-[36rem]">Backwaters, hills, coast and history</h2>
+        <div className="mt-20 space-y-24 md:space-y-32">
+          {places.map((place, i) => (
+            <article key={place.title} className="grid gap-8 md:grid-cols-12 md:items-end md:gap-x-6">
+              {place.photo && (
+                <Photo
+                  photo={place.photo}
+                  sizes="(min-width: 768px) 60vw, 100vw"
+                  className={cn("aspect-[3/2] md:col-span-7", i % 2 === 1 && "md:order-2 md:col-start-6", i % 3 === 2 && "md:col-span-6 md:aspect-[4/5]")}
+                />
+              )}
+              <div data-rise className={cn("md:col-span-4", i % 2 === 1 ? "md:order-1 md:col-start-1" : "md:col-start-9", !place.photo && "md:col-span-6 md:col-start-1")}>
+                <h3 className="site-display text-[clamp(2.25rem,1.5rem+2vw,3.5rem)]">{place.title}</h3>
+                <p className="mt-4 leading-relaxed text-night-muted">{place.text}</p>
+              </div>
+            </article>
           ))}
-        </ol>
-      </Section>
+        </div>
+      </section>
 
-      <Section id="getting-there" eyebrow="Getting there" title="Practical things to know">
-        <dl className="grid gap-x-10 gap-y-6 md:grid-cols-2">
-          {PAGE.travel.map((item) => (
-            <div key={item.title} className="site-reveal border-b border-kasavu-200 pb-6">
-              <dt className="text-[20px] font-semibold text-ink-900">{item.title}</dt>
-              <dd className="mt-2 leading-relaxed text-ink-700">{item.text}</dd>
+      {/* Seasons, set like a timetable. */}
+      <Band id="seasons" title="Kerala through the year" tone="mist">
+        <dl data-rise className="space-y-10">
+          {PAGE.seasons.map((s) => (
+            <div key={s.months} className="grid gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-8">
+              <dt className="site-display text-[clamp(1.75rem,1.3rem+1.2vw,2.4rem)] leading-tight">{s.months}</dt>
+              <dd className="leading-relaxed text-mist-muted">{s.text}</dd>
             </div>
           ))}
         </dl>
-      </Section>
+      </Band>
 
-      <TalkBand />
+      <Band id="getting-there" title="Practical things to know">
+        <Points items={PAGE.travel} />
+      </Band>
 
-      <Section id="faq" eyebrow="Questions" title="Questions about travelling">
-        <Faq items={faqFor(["Is Kerala safe to travel to?", "Do I need a visa?", "What does a whole trip cost?"])} />
-      </Section>
+      <Band id="faq" title="Questions about travelling" tone="raised">
+        <Faq items={faqFor(["Is Kerala safe to travel to?", "Do I need a visa?", "What does a whole trip cost?"])} tone="night" />
+      </Band>
 
-      <MobileCta />
+      <ClosingCta photo={PHOTOS.hills} />
     </>
   );
 }

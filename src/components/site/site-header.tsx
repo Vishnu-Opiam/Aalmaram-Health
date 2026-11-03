@@ -1,38 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { CalendarCheck, Phone, X } from "lucide-react";
 import { AppLink as Link } from "@/components/ui/primitives";
-import { PortalBrand } from "@/components/portal/ui";
 import { cn } from "@/lib/utils";
 import { ctaClass, SITE_MENU } from "./nav";
 
+const telHref = (phone: string) => `tel:${phone.replace(/[^+\d]/g, "")}`;
+const MENU = [...SITE_MENU, { href: "/trip/sign-in", label: "My trip" }];
+
 /**
- * Every menu item stays visible on desktop. On phones and tablets a button
- * labelled "Menu" (a word, not just an icon) opens the same list, and the
- * free-conversation button never hides.
+ * A plain bar that sits on the first photograph and turns solid once you
+ * scroll. Every menu item stays visible on wide screens; narrower ones get a
+ * button labelled "Menu" (a word, not an icon) that opens the same list full
+ * screen. The free-conversation button never hides.
  */
 export function SiteHeader({ phone }: { phone?: string }) {
   const [open, setOpen] = useState(false);
+  const [solid, setSolid] = useState(false);
   const pathname = usePathname();
   const current = (href: string) => (href === pathname ? "page" : undefined);
+
+  useEffect(() => {
+    const onScroll = () => setSolid(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
-    <header className="sticky top-0 z-40 border-b border-kasavu-200 bg-kasavu-50/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link href="/" aria-label="Aalmaram Health — home" className="shrink-0">
-          {/* Phones show the tree mark alone so the call to action and Menu both fit. */}
-          <PortalBrand className="max-sm:[&>span]:hidden" />
+    <header className={cn("fixed inset-x-0 top-0 z-40 text-night-ink transition-colors duration-300", solid || open ? "bg-night" : "bg-transparent")}>
+      <div className="flex h-20 items-center justify-between gap-4 px-5 sm:px-8 lg:px-[5vw]">
+        <Link href="/" className="site-display shrink-0 text-[26px] leading-none" aria-label="Aalmaram Health — home">
+          Aalmaram<span className="max-sm:hidden"> Health</span>
         </Link>
 
         <nav aria-label="Main" className="hidden xl:block">
-          <ul className="flex items-center gap-1">
+          <ul className="flex items-center gap-7">
             {SITE_MENU.map((item) => (
               <li key={item.href}>
                 <a
                   href={item.href}
                   aria-current={current(item.href)}
-                  className="rounded-full px-3 py-2.5 text-[17px] font-medium text-ink-700 hover:bg-kasavu-100 hover:text-ink-900 aria-[current=page]:bg-kasavu-100 aria-[current=page]:text-banyan-900 aria-[current=page]:underline aria-[current=page]:underline-offset-8"
+                  className="inline-flex min-h-12 items-center text-[16px] underline-offset-[6px] transition-opacity hover:opacity-70 aria-[current=page]:underline"
                 >
                   {item.label}
                 </a>
@@ -41,17 +62,16 @@ export function SiteHeader({ phone }: { phone?: string }) {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-2 sm:gap-5">
           {phone && (
-            <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="hidden items-center gap-2 rounded-full px-3 py-2.5 text-[17px] font-medium text-ink-800 hover:bg-kasavu-100 lg:inline-flex">
-              <Phone className="h-4 w-4 text-gold-700" aria-hidden="true" /> {phone}
+            <a href={telHref(phone)} className="hidden min-h-12 items-center text-[16px] transition-opacity hover:opacity-70 2xl:inline-flex">
+              {phone}
             </a>
           )}
-          <Link href="/trip/sign-in" className="hidden rounded-full px-3 py-2.5 text-[17px] font-medium text-ink-700 hover:bg-kasavu-100 hover:text-ink-900 sm:inline-block">
+          <Link href="/trip/sign-in" className="hidden min-h-12 items-center text-[16px] transition-opacity hover:opacity-70 sm:inline-flex">
             My trip
           </Link>
-          <Link href="/talk" className={ctaClass}>
-            <CalendarCheck className="hidden h-5 w-5 sm:block" aria-hidden="true" />
+          <Link href="/talk" className={cn(ctaClass, "px-5 text-[16px]")}>
             <span className="whitespace-nowrap sm:hidden">Free conversation</span>
             <span className="hidden sm:inline">Book a free conversation</span>
           </Link>
@@ -60,36 +80,33 @@ export function SiteHeader({ phone }: { phone?: string }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="site-menu"
-            className="inline-flex min-h-12 items-center gap-2 rounded-full border-2 border-kasavu-200 px-4 text-[17px] font-semibold text-ink-900 hover:border-banyan-800 xl:hidden"
+            className="inline-flex min-h-12 items-center px-2 text-[16px] font-medium underline-offset-[6px] hover:underline xl:hidden"
           >
-            {open ? <X className="h-5 w-5" aria-hidden="true" /> : null}
-            Menu
+            {open ? "Close" : "Menu"}
           </button>
         </div>
       </div>
 
-      <nav id="site-menu" aria-label="Menu" hidden={!open} className="border-t border-kasavu-200 bg-kasavu-50 xl:hidden">
-        <ul className="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:grid-cols-2 sm:px-6">
-          {[...SITE_MENU, { href: "/trip/sign-in", label: "My trip" }].map((item) => (
+      <nav id="site-menu" aria-label="Menu" hidden={!open} className="h-[calc(100svh-5rem)] overflow-y-auto bg-night px-5 pb-10 pt-6 sm:px-8 lg:px-[5vw] xl:hidden">
+        <ul className="space-y-1">
+          {MENU.map((item) => (
             <li key={item.href}>
               <a
                 href={item.href}
                 aria-current={current(item.href)}
                 onClick={() => setOpen(false)}
-                className={cn("flex min-h-12 items-center rounded-2xl px-4 text-[19px] font-medium text-ink-900 hover:bg-kasavu-100")}
+                className="site-display inline-flex min-h-14 items-center text-[clamp(2.25rem,9vw,3.5rem)] transition-opacity hover:opacity-70 aria-[current=page]:underline"
               >
                 {item.label}
               </a>
             </li>
           ))}
-          {phone && (
-            <li>
-              <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="flex min-h-12 items-center gap-2 rounded-2xl px-4 text-[19px] font-medium text-ink-900 hover:bg-kasavu-100">
-                <Phone className="h-5 w-5 text-gold-700" aria-hidden="true" /> Call us: {phone}
-              </a>
-            </li>
-          )}
         </ul>
+        {phone && (
+          <a href={telHref(phone)} className="mt-10 inline-flex min-h-12 items-center text-[19px] underline underline-offset-4">
+            Call us: {phone}
+          </a>
+        )}
       </nav>
     </header>
   );

@@ -198,3 +198,24 @@ illustrations. What changed:
 - **No 2D illustration remains** (the SVG dawn scene and line-drawn banyan are gone).
 - Guard rails kept: content is ordinary HTML in the page (readable without WebGL or JavaScript); reduced motion holds
   the camera and drops all scroll animation; phones get a lighter scene; software WebGL draws only when you scroll.
+
+## 11. Rebuild from the ground up (3 Nov 2026, evening)
+
+Feedback: still "AI generated, sloppy, no premium feel". References: five screen recordings (Mexico Islands, Stepout,
+Explore, WattBank, Kamui, Tourvia) and vita-travel.webflow.io. What they share, and what we now do:
+
+| What makes them premium | On our site |
+|---|---|
+| A real photograph is the argument; the design steps back | 18 photographs of Kerala in one dawn/dusk light (Unsplash licence, credited in the footer). No drawn or generated scenery. |
+| One huge word over the place | "Kerala" as a film title across the bottom of the hero photo; the five Why Kerala words over full-screen photographs |
+| Very few type sizes, far apart; sentence case | Gambarino (display) + General Sans (text), self-hosted; small 15–16, body 18–19, lead 20–26, head 36–68, display |
+| Dark, calm ground; colour comes from the pictures | Night `#0e1518`, mist field `#e7e8e4` for practical sections, lamp brass `#cfab70` on the one button only |
+| No ornament | No eyebrows, glass, shadows, icon tiles, numbering or rules; square photographs, round buttons |
+| Scroll tells a story | Photo shutter on arrival; chapters that hold and hand over; Explore photo that follows the row; mix panels that slide |
+
+Tool support: the direction ("The place carries it") was dealt by taste-skill's `draw.mjs`; its `inspect.mjs` measured
+the production build at 1440/768/390 (0 FAIL on every inner page). ui-ux-pro-max confirmed contrast and touch-target
+rules (48 px controls, 4.5:1 text; ink on night 16:1, muted 7.9:1, ink on mist 15:1, muted 6.4:1).
+
+Still open: our own photographs (and permission for providers'), a hero video clip if an honest one exists, and
+Nivedith's copy. Placeholder copy is unchanged in substance; headings were shortened to two lines.

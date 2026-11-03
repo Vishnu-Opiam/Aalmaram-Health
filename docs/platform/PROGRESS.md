@@ -93,6 +93,7 @@
 ## Website — public site (Nivedith, 2 Nov 2026; notes in `inputs/2026-11-02-website-call-notes.md`)
 - [x] W.1 Homepage / landing page at `/` (placeholder copy; one CTA: a free call)
 - [x] W.1b Redesign "Under the banyan" + `/talk` free-conversation request (direction: `website/DESIGN_DIRECTION.md`)
+- [x] W.1d Whole public site rebuilt photography-first after the 3 Nov review (direction: `website/DESIGN_DIRECTION.md` §11)
 - [~] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care) — built at `/why-kerala` with placeholder copy; needs Nivedith's review and our own photos
 - [~] W.3 Safety & quality page with the formal vetting process — built at `/safety`; the vetting checklist is placeholder until Nivedith's formal process exists
 - [~] W.4 How it works, About / our network & team pages — `/how-it-works` built; About waits for names and photos
@@ -127,6 +128,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Public site rebuilt from the ground up after Vishnu's second review ("looks AI generated, sloppy, not premium"): the 3D backwater, glass panels, eyebrow labels and cream/gold palette are gone. Real Kerala photography carries every page (18 Unsplash-licence photos, one dawn/dusk light, credited in the footer); a night ground with a monsoon-mist field for practical sections and lamp brass on the one button; Gambarino + General Sans (Fontshare ITF Free Font License, self-hosted). three.js removed. Direction dealt by the taste-skill ("The place carries it") and checked with its inspector (0 FAIL on every inner page). | References (Vita Travel, WattBank, Stepout, Tourvia, Explore) share one thing: a real photograph does the selling, type is large and sparse, nothing decorative. Procedural 3D and ornament were what read as generated. |
 | 2026-09-17 | The four platform lifecycle parts are called **Stages**, not Modules. | `Module` already means Health / Wellness / Heritage content category. |
 | 2026-09-17 | Vendor profile questions are data (`ProfileQuestion`), not hard-coded fields. **Superseded 2026-10-15** (simple fields, below). | Nivedith's question document is pending and will evolve. |
 | 2026-09-17 | AI via Vercel AI Gateway + AI SDK, fake provider default. | App is on Vercel; tests/dev must run offline and deterministically. |
@@ -234,6 +236,19 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
+
+- **2026-11-03 (rebuild)** · `feat/site-redesign` · Vishnu: the site still looked AI-made and not premium; rebuild
+  every page using his reference videos and vita-travel.webflow.io, with the structure from the 2 Nov call. Studied
+  the references frame by frame and the live Vita Travel site; dealt a direction with the taste-skill and checked
+  colour/type with ui-ux-pro-max. Homepage: the lake at dawn full screen with "Kerala" as a film title; who we are;
+  Why Kerala as five full-screen chapters (backwaters, Ayurveda, hospitals, hills, heritage); Explore as a list beside
+  a photograph that changes with the row; Your mix (photographs that widen with your split); how it works as four
+  verbs; how we choose providers as plain columns; is it for you; prices set like a menu; FAQ; a last photograph
+  with the invitation. Inner pages, `/talk` and the thank-you page rebuilt in the same system. Removed three.js,
+  the scene components and the mobile bottom bar (the header button is always visible). Tests: typecheck ✓, unit +
+  integration 162/162 ✓, e2e 5/5 ✓ (headings updated), build ✓; taste-skill inspector 0 FAIL on inner pages, homepage
+  only flags reveals caught mid-animation. Next: Vishnu's look, then Nivedith's copy; our own photographs to replace
+  the stock ones; one honest video clip for the hero if we find one.
 
 - **2026-11-03 (rework)** · `feat/site-redesign` · Vishnu rejected the first look. Rebuilt the homepage as a scroll
   story over a 3D backwater (`components/site/three/backwater.ts`): sky and sun from dawn to night, mirror water,

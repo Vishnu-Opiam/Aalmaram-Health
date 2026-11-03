@@ -1,7 +1,6 @@
-import { Figtree, Fraunces } from "next/font/google";
-import { Mail, Phone } from "lucide-react";
+import localFont from "next/font/local";
 import { AppLink as Link } from "@/components/ui/primitives";
-import { PortalBrand } from "@/components/portal/ui";
+import { frame, Photo, telHref } from "@/components/site/blocks";
 import { SITE_MENU } from "@/components/site/nav";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteMotion } from "@/components/site/motion";
@@ -10,24 +9,32 @@ import { cn } from "@/lib/utils";
 import { PHOTOS } from "./content";
 import "./site.css";
 
-// Same type as the client portal, so the site and the trip page feel like one place.
-const body = Figtree({ subsets: ["latin"], variable: "--font-portal-body", display: "swap" });
-const display = Fraunces({ subsets: ["latin"], variable: "--font-portal-display", display: "swap", axes: ["opsz"] });
+// A narrow, sharp serif for the few big words and a plain sans for everything read.
+// Both from Fontshare (ITF Free Font License, free for commercial use), self-hosted.
+const gambarino = localFont({ src: "./fonts/gambarino-400.woff2", weight: "400", variable: "--font-site-serif", display: "swap" });
+const generalSans = localFont({
+  src: [
+    { path: "./fonts/general-sans-400.woff2", weight: "400" },
+    { path: "./fonts/general-sans-500.woff2", weight: "500" },
+  ],
+  variable: "--font-site-sans",
+  display: "swap",
+});
 
 /**
- * Public website shell: a slim menu, one dominant call to action (a free
- * conversation with a person) and contact details in the same place on every
- * page. Visitors are mostly 50+, so body text is 18–19 px.
+ * Public website shell. Visitors are mostly 50+: body text is 18–19 px, every
+ * control is at least 48 px tall, and the way to a person (the free
+ * conversation, the phone number) is in the same place on every page.
  */
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const email = contactEmail();
   const phone = contactPhone();
 
   return (
-    <div className={cn(body.variable, display.variable, "site-shell flex min-h-screen flex-col bg-kasavu-50 font-body text-[18px] leading-[1.6] text-ink-800 md:text-[19px]")}>
+    <div className={cn(gambarino.variable, generalSans.variable, "site-shell flex min-h-svh flex-col bg-night text-[18px] leading-[1.6] text-night-ink md:text-[19px]")}>
       <a
         href="#site-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-5 focus:py-3 focus:text-[17px] focus:shadow"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-mist focus:px-5 focus:py-3 focus:text-mist-ink"
       >
         Skip to content
       </a>
@@ -39,85 +46,69 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       </main>
       <SiteMotion />
 
-      <footer className="relative overflow-hidden bg-banyan-950 text-kasavu-50">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
-          <div>
-            <PortalBrand className="[&_span]:text-kasavu-50" />
-            <p className="mt-5 max-w-md leading-relaxed text-kasavu-100">
-              Aalmaram is the banyan tree: deep roots and wide shelter. We plan and look after health, wellness and
-              cultural journeys in Kerala.
-            </p>
-            <Link href="/talk" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-gold-300 px-6 font-semibold text-banyan-950 hover:bg-kasavu-100">
-              Book a free conversation
-            </Link>
-          </div>
-
-          <div>
-            <h2 className="text-[16px] font-semibold uppercase tracking-[0.18em] text-gold-300">Talk to us</h2>
-            <ul className="mt-4 space-y-3">
-              {phone && (
-                <li>
-                  <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="inline-flex min-h-11 items-center gap-3 underline-offset-4 hover:underline">
-                    <Phone className="h-5 w-5 text-gold-300" aria-hidden="true" /> {phone}
-                  </a>
-                </li>
-              )}
-              {email && (
-                <li>
-                  <a href={`mailto:${email}`} className="inline-flex min-h-11 items-center gap-3 break-all underline-offset-4 hover:underline">
-                    <Mail className="h-5 w-5 shrink-0 text-gold-300" aria-hidden="true" /> {email}
-                  </a>
-                </li>
-              )}
-              <li>
-                <Link href="/talk" className="inline-flex min-h-11 items-center underline underline-offset-4">
-                  Ask for a free conversation
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <nav aria-label="Footer">
-            <h2 className="text-[16px] font-semibold uppercase tracking-[0.18em] text-gold-300">On this site</h2>
-            <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 md:grid-cols-1">
-              {[...SITE_MENU, { href: "/trip/sign-in", label: "My trip" }].map((item) => (
+      {/* Footer: the place, larger than anywhere above, beside the whole menu. */}
+      <footer className="grid bg-night-raised md:min-h-svh md:grid-cols-2">
+        <Photo photo={PHOTOS.canal} sizes="(min-width: 768px) 50vw, 100vw" decorative className="h-[50svh] md:h-auto" />
+        <div className={cn(frame, "flex flex-col py-14 md:py-20 md:pl-[6vw]")}>
+          <Link href="/" className="site-display text-[28px]">Aalmaram Health</Link>
+          <nav aria-label="Footer" className="mt-10">
+            <ul className="space-y-2">
+              {[...SITE_MENU, { href: "/talk", label: "Book a free conversation" }, { href: "/trip/sign-in", label: "My trip" }].map((item) => (
                 <li key={item.href}>
-                  <a href={item.href} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
+                  <a href={item.href} className="site-display inline-flex min-h-12 items-center text-[clamp(1.9rem,2.6vw,2.75rem)] transition-[opacity,transform] duration-300 hover:translate-x-3 hover:opacity-80">
                     {item.label}
                   </a>
                 </li>
               ))}
             </ul>
           </nav>
-        </div>
 
-        <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-[16px] leading-relaxed text-kasavu-100 sm:px-6 md:flex-row md:items-start md:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <p>
-                Aalmaram Health coordinates trips with independent, licensed providers in Kerala. We do not provide medical
-                advice, diagnosis or treatment; clinical decisions rest with the providers who care for you.
-              </p>
-              <p className="text-[15px] text-kasavu-200">
-                Photos from Unsplash by{" "}
-                {Object.values(PHOTOS).map((photo, i, all) => (
-                  <span key={photo.src}>
-                    <a href={photo.href} className="underline underline-offset-2" rel="noopener noreferrer">
-                      {photo.credit}
-                    </a>
-                    {i < all.length - 1 ? ", " : "."}
-                  </span>
-                ))}
-              </p>
+          <div className="mt-14 grid gap-8 text-[16px] sm:grid-cols-2">
+            <div>
+              <h2 className="font-medium">Talk to us</h2>
+              <ul className="mt-2 space-y-1 text-night-muted">
+                {phone && (
+                  <li>
+                    <a href={telHref(phone)} className="inline-flex min-h-11 items-center hover:text-night-ink">{phone}</a>
+                  </li>
+                )}
+                {email && (
+                  <li>
+                    <a href={`mailto:${email}`} className="inline-flex min-h-11 items-center break-all hover:text-night-ink">{email}</a>
+                  </li>
+                )}
+                <li>
+                  <Link href="/talk" className="inline-flex min-h-11 items-center hover:text-night-ink">Ask for a free conversation</Link>
+                </li>
+              </ul>
             </div>
-            <Link href="/login" className="shrink-0 text-[15px] text-kasavu-100 underline underline-offset-4 hover:text-white">
+            <p className="leading-relaxed text-night-muted">
+              Aalmaram is Malayalam for the banyan, the tree a village gathers under. We plan health, wellness and
+              culture journeys in Kerala.
+            </p>
+          </div>
+
+          <div className="mt-auto space-y-3 pt-14 text-[15px] leading-relaxed text-night-muted">
+            <p>
+              Aalmaram Health coordinates trips with independent, licensed providers in Kerala. We do not provide medical
+              advice, diagnosis or treatment; clinical decisions rest with the providers who care for you.
+            </p>
+            <p>
+              Photographs from Unsplash by{" "}
+              {Object.values(PHOTOS).map((photo, i, all) => (
+                <span key={photo.src}>
+                  <a href={photo.href} className="underline underline-offset-2 hover:text-night-ink" rel="noopener noreferrer">
+                    {photo.credit}
+                  </a>
+                  {i < all.length - 1 ? ", " : "."}
+                </span>
+              ))}
+            </p>
+            <Link href="/login" className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-night-ink">
               Staff sign-in
             </Link>
           </div>
         </div>
-        <p aria-hidden="true" className="pointer-events-none -mb-[5vw] select-none whitespace-nowrap text-center font-display text-[21vw] font-medium leading-[0.85] tracking-[-0.04em] text-white/[0.06]">
-          <span data-parallax="0.25" className="inline-block">Aalmaram</span>
-        </p>
       </footer>
     </div>
   );

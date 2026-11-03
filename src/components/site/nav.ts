@@ -8,5 +8,10 @@ export const SITE_MENU = [
   { href: "/#faq", label: "Questions" },
 ];
 
+/** The one filled button on the site: lamp brass, fully round. */
 export const ctaClass =
-  "inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-banyan-900 px-5 text-[17px] font-semibold text-white transition-colors hover:bg-banyan-800 focus-visible:outline-offset-4";
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brass px-6 text-[17px] font-medium text-night transition-[background-color,transform] duration-200 hover:bg-brass-bright active:scale-[0.98] focus-visible:outline-offset-4";
+
+/** A quiet second action beside the button: text with an underline that grows on hover. */
+export const textLinkClass =
+  "inline-flex min-h-12 items-center gap-2 text-[17px] font-medium underline decoration-1 underline-offset-[6px] transition-[text-decoration-color,text-underline-offset] duration-200 hover:underline-offset-[9px]";

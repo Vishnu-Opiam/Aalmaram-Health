@@ -1,19 +1,20 @@
 import { expect, test } from "@playwright/test";
 
 /** Visitors land on the public homepage, not the staff sign-in. */
-test("homepage answers what, how, safety and cost, and offers a free conversation", async ({ page }) => {
+test("homepage answers what, why Kerala, how, safety and cost, and offers a free conversation", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Kerala");
   for (const name of [
-    "Deep roots. Wide shelter.",
-    /quality is uneven/,
-    "A thorough check-up, then the backwaters",
-    "Health, wellness and culture — in the proportions you choose",
-    "Four steps, with a person beside you at each one",
-    "Good care, an old tradition, and a beautiful place to be",
+    "Deep roots, wide shelter",
+    "Why Kerala",
+    "Choose what you need",
+    "Your own mix",
+    "How it works",
+    "Choosing providers",
     "Is this right for you?",
-    "Transparent pricing",
+    "What it costs",
+    "Questions people ask",
   ]) {
     await expect(page.getByRole("heading", { level: 2, name })).toBeAttached();
   }
@@ -54,9 +55,9 @@ test("a visitor asks for a free conversation in one click from the header", asyn
 
 test("How it works, Why Kerala and Is it safe? are one click from the menu", async ({ page }) => {
   for (const [link, path, heading] of [
-    ["How it works", "/how-it-works", "Four steps, with a person beside you at each one"],
+    ["How it works", "/how-it-works", "Four steps, one person beside you"],
     ["Why Kerala", "/why-kerala", "Classical Ayurveda"],
-    ["Is it safe?", "/safety", "We arrange your care. Doctors decide it, with you."],
+    ["Is it safe?", "/safety", "We arrange. Doctors decide."],
   ]) {
     await page.goto("/");
     await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: link }).click();

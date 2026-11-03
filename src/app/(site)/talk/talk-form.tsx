@@ -10,7 +10,7 @@ import { COUNTRIES } from "../content";
 import { requestConversationAction } from "./actions";
 
 const control =
-  "mt-2 block min-h-14 w-full rounded-2xl border-2 border-kasavu-200 bg-white px-4 text-[19px] text-ink-900 focus:border-banyan-800 focus:outline-none aria-[invalid=true]:border-laterite-600";
+  "mt-2 block min-h-14 w-full border-2 border-mist-muted bg-white px-4 text-[19px] text-mist-ink transition-colors focus:border-mist-ink focus:outline-none aria-[invalid=true]:border-laterite-600";
 
 function Errors({ id, errors }: { id: string; errors?: string[] }) {
   if (!errors?.length) return null;
@@ -28,7 +28,7 @@ function Submit() {
       type="submit"
       disabled={pending}
       aria-busy={pending}
-      className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-banyan-900 px-8 text-[19px] font-semibold text-white hover:bg-banyan-800 disabled:opacity-60 sm:w-auto"
+      className="inline-flex min-h-14 w-full cursor-pointer items-center justify-center rounded-full bg-night px-8 text-[19px] font-medium text-night-ink transition-[background-color,transform] duration-200 hover:bg-night-raised active:scale-[0.98] disabled:opacity-60 sm:w-auto"
     >
       {pending ? "Sending…" : "Ask for my free conversation"}
     </button>
@@ -56,27 +56,27 @@ export function TalkForm() {
   return (
     <form action={formAction} noValidate className="space-y-7">
       {state.status === "error" && state.message && (
-        <p ref={summary} tabIndex={-1} role="alert" className="scroll-mt-28 rounded-2xl bg-laterite-50 p-4 text-[18px] font-medium text-laterite-600">
+        <p ref={summary} tabIndex={-1} role="alert" className="scroll-mt-28 bg-laterite-50 p-4 text-[18px] font-medium text-laterite-600">
           {state.message}
         </p>
       )}
 
       <div>
-        <label htmlFor="talk-name" className="text-[19px] font-semibold text-ink-900">Your name</label>
+        <label htmlFor="talk-name" className="text-[19px] font-medium text-mist-ink">Your name</label>
         <input {...field("name")} autoComplete="name" required defaultValue={v.name} className={control} />
         <Errors id="talk-name-error" errors={err.name} />
       </div>
 
       <div>
-        <label htmlFor="talk-email" className="text-[19px] font-semibold text-ink-900">Email</label>
-        <p className="text-[17px] text-ink-600">We use it to agree a time with you.</p>
+        <label htmlFor="talk-email" className="text-[19px] font-medium text-mist-ink">Email</label>
+        <p className="text-[17px] text-mist-muted">We use it to agree a time with you.</p>
         <input {...field("email")} type="email" autoComplete="email" required defaultValue={v.email} className={control} />
         <Errors id="talk-email-error" errors={err.email} />
       </div>
 
       <div>
-        <label htmlFor="talk-phone" className="text-[19px] font-semibold text-ink-900">
-          Phone <span className="font-normal text-ink-600">(if you would like us to call)</span>
+        <label htmlFor="talk-phone" className="text-[19px] font-medium text-mist-ink">
+          Phone <span className="font-normal text-mist-muted">(if you would like us to call)</span>
         </label>
         <input {...field("phone")} type="tel" autoComplete="tel" defaultValue={v.phone} className={control} />
         <Errors id="talk-phone-error" errors={err.phone} />
@@ -84,7 +84,7 @@ export function TalkForm() {
 
       <div className="grid gap-7 sm:grid-cols-2">
         <div>
-          <label htmlFor="talk-country" className="text-[19px] font-semibold text-ink-900">Where you live</label>
+          <label htmlFor="talk-country" className="text-[19px] font-medium text-mist-ink">Where you live</label>
           <select {...field("country")} required defaultValue={v.country ?? ""} className={control}>
             <option value="" disabled>Choose…</option>
             {COUNTRIES.map((c) => (
@@ -94,7 +94,7 @@ export function TalkForm() {
           <Errors id="talk-country-error" errors={err.country} />
         </div>
         <div>
-          <label htmlFor="talk-callTime" className="text-[19px] font-semibold text-ink-900">Best time to talk</label>
+          <label htmlFor="talk-callTime" className="text-[19px] font-medium text-mist-ink">Best time to talk</label>
           <select {...field("callTime")} required defaultValue={v.callTime ?? ""} className={control}>
             <option value="" disabled>Choose…</option>
             {CALL_TIMES.map((t) => (
@@ -106,15 +106,15 @@ export function TalkForm() {
       </div>
 
       <fieldset>
-        <legend className="text-[19px] font-semibold text-ink-900">What interests you? <span className="font-normal text-ink-600">(any, or none yet)</span></legend>
+        <legend className="text-[19px] font-medium text-mist-ink">What interests you? <span className="font-normal text-mist-muted">(any, or none yet)</span></legend>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {[
             { name: "health", label: "Health" },
             { name: "wellness", label: "Wellness & Ayurveda" },
             { name: "culture", label: "Culture & travel" },
           ].map((o) => (
-            <label key={o.name} className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-kasavu-200 bg-white px-4 text-[18px] has-[:checked]:border-banyan-800">
-              <input type="checkbox" name={o.name} defaultChecked={v[o.name] === "on"} className="h-6 w-6 accent-[#1f3b2d]" />
+            <label key={o.name} className="flex min-h-14 cursor-pointer items-center gap-3 border-2 border-transparent bg-white px-4 text-[18px] transition-colors hover:border-mist-muted has-[:checked]:border-mist-ink">
+              <input type="checkbox" name={o.name} defaultChecked={v[o.name] === "on"} className="h-6 w-6 accent-[#0e1518]" />
               {o.label}
             </label>
           ))}
@@ -122,10 +122,10 @@ export function TalkForm() {
       </fieldset>
 
       <div>
-        <label htmlFor="talk-message" className="text-[19px] font-semibold text-ink-900">
-          Anything you would like us to know? <span className="font-normal text-ink-600">(optional)</span>
+        <label htmlFor="talk-message" className="text-[19px] font-medium text-mist-ink">
+          Anything you would like us to know? <span className="font-normal text-mist-muted">(optional)</span>
         </label>
-        <p className="text-[17px] text-ink-600">For example when you hope to travel. Please don&apos;t include medical records.</p>
+        <p className="text-[17px] text-mist-muted">For example when you hope to travel. Please don&apos;t include medical records.</p>
         <textarea {...field("message")} rows={4} defaultValue={v.message} className={cn(control, "py-3 leading-relaxed")} />
         <Errors id="talk-message-error" errors={err.message} />
       </div>
@@ -137,7 +137,7 @@ export function TalkForm() {
       </div>
 
       <div>
-        <label className="flex cursor-pointer gap-3 text-[18px] leading-relaxed text-ink-800">
+        <label className="flex cursor-pointer gap-3 text-[18px] leading-relaxed text-mist-ink">
           <input
             type="checkbox"
             name="consent"
@@ -145,7 +145,7 @@ export function TalkForm() {
             defaultChecked={v.consent === "on"}
             aria-invalid={err.consent ? true : undefined}
             aria-describedby={err.consent ? "talk-consent-error" : undefined}
-            className="mt-1 h-6 w-6 shrink-0 accent-[#1f3b2d]"
+            className="mt-1 h-6 w-6 shrink-0 accent-[#0e1518]"
           />
           You may contact me about my trip. We use your details only to arrange this conversation and plan your trip.
         </label>

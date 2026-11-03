@@ -16,8 +16,10 @@ A public homepage and two interfaces over one data model:
   `/talk`, which records a LEAD client with a `WEBSITE` conversation. Inner
   pages: `/how-it-works`, `/why-kerala`, `/safety`. Copy lives
   in `src/app/(site)/content.ts` and is placeholder until Nivedith rewrites it.
-  The homepage story runs over a 3D backwater (`src/components/site/three/`,
-  three.js); site motion is GSAP ScrollTrigger (`src/components/site/motion.tsx`).
+  The site is photography-led (credited Unsplash photographs of Kerala, set in
+  `content.ts`), in Gambarino and General Sans (Fontshare, self-hosted in
+  `src/app/(site)/fonts/`); motion is GSAP ScrollTrigger plus CSS sticky
+  (`src/components/site/motion.tsx`, `why-chapters.tsx`).
 - **Admin** (`/admin`) — for the team: what we offer (modules → catalogues →
   vendors with branches and practitioners → components), clients, trips,
   requirements, conversations, the health-core builder, the Feed and AI runs.

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Mail, Phone } from "lucide-react";
+import { frame, Photo, telHref } from "@/components/site/blocks";
 import { contactEmail, contactPhone } from "@/lib/env";
-import { NEXT_STEPS } from "../content";
+import { cn } from "@/lib/utils";
+import { NEXT_STEPS, PHOTOS } from "../content";
 import { TalkForm } from "./talk-form";
 
 export const metadata: Metadata = {
@@ -15,64 +16,57 @@ export default function TalkPage() {
   const phone = contactPhone();
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
-      <div>
-        <p className="text-[16px] font-semibold uppercase tracking-[0.18em] text-gold-700">Free conversation</p>
-        <h1 className="mt-3 font-display text-[38px] font-medium leading-[1.1] tracking-tight text-banyan-900 sm:text-[50px]">
-          Talk to a person about your trip
-        </h1>
-        <p className="mt-4 max-w-2xl text-[20px] leading-relaxed text-ink-700">
-          It is free, there is no obligation, and you will speak with someone who knows Kerala and our providers.
-        </p>
-        <div className="mt-10 rounded-[28px] bg-white p-6 ring-1 ring-kasavu-200 sm:p-8">
+    <div className={cn(frame, "grid gap-14 pb-28 pt-36 md:grid-cols-12 md:gap-x-6 md:pt-44")}>
+      <div className="md:col-span-7">
+        <div data-rise>
+          <h1 className="site-head text-[clamp(2.4rem,1.4rem+3.6vw,4.75rem)]">Talk to a person about your trip</h1>
+          <p className="site-lead mt-6 max-w-[36rem]">
+            It is free, there is no obligation, and you will speak with someone who knows Kerala and our providers.
+          </p>
+        </div>
+        <div className="mt-12 bg-mist p-6 text-mist-ink sm:p-10">
           <TalkForm />
         </div>
       </div>
 
-      <aside className="space-y-8 lg:pt-28">
-        <div className="rounded-[28px] bg-banyan-900 p-6 text-white sm:p-8">
-          <h2 className="text-[21px] font-semibold text-gold-300">What happens next</h2>
-          <ol className="mt-6 space-y-6">
-            {NEXT_STEPS.map((step, i) => (
-              <li key={step.title} className="flex gap-4">
-                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold-300/60 font-display text-[19px] text-gold-300">
-                  {i + 1}
-                </span>
-                <div>
-                  <p className="text-[19px] font-semibold">{step.title}</p>
-                  <p className="mt-1 leading-relaxed text-white/85">{step.text}</p>
-                </div>
+      <aside className="md:col-span-4 md:col-start-9">
+        <div className="md:sticky md:top-28">
+          <Photo photo={PHOTOS.lake} sizes="(min-width: 768px) 30vw, 100vw" className="aspect-[4/3]" />
+          <h2 className="mt-10 text-[21px] font-medium">What happens next</h2>
+          <ol className="mt-5 space-y-5">
+            {NEXT_STEPS.map((step) => (
+              <li key={step.title}>
+                <p className="font-medium">{step.title}</p>
+                <p className="mt-1 leading-relaxed text-night-muted">{step.text}</p>
               </li>
             ))}
           </ol>
+
+          {(phone || email) && (
+            <>
+              <h2 className="mt-10 text-[21px] font-medium">Prefer to call or write?</h2>
+              <ul className="mt-3 space-y-1">
+                {phone && (
+                  <li>
+                    <a href={telHref(phone)} className="inline-flex min-h-12 items-center text-[19px] underline underline-offset-4">{phone}</a>
+                  </li>
+                )}
+                {email && (
+                  <li>
+                    <a href={`mailto:${email}?subject=${encodeURIComponent("Free call with Aalmaram Health")}`} className="inline-flex min-h-12 items-center break-all text-[19px] underline underline-offset-4">
+                      {email}
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </>
+          )}
+
+          <p className="mt-10 text-[16px] leading-relaxed text-night-muted">
+            We are a concierge, not a clinic, and we do not give medical advice. If you need urgent care, please contact
+            your local services.
+          </p>
         </div>
-
-        {(phone || email) && (
-          <div className="rounded-[28px] bg-kasavu-100 p-6 sm:p-8">
-            <h2 className="text-[21px] font-semibold text-ink-900">Prefer to call or write?</h2>
-            <ul className="mt-4 space-y-3">
-              {phone && (
-                <li>
-                  <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className="inline-flex min-h-12 items-center gap-3 text-[19px] font-semibold text-banyan-900 underline underline-offset-4">
-                    <Phone className="h-5 w-5 text-gold-700" aria-hidden="true" /> {phone}
-                  </a>
-                </li>
-              )}
-              {email && (
-                <li>
-                  <a href={`mailto:${email}?subject=${encodeURIComponent("Free call with Aalmaram Health")}`} className="inline-flex min-h-12 items-center gap-3 break-all text-[19px] font-semibold text-banyan-900 underline underline-offset-4">
-                    <Mail className="h-5 w-5 shrink-0 text-gold-700" aria-hidden="true" /> {email}
-                  </a>
-                </li>
-              )}
-            </ul>
-          </div>
-        )}
-
-        <p className="px-2 text-[17px] leading-relaxed text-ink-700">
-          We are a concierge, not a clinic, and we do not give medical advice. If you need urgent care, please contact
-          your local services.
-        </p>
       </aside>
     </div>
   );

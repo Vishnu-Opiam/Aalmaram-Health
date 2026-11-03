@@ -1,4 +1,3 @@
-import { Bone, Eye, HeartPulse, Landmark, Leaf, Smile, Stethoscope, UtensilsCrossed, type LucideIcon } from "lucide-react";
 import type { MixKey } from "@/domain/site/mix";
 
 /**
@@ -10,75 +9,55 @@ import type { MixKey } from "@/domain/site/mix";
  */
 
 /** Free-licence place photography (Unsplash licence), until we have our own. */
-export type Photo = { src: string; alt: string; credit: string; href: string };
+/** `focus` is the CSS object-position that keeps the subject in narrow crops. */
+export type Photo = { src: string; alt: string; credit: string; href: string; focus?: string };
 
-const unsplash = (id: string, alt: string, credit: string, page: string): Photo => ({
+const unsplash = (id: string, alt: string, credit: string, page: string, focus?: string): Photo => ({
   src: `https://images.unsplash.com/photo-${id}`,
   alt,
   credit,
   href: `https://unsplash.com/photos/${page}`,
+  focus,
 });
 
 export const PHOTOS = {
+  lake: unsplash("1583482011546-c327a8076798", "A boatman poles a canoe across a still lake at dawn, with palm islands behind", "Marieke Weller", "vwMBUwR72UM"),
+  prow: unsplash("1583482939907-d6959d54af75", "The prow of a wooden canoe on still water at first light", "Marieke Weller", "lHHnoBDqSK8"),
+  river: unsplash("1643614331150-37823121afce", "A boat moored on a misty river lined with palms and fishing nets", "Emmanual Thomas", "Re6R7pDEo5c"),
+  nets: unsplash("1583558257444-cfba032b49ea", "A Chinese fishing net against the evening sky in Kochi", "Sarfaraz Siddiqui", "6MMW6cMIgX0"),
+  dhara: unsplash("1775133263714-848c8fe09e73", "Warm oil poured in a thin stream onto the forehead during an Ayurveda treatment", "Charanjeet Dhiman", "kvf5kfVMqng", "20% 80%"),
+  treatmentRoom: unsplash("1731597076108-f3bbe268162f", "A treatment room with a brass oil vessel hanging above a wooden table", "Gokul Gurung", "N3Ll8c2uLgE"),
+  mortar: unsplash("1492552085122-36706c238263", "Herbs ground by hand in a stone mortar", "Katherine Hanlon", "bd_fCZhy_W8"),
+  eyeClinic: unsplash("1565428744974-f41cf79c05fa", "Eye examination equipment in a clinic", "Syed Hussaini", "mDCuzdHh_bw"),
+  tea: unsplash("1491497895121-1334fc14d8c9", "Misty tea gardens on the hills of Munnar", "Vivek Kumar", "JS_ohjocm00"),
+  hills: unsplash("1766671965039-8bc8687390ad", "Misty mountains above a calm lake at sunrise", "Anjith Paul", "biC4hql1lWU"),
+  kathakali: unsplash("1597735881932-d9664c9bbcea", "A Kathakali performer in green face paint and an ornate headdress", "Divyanshi Verma", "h3SyJYsqYSo", "65% 50%"),
+  kathakaliStage: unsplash("1691075213372-ff9e2d6d7645", "A Kathakali performer on stage, with drummers behind", "Anantha Krishnan", "zMfvtg7jfuc"),
+  palms: unsplash("1679934409073-838c884261fb", "Coconut palms in morning fog", "Hardik Monga", "GfFsbhNOW5c"),
+  canal: unsplash("1704365159871-6bf63f00b9c8", "A canoe on a narrow canal through palm groves, seen from above", "Swastik Arora", "h-PHS1XHC0I"),
+  coast: unsplash("1697193374263-8aeb5488dabe", "Cliffs above the sea on Kerala's southern coast", "Faraz Ghori", "Un0s8OmOEr0"),
   houseboat: unsplash("1593693411515-c20261bcad6e", "A houseboat on the palm-lined backwaters of Alappuzha", "Abhishek Prasad", "ii0oWs5abCo"),
-  canoe: unsplash("1590050752117-238cb0fb12b1", "A canoe on a quiet canal at sunrise, framed by coconut palms", "Ajmal MK", "pfLyzuGfofY"),
-  tea: unsplash("1696027356970-b1527cc0d33c", "Tea gardens on rolling green hills below the Western Ghats", "Antony Thomas", "PHOk0ZP28a0"),
-  kathakali: unsplash("1786644849913-8107d8179364", "A Kathakali performer in a red costume and ornate headdress", "Chethan Kanakamurthy", "x3dZS_TPqII"),
-  oils: unsplash("1492552181161-62217fc3076d", "Oil poured over herbs in a stone mortar", "Katherine Hanlon", "mod2s3-qFOc"),
-  spout: unsplash("1780756817394-9a5414ce47a1", "Water dripping from a bamboo spout into a stone basin", "Jome Parker", "4RruyuZvMDc"),
-  kochi: unsplash("1696966358360-f64c761e0cb5", "Old waterfront buildings across the water in Kochi", "Sleeba Thomas", "7FNVvI2Lezc"),
-  palms: unsplash("1602216056096-3b40cc0c9944", "A houseboat between tall coconut palms", "Nature Photographer", "29ezCWtMtnM"),
-  hills: unsplash("1650884986392-984358536050", "Misty green hills and tea fields", "Kevin JD", "S1nGUR7bCaM"),
   check: unsplash("1700832082200-af7deeb63d9b", "A stethoscope and a blood pressure gauge on white linen", "Immo Wegmann", "njrDE70M2VI"),
+  kochi: unsplash("1696966358360-f64c761e0cb5", "Old waterfront buildings across the water in Kochi", "Sleeba Thomas", "7FNVvI2Lezc"),
 } satisfies Record<string, Photo>;
 
 export const HERO = {
-  title: "Health, rest and Kerala — looked after for you",
+  title: "Health journeys to Kerala, arranged for you",
   /** The longer headline from the first version, kept for search and sharing. */
   longTitle: "Health check-ups, Ayurveda and culture in Kerala — arranged for you",
   line:
-    "Aalmaram Health plans and looks after your health journey to Kerala, with licensed providers we know. We are a concierge, not a clinic.",
+    "Check-ups, Ayurveda and the backwaters, planned around you with licensed providers we know. We are a concierge, not a clinic.",
   forWhom: "For people from the UK, Austria, Slovenia and beyond who want planned care, rest and a real trip — without arranging it alone.",
   context: "If waiting lists or private prices at home are holding you back, Kerala can be a calm, well-organised alternative.",
 };
 
-/** The homepage story: one day on the backwaters (placeholder copy). */
-export const STORY = [
-  { time: "Dawn", eyebrow: "Health · Wellness · Culture", title: "", text: "", cta: true, heading: "h1" as const },
-  {
-    time: "First light",
-    eyebrow: "Aalmaram · the banyan tree",
-    title: "Deep roots. Wide shelter.",
-    text: "Aalmaram is Malayalam for the banyan, the tree a village gathers under. We know Kerala and the people we recommend, and one person looks after every detail for you.",
-    align: "right" as const,
-  },
-  {
-    time: "Morning",
-    eyebrow: "Health",
-    title: "Clear mornings for your health",
-    text: "Check-ups and specialist consultations with experienced doctors at hospitals we have looked at closely. Results in English, for you and for your own doctor.",
-  },
-  {
-    time: "Midday",
-    eyebrow: "Wellness",
-    title: "The heat of the day is for rest",
-    text: "Classical Ayurveda and quiet retreats, with practitioners we have met. We tell you plainly what a programme involves — and make no promises about what it will do.",
-    align: "right" as const,
-  },
-  {
-    time: "Evening",
-    eyebrow: "Culture",
-    title: "Evenings are for Kerala itself",
-    text: "A houseboat on the lake, the fishing nets at sunset, Kathakali by lamplight and a sadya on a banana leaf — at your pace.",
-  },
-  {
-    time: "Night",
-    eyebrow: "One person, from first call to home",
-    title: "When the lamps come on, you are looked after",
-    text: "Your coordinator plans with you, books once you have confirmed and paid, and is there while you travel. It starts with a free conversation.",
-    align: "centre" as const,
-    cta: true,
-  },
+/** Why Kerala, told in five words over five photographs (placeholder copy). */
+export const WHY_CHAPTERS = [
+  { word: "Backwaters", photo: PHOTOS.river, text: "Lakes, canals and lagoons run behind the coast for hundreds of kilometres. You see them best slowly, from a houseboat or a canoe." },
+  { word: "Ayurveda", photo: PHOTOS.dhara, text: "Kerala is known for classical Ayurveda, practised by doctors trained in it. We tell you what a programme involves, never what it will do for you." },
+  { word: "Hospitals", photo: PHOTOS.eyeClinic, veil: 0.55, text: "Kochi and Thiruvananthapuram have large private hospitals; several hold national (NABH) or international (JCI) accreditation. English is widely spoken." },
+  { word: "Hills", photo: PHOTOS.tea, text: "A few hours inland, tea gardens and cool air in the Western Ghats. Days for walking, or for doing very little." },
+  { word: "Heritage", photo: PHOTOS.kathakali, text: "Centuries of trade in Fort Kochi, Kathakali by lamplight, temple festivals and a sadya on a banana leaf." },
 ];
 
 export const STATEMENT =
@@ -91,23 +70,15 @@ export const PROMISES = [
 ];
 
 export const STEPS = [
-  { title: "A free call with a person", text: "Tell us what you are looking for. We listen, answer your questions and there is no obligation." },
-  { title: "We draft your plan", text: "Your coordinator puts appointments, wellness and culture from vetted providers into your private trip page." },
-  { title: "You shape it and book", text: "Move days, add or remove things and see every price. Nothing is booked until you confirm and pay." },
-  { title: "Travel, then take it home", text: "We look after you in Kerala. Your results and reports come to you — and to your own doctor if you wish." },
-];
-
-export const WHY_KERALA = [
-  { title: "Established hospitals", text: "Kerala has large private hospitals and clinics; several hold national (NABH) or international (JCI) accreditation." },
-  { title: "English spoken", text: "English is widely used by doctors and staff in Kerala's private hospitals." },
-  { title: "Prices you can see", text: "Every provider's price is on your trip page before you decide. The examples on this page give you an idea." },
-  { title: "Ayurveda and a real holiday", text: "Kerala is a home of classical Ayurveda, with backwaters, hills, coast and centuries of history to enjoy." },
+  { verb: "Talk", title: "A free call with a person", text: "Tell us what you are looking for. We listen, answer your questions and there is no obligation." },
+  { verb: "Plan", title: "We draft your plan", text: "Your coordinator puts appointments, wellness and culture from vetted providers into your private trip page." },
+  { verb: "Decide", title: "You shape it and book", text: "Move days, add or remove things and see every price. Nothing is booked until you confirm and pay." },
+  { verb: "Travel", title: "Travel, then take it home", text: "We look after you in Kerala. Your results and reports come to you — and to your own doctor if you wish." },
 ];
 
 /** Something we arrange, shown in Explore and in "Your mix". */
 export type Experience = {
   kind: MixKey;
-  Icon: LucideIcon;
   title: string;
   line: string;
   duration: string;
@@ -118,22 +89,22 @@ export type Experience = {
 };
 
 export const NEEDS: Experience[] = [
-  { kind: "health", Icon: Stethoscope, title: "Health check", line: "A full check-up with blood tests, scans and a doctor's consultation.", duration: "1–2 days", receive: "Written results in English", priceFromEur: 250, photo: PHOTOS.check },
-  { kind: "health", Icon: HeartPulse, title: "Heart", line: "Cardiology consultation with ECG, echo and stress test as your cardiologist advises.", duration: "1–2 days", receive: "Report and consultation notes", priceFromEur: 350 },
-  { kind: "health", Icon: Bone, title: "Joints", line: "Orthopaedic assessment with imaging, and physiotherapy if recommended.", duration: "1–5 days", receive: "Imaging report and care plan from the provider", priceFromEur: 300 },
-  { kind: "health", Icon: Smile, title: "Dental", line: "Dental examination and planned treatment at a modern dental clinic.", duration: "2–10 days", receive: "Treatment plan and records", priceFromEur: 150 },
-  { kind: "health", Icon: Eye, title: "Eyes", line: "Eye examination with an ophthalmologist; planned surgery only if your surgeon advises it.", duration: "1–7 days", receive: "Examination report", priceFromEur: 100 },
-  { kind: "wellness", Icon: Leaf, title: "Ayurveda", line: "A classical Ayurveda programme with consultations and daily treatments.", duration: "7–21 days", receive: "Programme summary from the practitioner", priceFromEur: 900, photo: PHOTOS.oils },
-  { kind: "culture", Icon: Landmark, title: "Culture", line: "Fort Kochi, the backwaters, temple arts and Kerala's kitchens, at your pace.", duration: "1–4 days", receive: "A guided, private itinerary", priceFromEur: 80, photo: PHOTOS.kochi },
+  { kind: "health", title: "Health check", line: "A full check-up with blood tests, scans and a doctor's consultation.", duration: "1–2 days", receive: "Written results in English", priceFromEur: 250, photo: PHOTOS.check },
+  { kind: "health", title: "Heart", line: "Cardiology consultation with ECG, echo and stress test as your cardiologist advises.", duration: "1–2 days", receive: "Report and consultation notes", priceFromEur: 350 },
+  { kind: "health", title: "Joints", line: "Orthopaedic assessment with imaging, and physiotherapy if recommended.", duration: "1–5 days", receive: "Imaging report and care plan from the provider", priceFromEur: 300 },
+  { kind: "health", title: "Dental", line: "Dental examination and planned treatment at a modern dental clinic.", duration: "2–10 days", receive: "Treatment plan and records", priceFromEur: 150 },
+  { kind: "health", title: "Eyes", line: "Eye examination with an ophthalmologist; planned surgery only if your surgeon advises it.", duration: "1–7 days", receive: "Examination report", priceFromEur: 100, photo: PHOTOS.eyeClinic },
+  { kind: "wellness", title: "Ayurveda", line: "A classical Ayurveda programme with consultations and daily treatments.", duration: "7–21 days", receive: "Programme summary from the practitioner", priceFromEur: 900, photo: PHOTOS.dhara },
+  { kind: "culture", title: "Culture", line: "Fort Kochi, the backwaters, temple arts and Kerala's kitchens, at your pace.", duration: "1–4 days", receive: "A guided, private itinerary", priceFromEur: 80, photo: PHOTOS.kochi },
 ];
 
 /** Extra examples for "Your mix" (placeholder). */
 export const MORE_EXPERIENCES: Experience[] = [
-  { kind: "wellness", Icon: Leaf, title: "Rest at a wellness retreat", line: "Quiet days at a retreat with simple food, gardens and gentle treatments.", duration: "3–10 days", receive: "A room, meals and a daily programme", priceFromEur: 120, photo: PHOTOS.spout },
-  { kind: "wellness", Icon: Leaf, title: "Slow days in the tea hills", line: "Cool air, walks between tea gardens and time to do very little.", duration: "2–4 days", receive: "A hill stay arranged for you", priceFromEur: 150, photo: PHOTOS.hills },
-  { kind: "culture", Icon: Landmark, title: "A day on the backwaters", line: "A houseboat or canoe through palm-lined canals and village life.", duration: "1–2 days", receive: "A private boat and local guide", priceFromEur: 140, photo: PHOTOS.houseboat },
-  { kind: "culture", Icon: Landmark, title: "A Kathakali evening", line: "Watch the make-up being applied, then a performance of classical dance-drama.", duration: "An evening", receive: "Seats and a short introduction", priceFromEur: 30, photo: PHOTOS.kathakali },
-  { kind: "culture", Icon: UtensilsCrossed, title: "Kerala's kitchens", line: "A home-cooked sadya on a banana leaf, and the spice markets behind it.", duration: "Half a day", receive: "A hosted meal and market walk", priceFromEur: 45 },
+  { kind: "wellness", title: "Rest at a wellness retreat", line: "Quiet days at a retreat with simple food, gardens and gentle treatments.", duration: "3–10 days", receive: "A room, meals and a daily programme", priceFromEur: 120, photo: PHOTOS.treatmentRoom },
+  { kind: "wellness", title: "Slow days in the tea hills", line: "Cool air, walks between tea gardens and time to do very little.", duration: "2–4 days", receive: "A hill stay arranged for you", priceFromEur: 150, photo: PHOTOS.hills },
+  { kind: "culture", title: "A day on the backwaters", line: "A houseboat or canoe through palm-lined canals and village life.", duration: "1–2 days", receive: "A private boat and local guide", priceFromEur: 140, photo: PHOTOS.houseboat },
+  { kind: "culture", title: "A Kathakali evening", line: "Watch the make-up being applied, then a performance of classical dance-drama.", duration: "An evening", receive: "Seats and a short introduction", priceFromEur: 30, photo: PHOTOS.kathakali },
+  { kind: "culture", title: "Kerala's kitchens", line: "A home-cooked sadya on a banana leaf, and the spice markets behind it.", duration: "Half a day", receive: "A hosted meal and market walk", priceFromEur: 45 },
 ];
 
 export const EXPERIENCES: Experience[] = [...NEEDS, ...MORE_EXPERIENCES];
@@ -158,19 +129,9 @@ export const SAFETY = [
 
 /** Sample journeys (placeholder): realistic shapes, not packages. Flights not included. */
 export const JOURNEYS: { title: string; days: number; mix: Record<MixKey, number>; line: string; fromEur: number; toEur: number; photo: Photo }[] = [
-  { title: "A thorough check-up, then the backwaters", days: 10, mix: { health: 50, wellness: 20, culture: 30 }, line: "Two days of tests and consultations in Kochi, then a houseboat, Fort Kochi and time to rest.", fromEur: 2200, toEur: 3000, photo: PHOTOS.canoe },
-  { title: "Two weeks of classical Ayurveda", days: 16, mix: { health: 10, wellness: 70, culture: 20 }, line: "A consultation and daily treatments at an Ayurveda centre, with a few gentle outings.", fromEur: 2600, toEur: 3800, photo: PHOTOS.spout },
+  { title: "A thorough check-up, then the backwaters", days: 10, mix: { health: 50, wellness: 20, culture: 30 }, line: "Two days of tests and consultations in Kochi, then a houseboat, Fort Kochi and time to rest.", fromEur: 2200, toEur: 3000, photo: PHOTOS.prow },
+  { title: "Two weeks of classical Ayurveda", days: 16, mix: { health: 10, wellness: 70, culture: 20 }, line: "A consultation and daily treatments at an Ayurveda centre, with a few gentle outings.", fromEur: 2600, toEur: 3800, photo: PHOTOS.treatmentRoom },
   { title: "A heart check and Kerala's culture", days: 9, mix: { health: 40, wellness: 20, culture: 40 }, line: "A cardiology assessment, then the tea hills, a Kathakali evening and Kerala's kitchens.", fromEur: 1600, toEur: 2400, photo: PHOTOS.tea },
-];
-
-/** The first sample journey, told day by day (placeholder). */
-export const JOURNEY_DAYS: { when: string; title: string; text: string; photo?: Photo }[] = [
-  { when: "Day 1", title: "Arrive in Kochi", text: "Someone meets you at the airport. A quiet first evening in Fort Kochi, by the water.", photo: PHOTOS.kochi },
-  { when: "Days 2–3", title: "Your health check", text: "Tests, scans and a consultation, booked and explained in advance. Results in English, for you and your own doctor.", photo: PHOTOS.check },
-  { when: "Days 4–5", title: "Onto the backwaters", text: "A houseboat through palm-lined canals. Nothing to do but watch the water go by.", photo: PHOTOS.houseboat },
-  { when: "Day 6", title: "A Kathakali evening", text: "Watch the make-up go on, then a performance of Kerala's classical dance-drama.", photo: PHOTOS.kathakali },
-  { when: "Days 7–9", title: "Up to the tea hills", text: "Cool air, walks between tea gardens and time to do very little.", photo: PHOTOS.tea },
-  { when: "Day 10", title: "Home, with your results", text: "Your reports travel with you — and to your own doctor, if you wish.", photo: PHOTOS.canoe },
 ];
 
 export const RIGHT_FOR_YOU = {

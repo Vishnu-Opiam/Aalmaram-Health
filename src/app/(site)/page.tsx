@@ -1,153 +1,266 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { Check, X } from "lucide-react";
-import { AppLink as Link } from "@/components/ui/primitives";
-import { BackwaterStory } from "@/components/site/backwater-story";
-import { Faq, MobileCta, MoreLink, photoUrl, Section, TalkBand } from "@/components/site/blocks";
-import { ChecklistScene } from "@/components/site/checklist-scene";
-import { JourneyScene } from "@/components/site/journey-scene";
-import { StepsScene } from "@/components/site/steps-scene";
+import { BookButton, ClosingCta, Faq, frame, MoreLink, Photo } from "@/components/site/blocks";
+import { ExploreList } from "@/components/site/explore-list";
+import { WhyChapters } from "@/components/site/why-chapters";
 import { YourMix } from "@/components/site/your-mix";
-import { formatPriceRange } from "@/domain/site/prices";
-import { contactPhone } from "@/lib/env";
-import { FAQ, HERO, JOURNEY_DAYS, JOURNEYS, PHOTOS, PRICING, RIGHT_FOR_YOU, STEPS, STORY, VETTING, WHY_KERALA } from "./content";
+import { formatPrice, formatPriceRange } from "@/domain/site/prices";
+import { cn } from "@/lib/utils";
+import {
+  FAQ,
+  HERO,
+  JOURNEYS,
+  MORE_EXPERIENCES,
+  NEEDS,
+  PHOTOS,
+  PRICING,
+  PROMISES,
+  RIGHT_FOR_YOU,
+  STATEMENT,
+  STEPS,
+  VETTING,
+  WHY_CHAPTERS,
+} from "./content";
 
 export const metadata: Metadata = {
   title: { absolute: "Aalmaram Health · Health journeys in Kerala, arranged for you" },
   description: HERO.line,
 };
 
+const EXPLORE = [...NEEDS, ...MORE_EXPERIENCES.slice(0, 3)];
+
+/** How we choose providers, set as plain names in columns, one kind per column. */
+const PROOF = [
+  { kind: "We check", names: VETTING.map((v) => v.title) },
+  { kind: "We never", names: ["Give medical advice or a diagnosis", "Book before you have confirmed and paid", "Add a markup to providers' prices"] },
+  { kind: "You can", names: ["Involve your own doctor", "See every price before you decide", "Change your plan until you confirm it"] },
+];
+
 /**
- * Homepage and landing page in one, told as a story: a day on the backwaters
- * in 3D (what this is), then how we choose providers (is it safe), a journey
- * day by day and your own mix (is it for me, what will it cost), how it works,
- * and one clear way to talk to a person.
+ * Homepage and landing page in one. The argument, in order: this is Kerala and
+ * someone looks after you (hero, intro); why Kerala at all (five chapters);
+ * what you can do and what it costs (explore, your mix); how it works; how we
+ * keep it safe; whether it suits you; prices in full; questions; a person.
  */
 export default function HomePage() {
-  const phone = contactPhone();
-  const sample = JOURNEYS[0];
-
   return (
     <>
-      <BackwaterStory phone={phone} chapters={[{ ...STORY[0], title: HERO.title, text: `${HERO.line} ${HERO.forWhom}` }, ...STORY.slice(1)]} />
-
-      <ChecklistScene
-        id="safety"
-        eyebrow="Is it safe?"
-        problem="Kerala has many good providers, but quality is uneven — and their websites rarely tell you who will treat you, how experienced they are, or what it costs."
-        answer="So we go and look."
-        items={VETTING}
-      >
-        <MoreLink href="/safety">How we choose providers, in full</MoreLink>
-      </ChecklistScene>
-
-      <JourneyScene
-        id="journeys"
-        eyebrow="A journey, day by day"
-        title={sample.title}
-        intro={`${sample.days} days, planned around one client's wishes. Every trip is different; this is the shape of one.`}
-        panels={JOURNEY_DAYS}
-        footer={
-          <>
-            <p className="text-[16px] font-semibold uppercase tracking-[0.18em] text-gold-300">Typically, everything on the ground</p>
-            <p className="mt-4 font-display text-[34px] leading-tight">{formatPriceRange(sample.fromEur, sample.toEur)}</p>
-            <p className="mt-4 leading-relaxed text-white/85">Flights not included. Every price is on your trip page before you decide.</p>
-            <Link href="/talk" className="mt-8 inline-flex min-h-12 items-center self-start rounded-full bg-gold-300 px-6 font-semibold text-banyan-950 hover:bg-kasavu-50">
-              Plan one like it
-            </Link>
-          </>
-        }
-      />
-
-      <Section
-        id="explore"
-        eyebrow="Your mix"
-        title="Health, wellness and culture — in the proportions you choose"
-        intro="Try a mix and see what a trip could include. Prices are indicative; your exact quote comes from the provider before you book."
-        tint
-      >
-        <YourMix />
-      </Section>
-
-      <Section id="how-it-works" eyebrow="How it works" title="Four steps, with a person beside you at each one">
-        <StepsScene steps={STEPS} />
-        <MoreLink href="/how-it-works">More on how it works</MoreLink>
-      </Section>
-
-      {/* Why Kerala — a full-bleed photo that drifts as you pass */}
-      <section id="why-kerala" aria-labelledby="why-kerala-title" className="relative scroll-mt-24 overflow-hidden bg-banyan-950 text-white">
-        <div data-parallax="0.35" className="absolute inset-[-15%_0]">
-          <Image src={photoUrl(PHOTOS.tea.src, 2200)} alt="" fill sizes="100vw" className="object-cover opacity-80" />
+      {/* Hero: the lake at dawn, and the place's name along the bottom like a film title. */}
+      <section className="relative isolate flex min-h-svh flex-col justify-end overflow-hidden bg-night text-night-ink">
+        <div data-shutter className="absolute inset-0 -z-10">
+          <Photo photo={PHOTOS.lake} sizes="100vw" priority drift className="h-full w-full" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-banyan-950/95 via-banyan-950/60 to-banyan-950/10" />
-        <div className="relative mx-auto max-w-7xl px-4 py-28 sm:px-6 sm:py-40">
-          <div data-reveal className="max-w-2xl">
-            <p className="text-[16px] font-semibold uppercase tracking-[0.22em] text-gold-300">Why Kerala</p>
-            <h2 id="why-kerala-title" className="mt-4 font-display text-[40px] font-medium leading-[1.05] tracking-tight sm:text-[64px]">
-              Good care, an old tradition, and a beautiful place to be
-            </h2>
-            <p className="mt-6 text-[20px] leading-relaxed text-white/90">{HERO.context}</p>
+        <div className="absolute inset-x-0 top-0 -z-10 h-44 bg-[linear-gradient(rgb(8_12_14/0.5),transparent)]" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-[62%] bg-[linear-gradient(transparent,rgb(8_12_14/0.7))]" aria-hidden="true" />
+
+        <div className={cn(frame, "grid items-end gap-8 pb-6 pt-40 md:grid-cols-12 md:pb-4")}>
+          <h1 data-rise className="site-display text-[30vw] md:col-span-8 md:text-[22vw]">
+            <span className="site-lead block font-[family-name:var(--font-site-sans)] tracking-normal">Health journeys to</span>
+            <span className="-ml-[0.04em] block leading-[0.8]">Kerala</span>
+          </h1>
+          <div data-rise className="md:col-span-4 md:col-start-9 md:pb-[2vw]">
+            <p className="max-w-[26rem] leading-relaxed">{HERO.line}</p>
+            <BookButton className="mt-7" />
+            <p className="mt-3 text-[15px] text-night-ink/90">Free, with a person, no obligation.</p>
           </div>
-          <ul data-stagger className="mt-14 grid gap-4 sm:grid-cols-2 lg:max-w-4xl">
-            {WHY_KERALA.map((item) => (
-              <li key={item.title} className="rounded-[28px] bg-white/10 p-6 ring-1 ring-white/15 backdrop-blur-md">
-                <h3 className="text-[20px] font-semibold text-gold-300">{item.title}</h3>
-                <p className="mt-2 leading-relaxed text-white/90">{item.text}</p>
-              </li>
-            ))}
-          </ul>
-          <Link href="/why-kerala" className="mt-12 inline-flex min-h-12 items-center text-[19px] font-semibold underline underline-offset-4">
-            Discover Kerala: care, Ayurveda, places and seasons
-          </Link>
         </div>
       </section>
 
-      <Section id="right-for-you" eyebrow="Is it for me?" title="Is this right for you?">
-        <div data-stagger className="grid gap-5 md:grid-cols-2">
-          <div className="rounded-[28px] bg-leaf-50 p-6 ring-1 ring-leaf-100 sm:p-10">
-            <h3 className="font-display text-[28px] text-leaf-700">It suits you if</h3>
-            <ul className="mt-6 space-y-4">
-              {RIGHT_FOR_YOU.suits.map((line) => (
-                <li key={line} className="flex gap-3 leading-relaxed text-ink-800">
-                  <Check className="mt-1 h-5 w-5 shrink-0 text-leaf-600" aria-hidden="true" /> {line}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-[28px] bg-white p-6 ring-1 ring-kasavu-200 sm:p-10">
-            <h3 className="font-display text-[28px] text-ink-900">It is not for</h3>
-            <ul className="mt-6 space-y-4">
-              {RIGHT_FOR_YOU.notFor.map((line) => (
-                <li key={line} className="flex gap-3 leading-relaxed text-ink-800">
-                  <X className="mt-1 h-5 w-5 shrink-0 text-laterite-600" aria-hidden="true" /> {line}
-                </li>
-              ))}
-            </ul>
+      {/* Who we are: one paragraph in the right half, a photograph hanging on the left. */}
+      <section aria-labelledby="intro-title" className={cn(frame, "grid gap-12 py-28 md:grid-cols-12 md:gap-x-6 md:py-40")}>
+        <div data-rise className="md:col-span-6 md:col-start-7">
+          <h2 id="intro-title" className="site-head">Deep roots, wide shelter</h2>
+          <p className="site-lead mt-8 indent-[3em]">{STATEMENT}</p>
+          <ul className="mt-12 grid gap-8 sm:grid-cols-3">
+            {PROMISES.map((p) => (
+              <li key={p.title}>
+                <h3 className="font-medium">{p.title}</h3>
+                <p className="mt-2 text-[16px] leading-relaxed text-night-muted">{p.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex items-end gap-6 md:col-span-5 md:row-start-1 md:block">
+          <Photo photo={PHOTOS.prow} sizes="(min-width: 768px) 30vw, 62vw" className="ml-auto aspect-[4/5] w-[62%] md:ml-0 md:mt-[18vh] md:aspect-square md:w-[72%]" />
+          <p className="order-first w-[30%] text-[15px] leading-relaxed text-night-muted md:mt-10 md:w-56">
+            Aalmaram is Malayalam for the banyan, the tree a village gathers under.
+          </p>
+        </div>
+      </section>
+
+      {/* Why Kerala: five words, five photographs, one page-turn each. */}
+      <section id="why-kerala" aria-labelledby="why-title" className="scroll-mt-0">
+        <div className={cn(frame, "grid gap-8 pb-20 md:grid-cols-12 md:gap-x-6")}>
+          <h2 id="why-title" data-rise className="site-head md:col-span-5">Why Kerala</h2>
+          <div data-rise className="md:col-span-6 md:col-start-7">
+            <p className="site-lead">
+              A green strip of south-west India between the mountains and the Arabian Sea, with established hospitals, an
+              old tradition of Ayurveda and some of India&apos;s best-loved places to travel.
+            </p>
+            <MoreLink href="/why-kerala" className="mt-6">Discover Kerala</MoreLink>
           </div>
         </div>
-      </Section>
+        <WhyChapters chapters={WHY_CHAPTERS} />
+      </section>
 
-      <Section id="pricing" eyebrow="Prices" title="Transparent pricing" tint>
-        <ul data-stagger className="grid gap-10 md:grid-cols-3">
-          {PRICING.map((item, i) => (
-            <li key={item.title} className="border-t-2 border-gold-500 pt-8">
-              <p className="font-display text-[88px] leading-none text-banyan-900" aria-hidden="true">
-                {["0%", "1", "€ £"][i]}
-              </p>
-              <h3 className="mt-6 text-[22px] font-semibold text-ink-900">{item.title}</h3>
-              <p className="mt-2 leading-relaxed text-ink-700">{item.text}</p>
-            </li>
+      {/* Explore: what you can do, with a starting price for each. */}
+      <section id="explore" aria-labelledby="explore-title" className={cn(frame, "relative z-10 scroll-mt-20 bg-mist py-28 text-mist-ink md:py-36")}>
+        <div className="grid gap-6 md:grid-cols-12 md:gap-x-6">
+          <h2 id="explore-title" data-rise className="site-head md:col-span-5">Choose what you need</h2>
+          <p data-rise className="text-mist-muted md:col-span-5 md:col-start-7">
+            {HERO.forWhom} Prices are where they start; your exact quote comes from the provider before you book.
+          </p>
+        </div>
+        <div className="mt-14">
+          <ExploreList items={EXPLORE} />
+        </div>
+      </section>
+
+      {/* Your mix: the one thing to try on the page. */}
+      <section aria-labelledby="mix-title" className={cn(frame, "py-28 md:py-36")}>
+        <div className="mb-14 grid gap-6 md:grid-cols-12 md:gap-x-6">
+          <h2 id="mix-title" data-rise className="site-head md:col-span-5">Your own mix</h2>
+          <p data-rise className="site-lead md:col-span-6 md:col-start-7">
+            Most people want some of each. Choose how much health, rest and Kerala, and see what a trip could hold.
+          </p>
+        </div>
+        <YourMix />
+      </section>
+
+      {/* How it works: four verbs, in order. */}
+      <section id="how-it-works" aria-labelledby="how-title" className={cn(frame, "scroll-mt-20 bg-mist py-28 text-mist-ink md:py-36")}>
+        <div className="grid gap-14 md:grid-cols-12 md:gap-x-6">
+          <div data-rise className="md:sticky md:top-32 md:col-span-4 md:self-start">
+            <h2 id="how-title" className="site-head">How it works</h2>
+            <p className="mt-6 leading-relaxed text-mist-muted">One person looks after you at every step. Nothing is booked until you have seen every price, confirmed and paid.</p>
+            <MoreLink href="/how-it-works" className="mt-4 max-md:hidden">More on how it works</MoreLink>
+          </div>
+          <ol className="space-y-16 md:col-span-7 md:col-start-6 md:space-y-24">
+            {STEPS.map((step) => (
+              <li key={step.verb} data-rise className="grid gap-3 sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] sm:items-baseline sm:gap-10">
+                <p className="site-display text-[clamp(4rem,8vw,8rem)]" aria-hidden="true">{step.verb}</p>
+                <div>
+                  <h3 className="text-[21px] font-medium">{step.title}</h3>
+                  <p className="mt-2 leading-relaxed text-mist-muted">{step.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <MoreLink href="/how-it-works" className="md:hidden">More on how it works</MoreLink>
+        </div>
+      </section>
+
+      {/* Is it safe: what we check, what we never do, what you can do. */}
+      <section id="safety" aria-labelledby="safety-title" className={cn(frame, "grid scroll-mt-20 gap-14 py-28 md:grid-cols-12 md:gap-x-6 md:py-36")}>
+        <div data-rise className="md:col-span-4">
+          <h2 id="safety-title" className="site-head">Choosing providers</h2>
+          <p className="mt-6 leading-relaxed text-night-muted">
+            Kerala has many good providers, but quality is uneven, and their websites rarely tell you who will treat you or
+            what it costs. So we go and look.
+          </p>
+          <MoreLink href="/safety" className="mt-4">How we keep it safe</MoreLink>
+        </div>
+        <div className="grid gap-10 sm:grid-cols-3 sm:gap-8 md:col-span-7 md:col-start-6">
+          {PROOF.map((group) => (
+            <ul key={group.kind} data-rise className="space-y-3 text-[20px] leading-snug">
+              <li className="text-night-muted">{group.kind}</li>
+              {group.names.map((name) => (
+                <li key={name}>{name}</li>
+              ))}
+            </ul>
           ))}
-        </ul>
-      </Section>
+        </div>
+      </section>
 
-      <TalkBand />
+      {/* Is this right for you: an honest filter, beside a quiet photograph. */}
+      <section aria-labelledby="fit-title" className={cn(frame, "grid gap-12 bg-night-raised py-28 md:grid-cols-12 md:gap-x-6 md:py-36")}>
+        <Photo photo={PHOTOS.palms} sizes="(min-width: 768px) 40vw, 100vw" className="aspect-[4/5] md:col-span-5" />
+        <div data-rise className="md:col-span-6 md:col-start-7 md:self-center">
+          <h2 id="fit-title" className="site-head">Is this right for you?</h2>
+          <h3 className="mt-10 text-[21px] font-medium">It suits you if</h3>
+          <ul className="mt-3 space-y-2 leading-relaxed text-night-muted">
+            {RIGHT_FOR_YOU.suits.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          <h3 className="mt-10 text-[21px] font-medium">It is not for</h3>
+          <ul className="mt-3 space-y-2 leading-relaxed text-night-muted">
+            {RIGHT_FOR_YOU.notFor.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-      <Section id="faq" eyebrow="Questions" title="Questions people ask">
-        <Faq items={FAQ} />
-      </Section>
+      {/* Prices, set like a menu. */}
+      <section id="pricing" aria-labelledby="pricing-title" className={cn(frame, "grid scroll-mt-20 gap-14 bg-mist py-28 text-mist-ink md:grid-cols-12 md:gap-x-6 md:py-36")}>
+        <div data-rise className="md:col-span-3">
+          <h2 id="pricing-title" className="site-head">What it costs</h2>
+          <p className="mt-6 text-[16px] leading-relaxed text-mist-muted">Indicative, in euros with pounds alongside. Flights are not included.</p>
+          <Photo photo={PHOTOS.mortar} sizes="(min-width: 768px) 22vw, 60vw" className="mt-10 aspect-[4/5] w-3/5 md:w-full" />
+        </div>
+        <div className="grid gap-x-16 gap-y-14 md:col-span-8 md:col-start-5 lg:grid-cols-2">
+          <PriceGroup title="How we charge">
+            {PRICING.map((p, i) => (
+              <PriceRow key={p.title} name={p.title} price={["No markup", "Shown first", "Then we book"][i]} text={p.text} />
+            ))}
+          </PriceGroup>
+          <PriceGroup title="Care, from">
+            {NEEDS.map((n) => (
+              <PriceRow key={n.title} name={n.title} price={formatPrice(n.priceFromEur)} />
+            ))}
+          </PriceGroup>
+          <PriceGroup title="Whole journeys, on the ground" className="lg:col-span-2">
+            <div className="grid gap-x-16 lg:grid-cols-2">
+              {JOURNEYS.map((j) => (
+                <PriceRow key={j.title} name={`${j.title}, ${j.days} days`} price={formatPriceRange(j.fromEur, j.toEur)} text={j.line} stacked />
+              ))}
+            </div>
+          </PriceGroup>
+        </div>
+      </section>
 
-      <MobileCta />
+      {/* Questions, beside a tall photograph. */}
+      <section id="faq" aria-labelledby="faq-title" className={cn(frame, "grid scroll-mt-20 gap-14 py-28 md:grid-cols-12 md:gap-x-6 md:py-36")}>
+        <div className="md:col-span-6">
+          <h2 id="faq-title" data-rise className="site-head">Questions people ask</h2>
+          <ul data-rise className="mt-8 space-y-1 text-[18px] text-night-muted">
+            <li>Kerala, south-west India. Fly into Kochi or Thiruvananthapuram.</li>
+            <li>For clients from the UK, Austria and Slovenia, and from anywhere.</li>
+            <li>It starts with a free conversation, by phone or video.</li>
+          </ul>
+          <Faq items={FAQ} tone="night" className="mt-10" />
+          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
+            <BookButton />
+            <MoreLink href="/safety">Is it safe?</MoreLink>
+          </div>
+        </div>
+        <div className="relative hidden md:col-span-5 md:col-start-8 md:block">
+          <Photo photo={PHOTOS.nets} sizes="40vw" className="sticky top-28 aspect-[3/4]" />
+        </div>
+      </section>
+
+      <ClosingCta photo={PHOTOS.hills} />
     </>
+  );
+}
+
+function PriceGroup({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
+  return (
+    <div data-rise className={className}>
+      <h3 className="text-[24px] font-medium">{title}</h3>
+      <div className="mt-6 space-y-5">{children}</div>
+    </div>
+  );
+}
+
+function PriceRow({ name, price, text, stacked }: { name: string; price: string; text?: string; stacked?: boolean }) {
+  return (
+    <div className={cn(stacked && "pb-4")}>
+      <p className={cn("flex justify-between gap-6 text-[19px]", stacked && "flex-col gap-1")}>
+        <span>{name}</span>
+        <span className="shrink-0 tabular-nums">{price}</span>
+      </p>
+      {text && <p className="mt-1 max-w-[36ch] text-[16px] leading-relaxed text-mist-muted">{text}</p>}
+    </div>
   );
 }
