@@ -46,3 +46,6 @@ export const isProduction = () => env().NODE_ENV === "production";
  * DATABASE_URL and SESSION_SECRET need not exist.
  */
 export const contactEmail = () => z.string().email().optional().catch(undefined).parse(process.env.CONTACT_EMAIL || undefined);
+
+/** Public phone number for the site header and footer; hidden until set. Read alone for the same reason. */
+export const contactPhone = () => z.string().trim().min(6).max(40).optional().catch(undefined).parse(process.env.CONTACT_PHONE || undefined);

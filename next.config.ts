@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Public site placeholder photography (Unsplash licence) until we have our own.
+  images: { remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }] },
   async headers() {
     return [
       {

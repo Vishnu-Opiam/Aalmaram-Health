@@ -92,10 +92,11 @@
 
 ## Website — public site (Nivedith, 2 Nov 2026; notes in `inputs/2026-11-02-website-call-notes.md`)
 - [x] W.1 Homepage / landing page at `/` (placeholder copy; one CTA: a free call)
+- [x] W.1b Redesign "Under the banyan" + `/talk` free-conversation request (direction: `website/DESIGN_DIRECTION.md`)
 - [ ] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care)
 - [ ] W.3 Safety & quality page with the formal vetting process — needs Nivedith's vetting process
 - [ ] W.4 How it works, About / our network & team pages
-- [ ] W.5 Explore on the website (interactive, by need) and a services chatbot
+- [~] W.5 Explore on the website (interactive, by need) and a services chatbot — "Your mix" on the homepage done; chatbot not started
 - [ ] W.6 Practical guide, journeys & stories, guides & articles
 - [ ] W.7 (later) Country selector that personalises waits, costs, travel time and shared history
 
@@ -191,6 +192,10 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-11-02 | Site keeps `noindex` (root layout) for now. | Copy and prices are placeholders; switch indexing on when Nivedith signs off the content. |
 | 2026-11-02 | "Book a free call" opens a `mailto:` to `CONTACT_EMAIL`; unset, it shows "Call booking opens soon". No scheduler or CRM. | No inbox or booking tool chosen yet; no paid services provisioned by the agent. |
 | 2026-11-02 | Tiles use icons, not provider photos; the safety box mentions GDPR only as "our privacy notice … is being prepared", not as a compliance claim. | Copyright concerns raised in the call; CLAUDE.md §4 forbids claiming compliance. |
+| 2026-11-03 | Site redesign "Under the banyan" approved by Vishnu with the recommended defaults: original layered hero art + Unsplash-licence place photos (credited in the footer) until we have our own; motion in scroll-driven CSS only (no GSAP/Framer), off for reduced motion, parallax desktop-only. | Lighthouse target, zero JS for motion, no licence risk in the hero. |
+| 2026-11-03 | Every "book" button goes to `/talk`, a short form that creates a LEAD client plus a `WEBSITE` conversation (new `Channel` value) and a staff notice with name + link only. An existing client's record is never changed from the public form. The `mailto:` stays as "or email us". No calendar tool. | Approved default; reuses the admin the team already has; no new service. |
+| 2026-11-03 | Prices are set in euros and shown with "≈ £" at a fixed 0.86 rate, rounded to £5 (`domain/site/prices.ts`). Plain numbers, not `Decimal`: orientation figures, never a quote or a charge. | UK is the biggest market; Decimal is for money we bill. |
+| 2026-11-03 | People section not built: no names or photos yet, and fictional people on the public site would mislead. Learn section hidden until the first article exists ("coming soon" cards read as unfinished). `CONTACT_PHONE` added; phone lines appear only once it is set. | 2 Nov call said skip "who stands behind it"; NN/g "current content". |
 | 2026-10-23 | Portal tabs are plain links (full page loads); other portal links stay `AppLink`. | A tab click right after a page load sometimes did nothing in the e2e run (1 in 4) — the client-router flakiness the README already notes. Tabs must always work. |
 | 2026-10-23 | Portal look: Figtree body at 18 px and Fraunces headings (`next/font`), pill buttons ≥ 52 px, tokens forest / lagoon (health) / leaf (wellness) / marigold (culture), no text lighter than ink-600; an original SVG Kerala scene instead of stock photos; short, reduced-motion-aware animations. Admin styling unchanged. | Vishnu's reference designs for fonts, colour and motion; legibility for 50+ readers; no licensing questions. |
 | 2026-10-23 | The "Ideas for you" rail and its `boardIdeas` / `tripIdeas` are removed; ideas now come per day (slot suggestions in "Add something") and from the chat. `client-chat` prompt bumped to `.2` for the new button names. | Three competing "add" paths were part of the confusion; dead code otherwise. |
@@ -216,6 +221,9 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-15 | X.6 | The MVP chatbot shows its itinerary at once. Before real clients, must staff approve an AI itinerary before the client sees it? | |
 | 2026-10-23 | P3.7 | Older clients will want to **phone** their relationship manager. May we add `phone` (and WhatsApp) and a photo to staff (`User`), shown to their clients on My trip and Ask us? Small schema change; until then the portal shows name and email. | |
 | 2026-10-23 | P3.1 | Real **photography** (providers, places) would do more for trust than the illustrated scene. Who supplies it, and may we use vendors' own images? | |
+| 2026-11-03 | W.1b | Phone number and hours to show (`CONTACT_PHONE` on Vercel), and confirm `CONTACT_EMAIL`. | |
+| 2026-11-03 | W.1b | Placeholder copy needing Nivedith: vetting checklist (we must actually do each step before this ships), sample journeys and their price ranges, five new FAQ answers, "what happens next" after a request. | |
+| 2026-11-03 | W.1b | Names, roles and photos for a "people behind Aalmaram" section; our own or providers' photos to replace the Unsplash placeholders. | |
 | 2026-11-02 | W.1 | Which inbox (or booking tool, e.g. a calendar link) should "Book a free call" go to? Set `CONTACT_EMAIL` on Vercel once decided. | |
 | 2026-11-02 | W.1 | Indicative "from" prices on the Explore tiles are placeholders — please confirm or replace each. | |
 | 2026-11-02 | W.1 | Homepage copy is placeholder (Nivedith will rewrite); privacy notice text for European clients is needed before the GDPR line can link anywhere. | |
@@ -226,6 +234,16 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-11-03** · `feat/site-redesign` · Research (NN/g on older users and trust, Baymard, Laws of UX, WCAG 2.2,
+  ASA/CAP health claims), reference study and audit → `website/DESIGN_DIRECTION.md`, approved with defaults. Built:
+  new palette (kasavu / banyan / gold / laterite) and shell (all links visible on desktop, labelled "Menu" on phones,
+  phone/email in header and footer), framed layered dawn hero with parallax and drifting mist, word-by-word
+  statement, banyan that grows a root per How-it-works step, "Your mix" (presets + ±10% buttons, examples change,
+  announced to screen readers), vetting checklist, sample journeys with mix bars and £/€ ranges, Why Kerala photo
+  band, extended FAQ, "what happens next", sticky phone CTA; `/talk` form → LEAD + WEBSITE conversation (migration
+  `website_enquiry`), `/talk/thanks`, "Website requests" card on the admin client page. Tests: typecheck ✓,
+  162 unit + integration ✓ (new: mix/prices unit, website-requests integration), build ✓; lint not configured
+  (prompts), skipped. Browser pane: 1366 px and 375 px, menu, form errors + submit, admin view.
 - **2026-11-02** · `feat/public-homepage` · Nivedith's website call (Vishnu's recording, transcribed locally; notes in
   `inputs/2026-11-02-website-call-notes.md`). Built W.1: public homepage at `/` — hero (what is this, who it's for,
   concierge not a clinic, one line on waits and costs), How it works (4 steps), Why Kerala preview, Explore tiles by
