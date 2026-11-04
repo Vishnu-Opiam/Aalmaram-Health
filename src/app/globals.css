@@ -75,6 +75,35 @@
   --color-marigold-300: #f0c470;
   --color-marigold-500: #d68f1f;
   --color-marigold-700: #87560b;
+
+  /* Public site ("Under the banyan"): kasavu off-white, banyan green, a gold
+     thread (300/500 decorative only; 700 for text) and laterite for culture. */
+  --color-kasavu-50: #f7f3ea;
+  --color-kasavu-100: #efe8d8;
+  --color-kasavu-200: #e2d8c2;
+  --color-banyan-950: #14271e;
+  --color-banyan-900: #1f3b2d;
+  --color-banyan-800: #2a4c3a;
+  --color-gold-300: #d9b86a;
+  --color-gold-500: #b08a3e;
+  --color-gold-700: #7a5c1e;
+  --color-laterite-50: #f8ece7;
+  --color-laterite-600: #a2482e;
+
+  /* Public site (Nov 2026 rebuild): colour comes from the photographs. A
+     backwater-at-night ground, a monsoon-mist field for practical sections,
+     and lamp brass on the one action. Ink on night 16:1, muted 7.9:1;
+     ink on mist 15:1, muted 6.4:1; night on brass 8.4:1. */
+  --color-night: #0e1518;
+  --color-night-raised: #172126;
+  --color-night-ink: #edeeea;
+  --color-night-muted: #a3adaa;
+  --color-mist: #e7e8e4;
+  --color-mist-raised: #dcded9;
+  --color-mist-ink: #11181b;
+  --color-mist-muted: #4e5a57;
+  --color-brass: #cfab70;
+  --color-brass-bright: #e2c38f;
 }
 
 /* Portal fonts are loaded by next/font on the /trip layout; `inline` makes

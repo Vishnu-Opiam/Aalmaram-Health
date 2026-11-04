@@ -47,6 +47,12 @@ export default async function ClientDetailPage({
         orderBy: { startDate: "asc" },
         include: { itinerary: { select: { _count: { select: { items: true } } } } },
       },
+      // Free-conversation requests from the public site, not tied to a trip yet.
+      conversations: {
+        where: { channel: "WEBSITE" },
+        orderBy: { occurredAt: "desc" },
+        select: { id: true, occurredAt: true, transcript: true },
+      },
     },
   });
 
@@ -123,6 +129,23 @@ export default async function ClientDetailPage({
               />
             </div>
           </Card>
+
+          {client.conversations.length > 0 && (
+            <Card>
+              <CardHeader
+                title="Website requests"
+                description="Written by the visitor on the public site and not verified."
+              />
+              <ul className="divide-y divide-sand-200">
+                {client.conversations.map((request) => (
+                  <li key={request.id} className="p-5">
+                    <p className="text-xs font-medium text-ink-500">{formatRelative(request.occurredAt)}</p>
+                    <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-ink-700">{request.transcript}</p>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
 
           <Card>
             <CardHeader

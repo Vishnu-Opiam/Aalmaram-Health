@@ -1,0 +1,106 @@
+/*
+  Public site. Two typefaces, five sizes far apart: small (15px), body (18–19px),
+  lead (20–26px), head (36–68px) and display (the big words). Square photographs,
+  round buttons, no rules, shadows or gradients; space and tone do the structuring.
+  Motion lives in GSAP (components/site/motion.tsx) and switches off for reduced motion.
+*/
+
+/* The fixed header must never cover a focused element (WCAG 2.4.11). */
+html:has(.site-shell) {
+  scroll-padding-top: 6rem;
+}
+
+/* Overscroll and the moment before paint show the night ground, not the app's light page. */
+body:has(.site-shell) {
+  background: var(--color-night);
+}
+
+/* Lenis smooth scrolling (on only when motion is allowed). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.site-shell {
+  font-family: var(--font-site-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.site-shell ::selection {
+  background: var(--color-brass);
+  color: var(--color-night);
+}
+
+/* Works on both grounds: the outline takes the text colour of wherever it is. */
+.site-shell :focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.site-display {
+  font-family: var(--font-site-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+.site-head {
+  font-family: var(--font-site-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2.25rem, 1.3rem + 3.2vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.site-lead {
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+/* FAQ chevron: two 2px strokes that turn when the answer opens. */
+.site-chevron {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex: none;
+  transition: transform 300ms ease;
+}
+.site-chevron::before,
+.site-chevron::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  width: 9px;
+  height: 2px;
+  background: currentColor;
+}
+.site-chevron::before {
+  left: 0;
+  transform: rotate(45deg);
+}
+.site-chevron::after {
+  right: 0;
+  transform: rotate(-45deg);
+}
+details[open] > summary .site-chevron {
+  transform: rotate(180deg);
+}
+.site-shell summary::-webkit-details-marker {
+  display: none;
+}
+
+/* New examples in "Your mix" rise into place. */
+@keyframes site-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}

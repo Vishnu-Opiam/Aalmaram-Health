@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CALL_TIMES } from "@/domain/site/talk";
 
 /**
  * Server-boundary validation.
@@ -220,6 +221,28 @@ export const clientSchema = z.object({
   generalPreferences: optionalText(2000),
 });
 
+// --- public site: free conversation request ---------------------------------
+
+const ticked = z
+  .string()
+  .optional()
+  .transform((v) => v === "on");
+
+export const talkRequestSchema = z.object({
+  name: requiredText("Your name", 120),
+  email: z.string().trim().toLowerCase().email("Enter a valid email address, for example name@example.com."),
+  phone: optionalText(50),
+  country: z.string({ error: "Choose where you live." }).trim().min(1, "Choose where you live.").max(100),
+  callTime: z.enum(CALL_TIMES, { error: "Choose when suits you." }),
+  health: ticked,
+  wellness: ticked,
+  culture: ticked,
+  message: optionalText(2000),
+  consent: z.literal("on", { error: "Please tick this box so we may contact you." }),
+  // Honeypot: hidden from people, filled in by bots.
+  website: z.string().optional(),
+});
+
 // --- trip ------------------------------------------------------------------
 
 const requiredDate = (label: string) =>
@@ -395,3 +418,4 @@ export type ModuleInput = z.infer<typeof moduleSchema>;
 export type CatalogueInput = z.infer<typeof catalogueSchema>;
 export type ComponentInput = z.infer<typeof componentSchema>;
 export type ClientInput = z.infer<typeof clientSchema>;
+export type TalkRequestInput = z.infer<typeof talkRequestSchema>;

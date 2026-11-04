@@ -92,10 +92,12 @@
 
 ## Website — public site (Nivedith, 2 Nov 2026; notes in `inputs/2026-11-02-website-call-notes.md`)
 - [x] W.1 Homepage / landing page at `/` (placeholder copy; one CTA: a free call)
-- [ ] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care)
-- [ ] W.3 Safety & quality page with the formal vetting process — needs Nivedith's vetting process
-- [ ] W.4 How it works, About / our network & team pages
-- [ ] W.5 Explore on the website (interactive, by need) and a services chatbot
+- [x] W.1b Redesign "Under the banyan" + `/talk` free-conversation request (direction: `website/DESIGN_DIRECTION.md`)
+- [x] W.1d Whole public site rebuilt photography-first after the 3 Nov review (direction: `website/DESIGN_DIRECTION.md` §11)
+- [~] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care) — built at `/why-kerala` with placeholder copy; needs Nivedith's review and our own photos
+- [~] W.3 Safety & quality page with the formal vetting process — built at `/safety`; the vetting checklist is placeholder until Nivedith's formal process exists
+- [~] W.4 How it works, About / our network & team pages — `/how-it-works` built; About waits for names and photos
+- [~] W.5 Explore on the website (interactive, by need) and a services chatbot — "Your mix" on the homepage done; chatbot not started
 - [ ] W.6 Practical guide, journeys & stories, guides & articles
 - [ ] W.7 (later) Country selector that personalises waits, costs, travel time and shared history
 
@@ -126,6 +128,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Public site rebuilt from the ground up after Vishnu's second review ("looks AI generated, sloppy, not premium"): the 3D backwater, glass panels, eyebrow labels and cream/gold palette are gone. Real Kerala photography carries every page (18 Unsplash-licence photos, one dawn/dusk light, credited in the footer); a night ground with a monsoon-mist field for practical sections and lamp brass on the one button; Gambarino + General Sans (Fontshare ITF Free Font License, self-hosted). three.js removed. Direction dealt by the taste-skill ("The place carries it") and checked with its inspector (0 FAIL on every inner page). | References (Vita Travel, WattBank, Stepout, Tourvia, Explore) share one thing: a real photograph does the selling, type is large and sparse, nothing decorative. Procedural 3D and ornament were what read as generated. |
 | 2026-09-17 | The four platform lifecycle parts are called **Stages**, not Modules. | `Module` already means Health / Wellness / Heritage content category. |
 | 2026-09-17 | Vendor profile questions are data (`ProfileQuestion`), not hard-coded fields. **Superseded 2026-10-15** (simple fields, below). | Nivedith's question document is pending and will evolve. |
 | 2026-09-17 | AI via Vercel AI Gateway + AI SDK, fake provider default. | App is on Vercel; tests/dev must run offline and deterministically. |
@@ -191,6 +194,11 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-11-02 | Site keeps `noindex` (root layout) for now. | Copy and prices are placeholders; switch indexing on when Nivedith signs off the content. |
 | 2026-11-02 | "Book a free call" opens a `mailto:` to `CONTACT_EMAIL`; unset, it shows "Call booking opens soon". No scheduler or CRM. | No inbox or booking tool chosen yet; no paid services provisioned by the agent. |
 | 2026-11-02 | Tiles use icons, not provider photos; the safety box mentions GDPR only as "our privacy notice … is being prepared", not as a compliance claim. | Copyright concerns raised in the call; CLAUDE.md §4 forbids claiming compliance. |
+| 2026-11-03 | After Vishnu's review ("generic", "no parallax, no storytelling", no 2D illustrations): the homepage opens with a real-time 3D backwater (three.js 0.186.1, all geometry generated in code, no downloaded models) travelled by scroll from dawn to night, with the story chapters over it. Motion moved from CSS scroll timelines (unsupported in Firefox/older Safari) to GSAP 3.15 ScrollTrigger: pinned checklist, horizontal journey, resizing mix panels, parallax photos. The 3D chunk loads after first paint; software WebGL or slow frames drop resolution and draw only on scroll; reduced motion holds the camera still. All 2D vector art removed. | References studied frame by frame: one continuous world, camera moving through it, type set in the scene. |
+| 2026-11-03 | Site redesign "Under the banyan" approved by Vishnu with the recommended defaults: original layered hero art + Unsplash-licence place photos (credited in the footer) until we have our own; motion in scroll-driven CSS only (no GSAP/Framer), off for reduced motion, parallax desktop-only. | Lighthouse target, zero JS for motion, no licence risk in the hero. |
+| 2026-11-03 | Every "book" button goes to `/talk`, a short form that creates a LEAD client plus a `WEBSITE` conversation (new `Channel` value) and a staff notice with name + link only. An existing client's record is never changed from the public form. The `mailto:` stays as "or email us". No calendar tool. | Approved default; reuses the admin the team already has; no new service. |
+| 2026-11-03 | Prices are set in euros and shown with "≈ £" at a fixed 0.86 rate, rounded to £5 (`domain/site/prices.ts`). Plain numbers, not `Decimal`: orientation figures, never a quote or a charge. | UK is the biggest market; Decimal is for money we bill. |
+| 2026-11-03 | People section not built: no names or photos yet, and fictional people on the public site would mislead. Learn section hidden until the first article exists ("coming soon" cards read as unfinished). `CONTACT_PHONE` added; phone lines appear only once it is set. | 2 Nov call said skip "who stands behind it"; NN/g "current content". |
 | 2026-10-23 | Portal tabs are plain links (full page loads); other portal links stay `AppLink`. | A tab click right after a page load sometimes did nothing in the e2e run (1 in 4) — the client-router flakiness the README already notes. Tabs must always work. |
 | 2026-10-23 | Portal look: Figtree body at 18 px and Fraunces headings (`next/font`), pill buttons ≥ 52 px, tokens forest / lagoon (health) / leaf (wellness) / marigold (culture), no text lighter than ink-600; an original SVG Kerala scene instead of stock photos; short, reduced-motion-aware animations. Admin styling unchanged. | Vishnu's reference designs for fonts, colour and motion; legibility for 50+ readers; no licensing questions. |
 | 2026-10-23 | The "Ideas for you" rail and its `boardIdeas` / `tripIdeas` are removed; ideas now come per day (slot suggestions in "Add something") and from the chat. `client-chat` prompt bumped to `.2` for the new button names. | Three competing "add" paths were part of the confusion; dead code otherwise. |
@@ -216,6 +224,9 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | 2026-10-15 | X.6 | The MVP chatbot shows its itinerary at once. Before real clients, must staff approve an AI itinerary before the client sees it? | |
 | 2026-10-23 | P3.7 | Older clients will want to **phone** their relationship manager. May we add `phone` (and WhatsApp) and a photo to staff (`User`), shown to their clients on My trip and Ask us? Small schema change; until then the portal shows name and email. | |
 | 2026-10-23 | P3.1 | Real **photography** (providers, places) would do more for trust than the illustrated scene. Who supplies it, and may we use vendors' own images? | |
+| 2026-11-03 | W.1b | Phone number and hours to show (`CONTACT_PHONE` on Vercel), and confirm `CONTACT_EMAIL`. | |
+| 2026-11-03 | W.1b | Placeholder copy needing Nivedith: vetting checklist (we must actually do each step before this ships), sample journeys and their price ranges, five new FAQ answers, "what happens next" after a request. | |
+| 2026-11-03 | W.1b | Names, roles and photos for a "people behind Aalmaram" section; our own or providers' photos to replace the Unsplash placeholders. | |
 | 2026-11-02 | W.1 | Which inbox (or booking tool, e.g. a calendar link) should "Book a free call" go to? Set `CONTACT_EMAIL` on Vercel once decided. | |
 | 2026-11-02 | W.1 | Indicative "from" prices on the Explore tiles are placeholders — please confirm or replace each. | |
 | 2026-11-02 | W.1 | Homepage copy is placeholder (Nivedith will rewrite); privacy notice text for European clients is needed before the GDPR line can link anywhere. | |
@@ -226,6 +237,55 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-11-04 (motion)** · `feat/site-redesign` · Vishnu: more scrollytelling, the page should build itself as you
+  scroll. Added a motion layer (GSAP SplitText + ScrollTrigger, Lenis 1.3.11 for smooth wheel scrolling): line,
+  letter and word text reveals, a scrubbed statement, photo wipes with parallax, the hero title assembling and lifting
+  away, a place-name band, chapter words assembling, a sideways ten-day journey (desktop; swipeable on phones), a
+  reading bar on How it works and a header that steps aside on scroll. Details in `website/DESIGN_DIRECTION.md` §12.
+  Tests: typecheck ✓, unit + integration 162/162 ✓, e2e 5/5 ✓, build ✓; checked in the browser pane at 1440 and 390 px,
+  including client-side navigation between pages (no console errors).
+
+- **2026-11-03 (rebuild)** · `feat/site-redesign` · Vishnu: the site still looked AI-made and not premium; rebuild
+  every page using his reference videos and vita-travel.webflow.io, with the structure from the 2 Nov call. Studied
+  the references frame by frame and the live Vita Travel site; dealt a direction with the taste-skill and checked
+  colour/type with ui-ux-pro-max. Homepage: the lake at dawn full screen with "Kerala" as a film title; who we are;
+  Why Kerala as five full-screen chapters (backwaters, Ayurveda, hospitals, hills, heritage); Explore as a list beside
+  a photograph that changes with the row; Your mix (photographs that widen with your split); how it works as four
+  verbs; how we choose providers as plain columns; is it for you; prices set like a menu; FAQ; a last photograph
+  with the invitation. Inner pages, `/talk` and the thank-you page rebuilt in the same system. Removed three.js,
+  the scene components and the mobile bottom bar (the header button is always visible). Tests: typecheck ✓, unit +
+  integration 162/162 ✓, e2e 5/5 ✓ (headings updated), build ✓; taste-skill inspector 0 FAIL on inner pages, homepage
+  only flags reveals caught mid-animation. Next: Vishnu's look, then Nivedith's copy; our own photographs to replace
+  the stock ones; one honest video clip for the hero if we find one.
+
+- **2026-11-03 (rework)** · `feat/site-redesign` · Vishnu rejected the first look. Rebuilt the homepage as a scroll
+  story over a 3D backwater (`components/site/three/backwater.ts`): sky and sun from dawn to night, mirror water,
+  instanced palms and young palms, houses, two kettuvallams, Chinese fishing nets at the lake mouth, egrets, mist,
+  a lamp-lit temple, moon, stars and fireflies; chapters on glass panels (`backwater-story.tsx`). Then a pinned
+  vetting checklist that ticks itself, a pinned horizontal 10-day journey, photo panels that resize with "Your mix",
+  steps with a rolling step number, parallax photo bands, full-screen photo heroes on the inner pages and a giant
+  footer wordmark. Fixed a React/GSAP pin crash on navigation (pinned scenes now sit in React-owned wrappers).
+  Tests: typecheck ✓, 162 unit + integration ✓, build ✓; e2e: homepage, /talk and pages specs ✓; **golden-path
+  failed 4/4 runs and inventory 2/3, each at a link click right after a reload** (the client-router flakiness noted
+  on 2026-10-23, in portal/admin flows this branch does not touch) — not confirmed unrelated, needs a look.
+  Browser pane: every hour of the day at 1440 px, phone at 375 px, no horizontal scroll, no console errors.
+- **2026-11-03 (later)** · `feat/site-redesign` · Built the first inner pages on shared blocks
+  (`components/site/blocks.tsx`): `/how-it-works` (steps with "you / we / you receive", the trip page, what we don't
+  do, pricing), `/why-kerala` (care and accreditation explained, classical Ayurveda with a no-claims note, places,
+  seasons, getting there) and `/safety` (vetting, who does what, before you go, if something goes wrong). Menu now
+  links to them and marks the current page; homepage previews link on. All copy placeholder in `content.ts` (covered
+  by the no-outcome-claims test). Tests: typecheck ✓, 162 unit + integration ✓, e2e 5/5 ✓ (new: pages from the menu),
+  build ✓. Browser pane: all three at 1366 px and 375 px, no horizontal scroll.
+- **2026-11-03** · `feat/site-redesign` · Research (NN/g on older users and trust, Baymard, Laws of UX, WCAG 2.2,
+  ASA/CAP health claims), reference study and audit → `website/DESIGN_DIRECTION.md`, approved with defaults. Built:
+  new palette (kasavu / banyan / gold / laterite) and shell (all links visible on desktop, labelled "Menu" on phones,
+  phone/email in header and footer), framed layered dawn hero with parallax and drifting mist, word-by-word
+  statement, banyan that grows a root per How-it-works step, "Your mix" (presets + ±10% buttons, examples change,
+  announced to screen readers), vetting checklist, sample journeys with mix bars and £/€ ranges, Why Kerala photo
+  band, extended FAQ, "what happens next", sticky phone CTA; `/talk` form → LEAD + WEBSITE conversation (migration
+  `website_enquiry`), `/talk/thanks`, "Website requests" card on the admin client page. Tests: typecheck ✓,
+  162 unit + integration ✓ (new: mix/prices unit, website-requests integration), build ✓, e2e 4/4 ✓ (first run: 2 homepage assertions were wrong in the test, fixed); lint not
+  configured (prompts), skipped; Lighthouse not measured (needs a deployed preview). Browser pane: 1366 px and 375 px, menu, form errors + submit, admin view.
 - **2026-11-02** · `feat/public-homepage` · Nivedith's website call (Vishnu's recording, transcribed locally; notes in
   `inputs/2026-11-02-website-call-notes.md`). Built W.1: public homepage at `/` — hero (what is this, who it's for,
   concierge not a clinic, one line on waits and costs), How it works (4 steps), Why Kerala preview, Explore tiles by
