@@ -1,5 +1,5 @@
 import type { Photo as PhotoData } from "@/app/(site)/content";
-import { frame, Photo } from "./blocks";
+import { frame, fullScreen, Photo } from "./blocks";
 import { cn } from "@/lib/utils";
 
 /**
@@ -16,7 +16,7 @@ export function WhyChapters({ chapters }: { chapters: { word: string; text: stri
         <article key={c.word} data-chapter className="h-[160svh] bg-night text-night-ink">
           <div className="sticky top-0 isolate flex h-svh flex-col justify-end overflow-hidden">
             <div data-chapter-photo className="absolute inset-0 -z-10">
-              <Photo photo={c.photo} sizes="100vw" still className="h-full w-full" />
+              <Photo photo={c.photo} sizes={fullScreen(c.photo)} still className="h-full w-full" />
             </div>
             {/* Pale photographs get a deeper veil so the word keeps its contrast. */}
             <div className="absolute inset-0 -z-10 bg-night" style={{ opacity: c.veil ?? 0.3 }} aria-hidden="true" />

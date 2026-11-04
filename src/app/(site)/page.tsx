@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BookButton, ClosingCta, Faq, frame, MoreLink, Photo } from "@/components/site/blocks";
+import { BookButton, ClosingCta, Faq, frame, fullScreen, MoreLink, Photo } from "@/components/site/blocks";
 import { ExploreList } from "@/components/site/explore-list";
 import { JourneyTrack, PlaceBand } from "@/components/site/journey-track";
 import { WhyChapters } from "@/components/site/why-chapters";
@@ -50,7 +50,7 @@ export default function HomePage() {
       {/* Hero: the lake at dawn, and the place's name along the bottom like a film title. */}
       <section data-hero className="relative isolate flex min-h-svh flex-col justify-end overflow-hidden bg-night text-night-ink">
         <div data-shutter className="absolute inset-0 -z-10">
-          <Photo photo={PHOTOS.lake} sizes="100vw" priority drift className="h-full w-full" />
+          <Photo photo={PHOTOS.lake} sizes={fullScreen(PHOTOS.lake)} priority drift className="h-full w-full" />
         </div>
         <div className="absolute inset-x-0 top-0 -z-10 h-44 bg-[linear-gradient(rgb(8_12_14/0.5),transparent)]" aria-hidden="true" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-[62%] bg-[linear-gradient(transparent,rgb(8_12_14/0.7))]" aria-hidden="true" />
@@ -125,7 +125,7 @@ export default function HomePage() {
         <div className="mb-14 grid gap-6 md:grid-cols-12 md:gap-x-6">
           <h2 id="mix-title" className="site-head md:col-span-5">Your own mix</h2>
           <p data-rise className="site-lead md:col-span-6 md:col-start-7">
-            Most people want some of each. Choose how much health, rest and Kerala, and see what a trip could hold.
+            Most people want some of each. Here are ten days in Kerala: choose how many go to your health, to rest and to Kerala itself.
           </p>
         </div>
         <YourMix />

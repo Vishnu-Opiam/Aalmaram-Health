@@ -1,7 +1,7 @@
-import Image from "next/image";
 import type { Photo as PhotoData } from "@/app/(site)/content";
 import { cn } from "@/lib/utils";
-import { frame, photoUrl } from "./blocks";
+import { frame } from "./blocks";
+import { SiteImage } from "./site-image";
 
 /**
  * One journey, day by day, travelled sideways: the section is as tall as the
@@ -38,7 +38,7 @@ export function JourneyTrack({
             <li key={day.when} className="w-[78vw] shrink-0 snap-start sm:w-[46vw] md:w-[30vw]">
               <div className="relative aspect-[4/5] overflow-hidden bg-night md:aspect-[4/3]">
                 <div data-card-photo className="absolute inset-0">
-                  <Image src={photoUrl(day.photo.src, 1200)} alt={day.photo.alt} fill sizes="(min-width: 768px) 30vw, 78vw" className="object-cover" style={{ objectPosition: day.photo.focus }} />
+                  <SiteImage photo={day.photo} sizes="(min-width: 768px) 30vw, 78vw" />
                 </div>
               </div>
               <p className="mt-5 text-[16px] text-night-muted">{day.when}</p>
