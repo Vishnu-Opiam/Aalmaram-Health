@@ -52,7 +52,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <div className={cn(frame, "flex flex-col py-14 md:py-20 md:pl-[6vw]")}>
           <Link href="/" className="site-display text-[28px]">Aalmaram Health</Link>
           <nav aria-label="Footer" className="mt-10">
-            <ul className="space-y-2">
+            <ul data-rise="left" className="space-y-2">
               {[...SITE_MENU, { href: "/talk", label: "Book a free conversation" }, { href: "/trip/sign-in", label: "My trip" }].map((item) => (
                 <li key={item.href}>
                   <a href={item.href} className="site-display inline-flex min-h-12 items-center text-[clamp(1.9rem,2.6vw,2.75rem)] transition-[opacity,transform] duration-300 hover:translate-x-3 hover:opacity-80">

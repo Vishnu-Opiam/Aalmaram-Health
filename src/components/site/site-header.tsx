@@ -18,11 +18,19 @@ const MENU = [...SITE_MENU, { href: "/trip/sign-in", label: "My trip" }];
 export function SiteHeader({ phone }: { phone?: string }) {
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const pathname = usePathname();
   const current = (href: string) => (href === pathname ? "page" : undefined);
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 24);
+    // Step aside while reading down the page; come back the moment you scroll up.
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setSolid(y > 24);
+      setHidden(y > 400 && y > last + 4 ? true : y < last - 4 ? false : (h) => h);
+      last = y;
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -40,7 +48,7 @@ export function SiteHeader({ phone }: { phone?: string }) {
   }, [open]);
 
   return (
-    <header className={cn("fixed inset-x-0 top-0 z-40 text-night-ink transition-colors duration-300", solid || open ? "bg-night" : "bg-transparent")}>
+    <header className={cn("fixed inset-x-0 top-0 z-40 text-night-ink transition-[background-color,transform] duration-500 ease-out", solid || open ? "bg-night" : "bg-transparent", hidden && !open && "has-[:focus-visible]:translate-y-0 -translate-y-full")}>
       <div className="flex h-20 items-center justify-between gap-4 px-5 sm:px-8 lg:px-[5vw]">
         <Link href="/" className="site-display shrink-0 text-[26px] leading-none" aria-label="Aalmaram Health — home">
           Aalmaram<span className="max-sm:hidden"> Health</span>

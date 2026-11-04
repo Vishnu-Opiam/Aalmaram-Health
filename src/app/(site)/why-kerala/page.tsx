@@ -26,16 +26,16 @@ export default function WhyKeralaPage() {
       {/* Ayurveda: the treatment itself, large, beside a plain description. */}
       <section aria-labelledby="ayurveda-title" className={cn(frame, "grid gap-12 py-28 md:grid-cols-12 md:gap-x-6 md:py-36")}>
         <Photo photo={PHOTOS.dhara} sizes="(min-width: 768px) 50vw, 100vw" className="aspect-[4/5] md:col-span-6" />
-        <div data-rise className="md:col-span-5 md:col-start-8 md:self-center">
+        <div className="md:col-span-5 md:col-start-8 md:self-center">
           <h2 id="ayurveda-title" className="site-head">{PAGE.ayurveda.title}</h2>
-          <p className="site-lead mt-8">{PAGE.ayurveda.text}</p>
-          <p className="mt-8 text-[16px] leading-relaxed text-night-muted">{PAGE.ayurveda.note}</p>
+          <p data-scrub className="site-lead mt-8">{PAGE.ayurveda.text}</p>
+          <p data-split="words" className="mt-8 text-[16px] leading-relaxed text-night-muted">{PAGE.ayurveda.note}</p>
         </div>
       </section>
 
       {/* Places: photographs at uneven sizes, alternating sides. */}
       <section aria-labelledby="places-title" className={cn(frame, "bg-night-raised py-28 md:py-36")}>
-        <h2 id="places-title" data-rise className="site-head max-w-[36rem]">Backwaters, hills, coast and history</h2>
+        <h2 id="places-title" className="site-head max-w-[36rem]">Backwaters, hills, coast and history</h2>
         <div className="mt-20 space-y-24 md:space-y-32">
           {places.map((place, i) => (
             <article key={place.title} className="grid gap-8 md:grid-cols-12 md:items-end md:gap-x-6">
@@ -47,7 +47,7 @@ export default function WhyKeralaPage() {
                 />
               )}
               <div data-rise className={cn("md:col-span-4", i % 2 === 1 ? "md:order-1 md:col-start-1" : "md:col-start-9", !place.photo && "md:col-span-6 md:col-start-1")}>
-                <h3 className="site-display text-[clamp(2.25rem,1.5rem+2vw,3.5rem)]">{place.title}</h3>
+                <h3 data-split="chars" className="site-display text-[clamp(2.25rem,1.5rem+2vw,3.5rem)]">{place.title}</h3>
                 <p className="mt-4 leading-relaxed text-night-muted">{place.text}</p>
               </div>
             </article>
@@ -57,7 +57,7 @@ export default function WhyKeralaPage() {
 
       {/* Seasons, set like a timetable. */}
       <Band id="seasons" title="Kerala through the year" tone="mist">
-        <dl data-rise className="space-y-10">
+        <dl data-rise="left" className="space-y-10">
           {PAGE.seasons.map((s) => (
             <div key={s.months} className="grid gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-8">
               <dt className="site-display text-[clamp(1.75rem,1.3rem+1.2vw,2.4rem)] leading-tight">{s.months}</dt>

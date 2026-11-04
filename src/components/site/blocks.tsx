@@ -21,6 +21,7 @@ export function Photo({
   className,
   priority,
   drift,
+  still,
   decorative,
 }: {
   photo: PhotoData;
@@ -28,10 +29,12 @@ export function Photo({
   className?: string;
   priority?: boolean;
   drift?: boolean;
+  /** Skip the wipe-open and parallax, for photographs a scene animates itself. */
+  still?: boolean;
   decorative?: boolean;
 }) {
   return (
-    <div className={cn("relative overflow-hidden bg-night-raised", className)}>
+    <div data-photo={still || drift ? undefined : ""} className={cn("relative overflow-hidden bg-night-raised", className)}>
       <div data-drift={drift ? "" : undefined} className="absolute inset-0">
         <Image src={photoUrl(photo.src, 2400)} alt={decorative ? "" : photo.alt} fill sizes={sizes} priority={priority} className="object-cover" style={{ objectPosition: photo.focus }} />
       </div>
@@ -154,7 +157,7 @@ export function Band({
         tone === "raised" && "bg-night-raised",
       )}
     >
-      <h2 id={`${id}-title`} data-rise className="site-head max-w-[26ch] md:col-span-12">{title}</h2>
+      <h2 id={`${id}-title`} className="site-head max-w-[26ch] md:col-span-12">{title}</h2>
       {intro && <div className={cn("leading-relaxed md:col-span-4", tone === "mist" ? "text-mist-muted" : "text-night-muted")}>{intro}</div>}
       <div className={cn("md:col-span-7", intro ? "md:col-start-6" : "md:col-start-1 md:col-span-12 lg:col-span-10")}>{children}</div>
     </section>

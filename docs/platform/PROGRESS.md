@@ -237,6 +237,14 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-11-04 (motion)** · `feat/site-redesign` · Vishnu: more scrollytelling, the page should build itself as you
+  scroll. Added a motion layer (GSAP SplitText + ScrollTrigger, Lenis 1.3.11 for smooth wheel scrolling): line,
+  letter and word text reveals, a scrubbed statement, photo wipes with parallax, the hero title assembling and lifting
+  away, a place-name band, chapter words assembling, a sideways ten-day journey (desktop; swipeable on phones), a
+  reading bar on How it works and a header that steps aside on scroll. Details in `website/DESIGN_DIRECTION.md` §12.
+  Tests: typecheck ✓, unit + integration 162/162 ✓, e2e 5/5 ✓, build ✓; checked in the browser pane at 1440 and 390 px,
+  including client-side navigation between pages (no console errors).
+
 - **2026-11-03 (rebuild)** · `feat/site-redesign` · Vishnu: the site still looked AI-made and not premium; rebuild
   every page using his reference videos and vita-travel.webflow.io, with the structure from the 2 Nov call. Studied
   the references frame by frame and the live Vita Travel site; dealt a direction with the taste-skill and checked

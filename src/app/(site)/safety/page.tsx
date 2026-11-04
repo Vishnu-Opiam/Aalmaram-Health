@@ -25,15 +25,15 @@ export default function SafetyPage() {
 
       {/* Who does what, as two plain columns of names. */}
       <section aria-labelledby="roles-title" className={cn(frame, "bg-mist py-28 text-mist-ink md:py-36")}>
-        <h2 id="roles-title" data-rise className="site-head max-w-[40rem]">We arrange. Doctors decide.</h2>
+        <h2 id="roles-title" className="site-head max-w-[40rem]">We arrange. Doctors decide.</h2>
         <div className="mt-16 grid gap-14 md:grid-cols-12 md:gap-x-6">
           {[
             { title: "Aalmaram Health", items: PAGE.roles.we, span: "md:col-span-5" },
             { title: "The doctors you see", items: PAGE.roles.doctors, span: "md:col-span-5 md:col-start-7" },
           ].map((col) => (
-            <div key={col.title} data-rise className={col.span}>
+            <div key={col.title} className={col.span}>
               <h3 className="text-[21px] text-mist-muted">{col.title}</h3>
-              <ul className="mt-4 space-y-3 text-[clamp(1.25rem,1.1rem+0.5vw,1.5rem)] leading-snug">
+              <ul data-rise="left" className="mt-4 space-y-3 text-[clamp(1.25rem,1.1rem+0.5vw,1.5rem)] leading-snug">
                 {col.items.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
@@ -46,7 +46,7 @@ export default function SafetyPage() {
       {/* Before you go: the four things, beside a quiet photograph. */}
       <section aria-labelledby="before-title" className={cn(frame, "grid gap-12 py-28 md:grid-cols-12 md:gap-x-6 md:py-36")}>
         <div className="md:col-span-6">
-          <h2 id="before-title" data-rise className="site-head">Four things to do before you go</h2>
+          <h2 id="before-title" className="site-head">Four things to do before you go</h2>
           <div className="mt-14">
             <Points items={PAGE.beforeYouGo} />
           </div>

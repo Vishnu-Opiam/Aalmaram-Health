@@ -219,3 +219,19 @@ rules (48 px controls, 4.5:1 text; ink on night 16:1, muted 7.9:1, ink on mist 1
 
 Still open: our own photographs (and permission for providers'), a hero video clip if an honest one exists, and
 Nivedith's copy. Placeholder copy is unchanged in substance; headings were shortened to two lines.
+
+## 12. Motion pass (4 Nov 2026)
+
+Feedback: still too static; the page should build itself as you scroll. Added (all in `components/site/motion.tsx`,
+driven by data attributes; nothing hidden without script; everything off for reduced motion):
+
+- **Smooth scrolling** with Lenis (wheel only; touch stays native).
+- **Text:** every heading rises line by line out of a mask; big words (step verbs, chapter words, place names)
+  assemble letter by letter; the "who we are" statement lights up word by word as you read; small notes arrive word
+  by word with a soft blur; lists slide in from the left.
+- **Pictures:** every photograph wipes open upwards while it settles from 1.4x, then drifts against the scroll; the
+  Explore picture wipes in from the side.
+- **Scenes:** the hero title assembles after the shutter and lifts away on scroll; a band of Kerala place names
+  slides in two opposite rows; each Why Kerala chapter's photo settles while its word assembles from the centre;
+  a ten-day journey travels sideways on wide screens (a swipeable row on phones); How it works has a bar that fills
+  as you read; the header steps aside while scrolling down and returns on the way up.

@@ -35,7 +35,7 @@ export function ExploreList({ items }: { items: Experience[] }) {
   return (
     <div className="grid gap-10 md:grid-cols-12 md:gap-0">
       {/* Phones: a band pinned under the header. Wider screens: a 4:5 print that stays put. */}
-      <div className="sticky top-20 z-10 -mx-5 h-[38svh] sm:-mx-8 md:top-[14vh] md:col-span-5 md:mx-0 md:aspect-[4/5] md:h-auto md:self-start">
+      <div data-wipe className="sticky top-20 z-10 -mx-5 h-[38svh] sm:-mx-8 md:top-[14vh] md:col-span-5 md:mx-0 md:aspect-[4/5] md:h-auto md:self-start">
         {photos.map((photo, i) => (
           <Image
             key={`${photo.src}-${i}`}
@@ -48,7 +48,7 @@ export function ExploreList({ items }: { items: Experience[] }) {
         ))}
       </div>
 
-      <ul className="md:col-span-6 md:col-start-7 md:py-[14vh]">
+      <ul data-rise className="md:col-span-6 md:col-start-7 md:py-[14vh]">
         {items.map((item, i) => {
           const open = i === active;
           return (

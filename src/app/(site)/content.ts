@@ -134,6 +134,19 @@ export const JOURNEYS: { title: string; days: number; mix: Record<MixKey, number
   { title: "A heart check and Kerala's culture", days: 9, mix: { health: 40, wellness: 20, culture: 40 }, line: "A cardiology assessment, then the tea hills, a Kathakali evening and Kerala's kitchens.", fromEur: 1600, toEur: 2400, photo: PHOTOS.tea },
 ];
 
+/** The first sample journey, told day by day (placeholder). */
+export const JOURNEY_DAYS: { when: string; title: string; text: string; photo: Photo }[] = [
+  { when: "Day 1", title: "Arrive in Kochi", text: "Someone meets you at the airport. A quiet first evening in Fort Kochi, by the water.", photo: PHOTOS.nets },
+  { when: "Days 2–3", title: "Your health check", text: "Tests, scans and a consultation, booked and explained in advance. Results in English, for you and your own doctor.", photo: PHOTOS.check },
+  { when: "Days 4–5", title: "Onto the backwaters", text: "A houseboat through palm-lined canals. Nothing to do but watch the water go by.", photo: PHOTOS.river },
+  { when: "Day 6", title: "A Kathakali evening", text: "Watch the make-up go on, then a performance of Kerala's classical dance-drama.", photo: PHOTOS.kathakaliStage },
+  { when: "Days 7–9", title: "Up to the tea hills", text: "Cool air, walks between tea gardens and time to do very little.", photo: PHOTOS.tea },
+  { when: "Day 10", title: "Home, with your results", text: "Your reports travel with you — and to your own doctor, if you wish.", photo: PHOTOS.prow },
+];
+
+/** Places that slide past between sections. */
+export const PLACE_NAMES = ["Kochi", "Alappuzha", "Kumarakom", "Munnar", "Thekkady", "Varkala", "Kovalam", "Thiruvananthapuram"];
+
 export const RIGHT_FOR_YOU = {
   suits: [
     "You want a planned check-up, assessment or treatment — not urgent care",
