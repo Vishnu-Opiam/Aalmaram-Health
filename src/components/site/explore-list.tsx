@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { PHOTOS, type Experience } from "@/app/(site)/content";
 import { formatPrice } from "@/domain/site/prices";
 import { cn } from "@/lib/utils";
+import { SiteImage } from "./site-image";
 
-const photoUrl = (src: string, width: number) => `${src}?auto=format&fit=crop&w=${width}&q=72`;
 const FALLBACK = { health: PHOTOS.check, wellness: PHOTOS.dhara, culture: PHOTOS.kathakaliStage } as const;
 
 /**
@@ -37,12 +36,11 @@ export function ExploreList({ items }: { items: Experience[] }) {
       {/* Phones: a band pinned under the header. Wider screens: a 4:5 print that stays put. */}
       <div data-wipe className="sticky top-20 z-10 -mx-5 h-[38svh] sm:-mx-8 md:top-[14vh] md:col-span-5 md:mx-0 md:aspect-[4/5] md:h-auto md:self-start">
         {photos.map((photo, i) => (
-          <Image
+          <SiteImage
             key={`${photo.src}-${i}`}
-            src={photoUrl(photo.src, 1400)}
+            photo={photo}
             alt={i === active ? photo.alt : ""}
-            fill
-            sizes="(min-width: 768px) 40vw, 100vw"
+            sizes="(min-width: 768px) 60vw, 100vw"
             className={cn("object-cover transition-[opacity,transform] duration-700 ease-out", i === active ? "scale-100 opacity-100" : "scale-[1.04] opacity-0")}
           />
         ))}

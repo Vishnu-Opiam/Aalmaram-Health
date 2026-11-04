@@ -240,6 +240,18 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
 
+- **2026-11-04 (polish)** · `feat/site-polish` · Vishnu's review of the live site. (1) The "concierge, not a clinic"
+  statement had huge gaps between words: its first-line indent was inherited by every word the scroll animation
+  split out; split words now reset `text-indent`. (2) Explore showed one stethoscope for every health item: Heart,
+  Joints and Dental (and Kerala's kitchens) now have their own Unsplash photographs. (3) Photos looked soft: images
+  were sized to their box's width only, so a landscape photo in a tall box was stretched. Site photos now carry their
+  original size, measure their box (`SiteImage`, cover crop + motion scale) and are fetched straight from Unsplash's
+  CDN at that width (no second re-encode through Next); `deviceSizes` gained 1440/2400/2880 steps. Audited in the
+  browser: every photo on the homepage and Why Kerala is fetched at ≥ its displayed pixels (1440 px and 375 px @2x).
+  (4) "Your own mix" redrawn as ten days, ten photographs, with days moved between health, rest and Kerala; changed
+  days turn over left to right. Fixes the zoom overflow of the old three-panel version.
+  Tests: typecheck ✓, unit + integration 163/163 ✓, e2e 5/5 ✓ (inventory flaked once, passed on re-run), build ✓.
+
 - **2026-11-04 (motion)** · `feat/site-redesign` · Vishnu: more scrollytelling, the page should build itself as you
   scroll. Added a motion layer (GSAP SplitText + ScrollTrigger, Lenis 1.3.11 for smooth wheel scrolling): line,
   letter and word text reveals, a scrubbed statement, photo wipes with parallax, the hero title assembling and lifting

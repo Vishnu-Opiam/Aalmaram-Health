@@ -30,6 +30,7 @@ const onEnter = (trigger: Element, start = "top 88%") => ({ trigger, start, once
  * Pictures
  *   data-photo            wipes open upwards while the picture settles, then drifts with the scroll
  *   data-wipe             a picture opens from its left edge
+ *   data-days             a row of pictures opens upwards, one after another
  *   data-shutter          the page's first photograph opens on arrival
  *   data-drift            a photograph slowly enlarges as its section scrolls away
  * Scenes
@@ -122,6 +123,9 @@ export function SiteMotion() {
 
       for (const el of gsap.utils.toArray<HTMLElement>("[data-wipe]")) {
         gsap.fromTo(el, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.5, ease: "power4.inOut", scrollTrigger: onEnter(el) });
+      }
+      for (const el of gsap.utils.toArray<HTMLElement>("[data-days]")) {
+        gsap.fromTo(el.children, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.2, ease: "power4.inOut", stagger: 0.07, scrollTrigger: onEnter(el, "top 85%") });
       }
       for (const el of gsap.utils.toArray<HTMLElement>("[data-marquee]")) {
         const dir = el.dataset.marquee === "right" ? 1 : -1;

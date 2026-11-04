@@ -9,36 +9,47 @@ import type { MixKey } from "@/domain/site/mix";
  */
 
 /** Free-licence place photography (Unsplash licence), until we have our own. */
-/** `focus` is the CSS object-position that keeps the subject in narrow crops. */
-export type Photo = { src: string; alt: string; credit: string; href: string; focus?: string };
+/**
+ * `w` and `h` are the original's pixel size: a box narrower than the
+ * photograph's shape crops its sides, so the image fetched must be wider than
+ * the box (SiteImage works this out). `focus` is the CSS object-position that
+ * keeps the subject in narrow crops.
+ */
+export type Photo = { src: string; alt: string; credit: string; href: string; w: number; h: number; focus?: string };
 
-const unsplash = (id: string, alt: string, credit: string, page: string, focus?: string): Photo => ({
+const unsplash = (id: string, alt: string, credit: string, page: string, [w, h]: [number, number], focus?: string): Photo => ({
   src: `https://images.unsplash.com/photo-${id}`,
   alt,
   credit,
   href: `https://unsplash.com/photos/${page}`,
+  w,
+  h,
   focus,
 });
 
 export const PHOTOS = {
-  lake: unsplash("1583482011546-c327a8076798", "A boatman poles a canoe across a still lake at dawn, with palm islands behind", "Marieke Weller", "vwMBUwR72UM"),
-  prow: unsplash("1583482939907-d6959d54af75", "The prow of a wooden canoe on still water at first light", "Marieke Weller", "lHHnoBDqSK8"),
-  river: unsplash("1643614331150-37823121afce", "A boat moored on a misty river lined with palms and fishing nets", "Emmanual Thomas", "Re6R7pDEo5c"),
-  nets: unsplash("1583558257444-cfba032b49ea", "A Chinese fishing net against the evening sky in Kochi", "Sarfaraz Siddiqui", "6MMW6cMIgX0"),
-  dhara: unsplash("1775133263714-848c8fe09e73", "Warm oil poured in a thin stream onto the forehead during an Ayurveda treatment", "Charanjeet Dhiman", "kvf5kfVMqng", "20% 80%"),
-  treatmentRoom: unsplash("1731597076108-f3bbe268162f", "A treatment room with a brass oil vessel hanging above a wooden table", "Gokul Gurung", "N3Ll8c2uLgE"),
-  mortar: unsplash("1492552085122-36706c238263", "Herbs ground by hand in a stone mortar", "Katherine Hanlon", "bd_fCZhy_W8"),
-  eyeClinic: unsplash("1565428744974-f41cf79c05fa", "Eye examination equipment in a clinic", "Syed Hussaini", "mDCuzdHh_bw"),
-  tea: unsplash("1491497895121-1334fc14d8c9", "Misty tea gardens on the hills of Munnar", "Vivek Kumar", "JS_ohjocm00"),
-  hills: unsplash("1766671965039-8bc8687390ad", "Misty mountains above a calm lake at sunrise", "Anjith Paul", "biC4hql1lWU"),
-  kathakali: unsplash("1597735881932-d9664c9bbcea", "A Kathakali performer in green face paint and an ornate headdress", "Divyanshi Verma", "h3SyJYsqYSo", "65% 50%"),
-  kathakaliStage: unsplash("1691075213372-ff9e2d6d7645", "A Kathakali performer on stage, with drummers behind", "Anantha Krishnan", "zMfvtg7jfuc"),
-  palms: unsplash("1679934409073-838c884261fb", "Coconut palms in morning fog", "Hardik Monga", "GfFsbhNOW5c"),
-  canal: unsplash("1704365159871-6bf63f00b9c8", "A canoe on a narrow canal through palm groves, seen from above", "Swastik Arora", "h-PHS1XHC0I"),
-  coast: unsplash("1697193374263-8aeb5488dabe", "Cliffs above the sea on Kerala's southern coast", "Faraz Ghori", "Un0s8OmOEr0"),
-  houseboat: unsplash("1593693411515-c20261bcad6e", "A houseboat on the palm-lined backwaters of Alappuzha", "Abhishek Prasad", "ii0oWs5abCo"),
-  check: unsplash("1700832082200-af7deeb63d9b", "A stethoscope and a blood pressure gauge on white linen", "Immo Wegmann", "njrDE70M2VI"),
-  kochi: unsplash("1696966358360-f64c761e0cb5", "Old waterfront buildings across the water in Kochi", "Sleeba Thomas", "7FNVvI2Lezc"),
+  lake: unsplash("1583482011546-c327a8076798", "A boatman poles a canoe across a still lake at dawn, with palm islands behind", "Marieke Weller", "vwMBUwR72UM", [5328, 4000]),
+  prow: unsplash("1583482939907-d6959d54af75", "The prow of a wooden canoe on still water at first light", "Marieke Weller", "lHHnoBDqSK8", [5328, 4000]),
+  river: unsplash("1643614331150-37823121afce", "A boat moored on a misty river lined with palms and fishing nets", "Emmanual Thomas", "Re6R7pDEo5c", [2268, 4032]),
+  nets: unsplash("1583558257444-cfba032b49ea", "A Chinese fishing net against the evening sky in Kochi", "Sarfaraz Siddiqui", "6MMW6cMIgX0", [4288, 2848]),
+  dhara: unsplash("1775133263714-848c8fe09e73", "Warm oil poured in a thin stream onto the forehead during an Ayurveda treatment", "Charanjeet Dhiman", "kvf5kfVMqng", [5472, 3648], "20% 80%"),
+  treatmentRoom: unsplash("1731597076108-f3bbe268162f", "A treatment room with a brass oil vessel hanging above a wooden table", "Gokul Gurung", "N3Ll8c2uLgE", [5868, 3301]),
+  mortar: unsplash("1492552085122-36706c238263", "Herbs ground by hand in a stone mortar", "Katherine Hanlon", "bd_fCZhy_W8", [5100, 3300]),
+  eyeClinic: unsplash("1565428744974-f41cf79c05fa", "Eye examination equipment in a clinic", "Syed Hussaini", "mDCuzdHh_bw", [4032, 1960]),
+  tea: unsplash("1491497895121-1334fc14d8c9", "Misty tea gardens on the hills of Munnar", "Vivek Kumar", "JS_ohjocm00", [4824, 3216]),
+  hills: unsplash("1766671965039-8bc8687390ad", "Misty mountains above a calm lake at sunrise", "Anjith Paul", "biC4hql1lWU", [6048, 4024]),
+  kathakali: unsplash("1597735881932-d9664c9bbcea", "A Kathakali performer in green face paint and an ornate headdress", "Divyanshi Verma", "h3SyJYsqYSo", [2497, 3786], "65% 50%"),
+  kathakaliStage: unsplash("1691075213372-ff9e2d6d7645", "A Kathakali performer on stage, with drummers behind", "Anantha Krishnan", "zMfvtg7jfuc", [6720, 4480]),
+  palms: unsplash("1679934409073-838c884261fb", "Coconut palms in morning fog", "Hardik Monga", "GfFsbhNOW5c", [6000, 4000]),
+  canal: unsplash("1704365159871-6bf63f00b9c8", "A canoe on a narrow canal through palm groves, seen from above", "Swastik Arora", "h-PHS1XHC0I", [4000, 2250]),
+  coast: unsplash("1697193374263-8aeb5488dabe", "Cliffs above the sea on Kerala's southern coast", "Faraz Ghori", "Un0s8OmOEr0", [4496, 3000]),
+  houseboat: unsplash("1593693411515-c20261bcad6e", "A houseboat on the palm-lined backwaters of Alappuzha", "Abhishek Prasad", "ii0oWs5abCo", [6016, 4016]),
+  check: unsplash("1700832082200-af7deeb63d9b", "A stethoscope and a blood pressure gauge on white linen", "Immo Wegmann", "njrDE70M2VI", [6016, 4000]),
+  heart: unsplash("1755287066058-80c68aaaf0e3", "An ECG tracing on graph paper, with a pencil and a protractor", "Joachim Schnürle", "RJ6jkh_eYR0", [6960, 4640]),
+  joints: unsplash("1649751361457-01d3a696c7e6", "A physiotherapist examines a patient's knee", "yury kirillov", "pbUWW-CBoqY", [3701, 2468], "40% 50%"),
+  dental: unsplash("1698749778813-ad5f2814e50f", "A dental mirror held up in a bright, quiet clinic", "Katarzyna Zygnerska", "rubu_NvklJE", [4000, 6000]),
+  sadya: unsplash("1625398407796-82650a8c135f", "A sadya: rice, curries and pappadam served on a banana leaf", "Saktheeswaran Govindarajan", "yCIcDyKm440", [3000, 3000]),
+  kochi: unsplash("1696966358360-f64c761e0cb5", "Old waterfront buildings across the water in Kochi", "Sleeba Thomas", "7FNVvI2Lezc", [5928, 2808]),
 } satisfies Record<string, Photo>;
 
 export const HERO = {
@@ -90,9 +101,9 @@ export type Experience = {
 
 export const NEEDS: Experience[] = [
   { kind: "health", title: "Health check", line: "A full check-up with blood tests, scans and a doctor's consultation.", duration: "1–2 days", receive: "Written results in English", priceFromEur: 250, photo: PHOTOS.check },
-  { kind: "health", title: "Heart", line: "Cardiology consultation with ECG, echo and stress test as your cardiologist advises.", duration: "1–2 days", receive: "Report and consultation notes", priceFromEur: 350 },
-  { kind: "health", title: "Joints", line: "Orthopaedic assessment with imaging, and physiotherapy if recommended.", duration: "1–5 days", receive: "Imaging report and care plan from the provider", priceFromEur: 300 },
-  { kind: "health", title: "Dental", line: "Dental examination and planned treatment at a modern dental clinic.", duration: "2–10 days", receive: "Treatment plan and records", priceFromEur: 150 },
+  { kind: "health", title: "Heart", line: "Cardiology consultation with ECG, echo and stress test as your cardiologist advises.", duration: "1–2 days", receive: "Report and consultation notes", priceFromEur: 350, photo: PHOTOS.heart },
+  { kind: "health", title: "Joints", line: "Orthopaedic assessment with imaging, and physiotherapy if recommended.", duration: "1–5 days", receive: "Imaging report and care plan from the provider", priceFromEur: 300, photo: PHOTOS.joints },
+  { kind: "health", title: "Dental", line: "Dental examination and planned treatment at a modern dental clinic.", duration: "2–10 days", receive: "Treatment plan and records", priceFromEur: 150, photo: PHOTOS.dental },
   { kind: "health", title: "Eyes", line: "Eye examination with an ophthalmologist; planned surgery only if your surgeon advises it.", duration: "1–7 days", receive: "Examination report", priceFromEur: 100, photo: PHOTOS.eyeClinic },
   { kind: "wellness", title: "Ayurveda", line: "A classical Ayurveda programme with consultations and daily treatments.", duration: "7–21 days", receive: "Programme summary from the practitioner", priceFromEur: 900, photo: PHOTOS.dhara },
   { kind: "culture", title: "Culture", line: "Fort Kochi, the backwaters, temple arts and Kerala's kitchens, at your pace.", duration: "1–4 days", receive: "A guided, private itinerary", priceFromEur: 80, photo: PHOTOS.kochi },
@@ -104,7 +115,7 @@ export const MORE_EXPERIENCES: Experience[] = [
   { kind: "wellness", title: "Slow days in the tea hills", line: "Cool air, walks between tea gardens and time to do very little.", duration: "2–4 days", receive: "A hill stay arranged for you", priceFromEur: 150, photo: PHOTOS.hills },
   { kind: "culture", title: "A day on the backwaters", line: "A houseboat or canoe through palm-lined canals and village life.", duration: "1–2 days", receive: "A private boat and local guide", priceFromEur: 140, photo: PHOTOS.houseboat },
   { kind: "culture", title: "A Kathakali evening", line: "Watch the make-up being applied, then a performance of classical dance-drama.", duration: "An evening", receive: "Seats and a short introduction", priceFromEur: 30, photo: PHOTOS.kathakali },
-  { kind: "culture", title: "Kerala's kitchens", line: "A home-cooked sadya on a banana leaf, and the spice markets behind it.", duration: "Half a day", receive: "A hosted meal and market walk", priceFromEur: 45 },
+  { kind: "culture", title: "Kerala's kitchens", line: "A home-cooked sadya on a banana leaf, and the spice markets behind it.", duration: "Half a day", receive: "A hosted meal and market walk", priceFromEur: 45, photo: PHOTOS.sadya },
 ];
 
 export const EXPERIENCES: Experience[] = [...NEEDS, ...MORE_EXPERIENCES];

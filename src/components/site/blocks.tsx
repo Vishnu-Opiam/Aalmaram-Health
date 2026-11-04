@@ -1,18 +1,23 @@
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { AppLink as Link } from "@/components/ui/primitives";
 import type { Photo as PhotoData } from "@/app/(site)/content";
 import { contactPhone } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { ctaClass, textLinkClass } from "./nav";
+import { SiteImage } from "./site-image";
 
 /** Shared building blocks for the public site's pages (server components). */
 
-export const photoUrl = (src: string, width: number) => `${src}?auto=format&fit=crop&w=${width}&q=72`;
 export const telHref = (phone: string) => `tel:${phone.replace(/[^+\d]/g, "")}`;
 
 /** One pair of outer margins for the whole site. */
 export const frame = "px-5 sm:px-8 lg:px-[5vw]";
+
+/**
+ * First-guess `sizes` for a photograph filling the whole screen: on a screen
+ * narrower than the photograph's shape it is the height that decides.
+ */
+export const fullScreen = (photo: PhotoData) => `(max-aspect-ratio: ${photo.w}/${photo.h}) ${Math.ceil((100 * photo.w) / photo.h)}vh, 100vw`;
 
 /** A photograph that fills its box. The box decides the crop. */
 export function Photo({
@@ -36,7 +41,7 @@ export function Photo({
   return (
     <div data-photo={still || drift ? undefined : ""} className={cn("relative overflow-hidden bg-night-raised", className)}>
       <div data-drift={drift ? "" : undefined} className="absolute inset-0">
-        <Image src={photoUrl(photo.src, 2400)} alt={decorative ? "" : photo.alt} fill sizes={sizes} priority={priority} className="object-cover" style={{ objectPosition: photo.focus }} />
+        <SiteImage photo={photo} alt={decorative ? "" : photo.alt} sizes={sizes} priority={priority} />
       </div>
     </div>
   );
@@ -80,7 +85,7 @@ export function PageHero({
   return (
     <section className={cn("relative isolate flex flex-col justify-end overflow-hidden bg-night text-night-ink", short ? "min-h-[78svh]" : "min-h-svh")}>
       <div data-shutter className="absolute inset-0 -z-10">
-        <Photo photo={photo} sizes="100vw" priority drift className="h-full w-full" />
+        <Photo photo={photo} sizes={fullScreen(photo)} priority drift className="h-full w-full" />
       </div>
       {/* Neutral scrims under the menu and the words only; the rest of the picture stays as taken. */}
       <div className="absolute inset-x-0 top-0 -z-10 h-44 bg-[linear-gradient(rgb(8_12_14/0.55),transparent)]" aria-hidden="true" />
@@ -105,7 +110,7 @@ export function ClosingCta({ photo, title = "Talk to a person", text }: { photo:
   return (
     <section aria-labelledby="closing-title" className="bg-night text-night-ink">
       <div className="relative isolate md:min-h-[90svh]">
-        <Photo photo={photo} sizes="100vw" decorative className="h-[70svh] w-full md:absolute md:inset-0 md:-z-10 md:h-full" />
+        <Photo photo={photo} sizes={fullScreen(photo)} decorative className="h-[70svh] w-full md:absolute md:inset-0 md:-z-10 md:h-full" />
         <div className="absolute inset-0 -z-10 hidden bg-[linear-gradient(90deg,transparent_30%,rgb(8_12_14/0.72)_75%)] md:block" aria-hidden="true" />
         <div className={cn(frame, "grid py-14 md:absolute md:inset-0 md:grid-cols-12 md:items-end md:py-20")}>
           <div data-rise className="md:col-span-5 md:col-start-8">

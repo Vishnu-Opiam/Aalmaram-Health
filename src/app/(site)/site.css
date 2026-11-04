@@ -98,6 +98,23 @@ details[open] > summary .site-chevron {
 }
 
 /* New examples in "Your mix" rise into place. */
+/* Words split for animation are inline blocks, and would each inherit a paragraph's first-line indent. */
+.site-shell :is([data-scrub], [data-split], .site-head) div {
+  text-indent: 0;
+}
+
+/* A day in "Your own mix" turning over to its new photograph. */
+@keyframes site-turn {
+  from {
+    clip-path: inset(100% 0 0 0);
+    transform: scale(1.12);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: scale(1);
+  }
+}
+
 @keyframes site-rise {
   from {
     opacity: 0;
