@@ -93,6 +93,8 @@ enum Channel {
   EMAIL
   WHATSAPP
   IN_PERSON
+  // A free-conversation request from the public site; unverified, written by the visitor.
+  WEBSITE
 }
 
 // TEAM = the health core placed by staff; the client cannot move or remove it.

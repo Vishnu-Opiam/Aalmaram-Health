@@ -10,9 +10,16 @@ sees the cost as they go, takes AI suggestions if they like, then confirms. Doma
 A public homepage and two interfaces over one data model:
 
 - **Homepage** (`/`) — the public landing page: what this is, how it works,
-  why Kerala, explore by need (indicative prices), is it safe, is it right for
-  you, learn, pricing, a free call with a person and FAQ. Copy lives in
-  `src/app/(site)/content.ts` and is placeholder until Nivedith rewrites it.
+  explore by need with an interactive "your mix" (indicative £/€ prices), is it
+  safe (how we vet), sample journeys, why Kerala, is it right for you, pricing,
+  a free conversation with a person and FAQ. Every "book" button leads to
+  `/talk`, which records a LEAD client with a `WEBSITE` conversation. Inner
+  pages: `/how-it-works`, `/why-kerala`, `/safety`. Copy lives
+  in `src/app/(site)/content.ts` and is placeholder until Nivedith rewrites it.
+  The site is photography-led (credited Unsplash photographs of Kerala, set in
+  `content.ts`), in Gambarino and General Sans (Fontshare, self-hosted in
+  `src/app/(site)/fonts/`); motion is GSAP ScrollTrigger plus CSS sticky
+  (`src/components/site/motion.tsx`, `why-chapters.tsx`).
 - **Admin** (`/admin`) — for the team: what we offer (modules → catalogues →
   vendors with branches and practitioners → components), clients, trips,
   requirements, conversations, the health-core builder, the Feed and AI runs.

@@ -124,3 +124,13 @@ export function sendStaffTripNotice(input: {
     body: [input.what, "", `Open the trip: ${input.adminUrl}`].join("\n"),
   });
 }
+
+/** A visitor asked for a free conversation. Name and link only; their message stays in the dashboard. */
+export function sendStaffWebsiteRequestNotice(input: { name: string; adminUrl: string }) {
+  return notify({
+    to: OPS_INBOX,
+    subject: `Free conversation requested: ${input.name}`,
+    body: [`${input.name} asked for a free conversation on the website.`, "", `Open the client: ${input.adminUrl}`].join("\n"),
+  });
+}
+
