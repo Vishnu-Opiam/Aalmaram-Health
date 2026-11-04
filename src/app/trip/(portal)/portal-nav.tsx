@@ -1,18 +1,19 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { CalendarDays, House, MessageCircle, Palmtree } from "lucide-react";
+import { CalendarDays, Compass, House, MessageCircle, Palmtree } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SECTIONS = [
   { href: "/trip", label: "My trip", icon: House, exact: true },
   { href: "/trip/itinerary", label: "Day by day", icon: CalendarDays },
+  { href: "/trip/explore", label: "Explore", icon: Compass },
   { href: "/trip/chat", label: "Ask us", icon: MessageCircle },
   { href: "/trip/kerala", label: "Kerala", icon: Palmtree },
 ];
 
 /**
- * Four labelled places, always visible: a pill bar beside the logo on wide
+ * Five labelled places, always visible: a pill bar beside the logo on wide
  * screens, a bottom tab bar on phones (where older clients know it from their
  * messaging apps). No menu to open. Plain links (full page loads): a tab
  * must never sit on a tap that didn't take, which Next's client router
@@ -57,14 +58,15 @@ export function PortalNav({ variant }: { variant: "top" | "bottom" }) {
       aria-label="Your trip"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-sand-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {items.map(({ href, label, icon: Icon, active, url }) => (
           <li key={href}>
             <a
               href={url}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex min-h-17 flex-col items-center justify-center gap-1 text-[15px] font-semibold",
+                // Five tabs share a 375 px phone: 14 px keeps "Day by day" on one line.
+                "flex min-h-17 flex-col items-center justify-center gap-1 text-center text-[14px] font-semibold leading-tight",
                 active ? "text-forest-900" : "text-ink-600",
               )}
             >

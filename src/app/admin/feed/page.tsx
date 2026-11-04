@@ -6,7 +6,8 @@ import { FEED_SOURCE_LABELS } from "@/domain/feed/queries";
 import { formatShortDate, toDateInputValue } from "@/domain/shared/dates";
 import { requireUserPage } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
-import { createFeedPostAction, importFeedAction, toggleFeedPostAction } from "./actions";
+import { instagramConnected } from "@/lib/services/instagram";
+import { createFeedPostAction, importFeedAction, ingestInstagramAction, toggleFeedPostAction } from "./actions";
 import { FeedImportForm, FeedPostForm } from "./forms";
 
 export const metadata: Metadata = { title: "Feed" };
@@ -53,6 +54,11 @@ export default async function FeedAdminPage() {
                         {post.hiddenAt && <Badge tone="warning">Hidden</Badge>}
                       </p>
                       <p className="mt-1 line-clamp-2 text-sm text-ink-800">{post.caption}</p>
+                      {post.aiReason && (
+                        <p className="mt-0.5 text-xs text-ink-500">
+                          Assistant: {post.aiReason}
+                        </p>
+                      )}
                       <a href={post.link} target="_blank" rel="noreferrer" className="text-xs text-teal-600 hover:underline">
                         {post.link}
                       </a>
@@ -68,6 +74,22 @@ export default async function FeedAdminPage() {
         </Card>
 
         <aside className="space-y-6">
+          <Card>
+            <CardHeader
+              title="Vendors' Instagram"
+              description="Fetched daily from each vendor's Instagram link. The assistant features or hides each new post and says why; you can flip any of them."
+            />
+            <div className="space-y-3 p-5">
+              {!instagramConnected() && (
+                <p className="text-xs text-ink-500">
+                  Instagram is not connected (INSTAGRAM_ACCESS_TOKEN). Development fetches demo posts instead.
+                </p>
+              )}
+              <ActionButton action={ingestInstagramAction} fields={{}} variant="primary" pendingLabel="Fetching…">
+                Fetch new posts now
+              </ActionButton>
+            </div>
+          </Card>
           <Card>
             <CardHeader title="Add a post" />
             <div className="p-5">

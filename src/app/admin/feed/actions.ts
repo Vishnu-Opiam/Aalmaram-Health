@@ -3,17 +3,33 @@
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
-import { notFound, validation } from "@/lib/errors";
+import { conflict, notFound, validation } from "@/lib/errors";
 import { parseDateInput } from "@/domain/shared/dates";
 import { feedImportItemSchema, feedPostSchema } from "@/lib/validation/schemas";
 import { parseForm, runAction, successState, type FormState } from "@/lib/validation/form";
 import { refreshUrl } from "@/lib/refresh-url";
+import { ingestVendorInstagram } from "@/lib/services/feed-ingest";
 
 /**
- * The MVP feed is curated by staff: add a post by hand, paste a JSON export,
- * hide anything that shouldn't be shown. Automated ingestion (vendors'
- * Instagram, Kerala Tourism, news) waits on a sourcing decision (P3.2).
+ * Staff curate the feed: add a post by hand, paste a JSON export, hide or show
+ * anything. Vendors' Instagram posts arrive through ingestVendorInstagram
+ * (daily cron, or the button here) already featured or hidden by the AI.
  */
+
+export async function ingestInstagramAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("feed.ingest", formData, async () => {
+    const user = await requireUser();
+    const s = await ingestVendorInstagram({ userId: user.id, label: user.name });
+    if (s.vendors === 0) {
+      throw validation("No active vendor has an Instagram profile link. Add one to the vendor's social links.");
+    }
+    // The button only shows errors (success navigates), so partial failures surface as one.
+    if (s.failed.length) {
+      throw conflict(`${s.added} new posts added, but these accounts could not be read: ${s.failed.join(", ")}.`);
+    }
+    return successState(`${s.added} new posts, ${s.featured} featured.`, refreshUrl("/admin/feed"));
+  });
+}
 
 export async function createFeedPostAction(_prev: FormState, formData: FormData): Promise<FormState> {
   return runAction("feed.create", formData, async () => {

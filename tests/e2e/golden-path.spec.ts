@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 /**
@@ -21,7 +19,7 @@ const RUN = Date.now();
 const CLIENT_NAME = `Golden Path Client ${RUN}`;
 const CLIENT_EMAIL = `golden.path.${RUN}@example.com`;
 const TRIP_NAME = `Golden path trip ${RUN}`;
-const MAIL_LOG = path.join(process.cwd(), ".mail.log");
+const CLIENT_PASSWORD = `Golden-path-${RUN}`;
 
 function isoDay(offset: number): string {
   const now = new Date();
@@ -47,13 +45,6 @@ async function clickAndSettle(page: Page, target: Locator) {
   await target.click();
   await page.waitForURL((url) => url.toString() !== before, { timeout: 30_000 });
   await page.waitForLoadState("load");
-}
-
-function latestInviteUrlFromMailLog(): string {
-  const contents = fs.readFileSync(MAIL_LOG, "utf8");
-  const last = [...contents.matchAll(/https?:\/\/\S+\/trip\/access\/([A-Za-z0-9_-]+)/g)].at(-1);
-  if (!last) throw new Error("No invitation link found in .mail.log");
-  return last[0];
 }
 
 /** Opens the "+" at the start of a day and adds an experience from the library. */
@@ -125,16 +116,28 @@ test("golden path: trip → health core → client builds → confirm", async ({
     await expect(block).toContainText("€370.00");
   });
 
-  await test.step("admin invites the client", async () => {
+  await test.step("admin creates the client's portal login", async () => {
     await page.getByRole("link", { name: CLIENT_NAME }).click();
-    await clickAndSettle(page, page.getByRole("button", { name: /Send invitation/ }));
+    await page.getByLabel("Password").fill(CLIENT_PASSWORD);
+    await clickAndSettle(page, page.getByRole("button", { name: "Create login" }));
+    await expect(page.getByRole("button", { name: "Reset password" })).toBeVisible();
   });
 
   const client = await (await browser.newContext()).newPage();
 
-  await test.step("client opens their link and lands on My trip", async () => {
-    await client.goto(latestInviteUrlFromMailLog());
-    await expect(client).toHaveURL(/\/trip$/);
+  await test.step("a wrong password is refused without saying which part was wrong", async () => {
+    await client.goto("/trip");
+    await expect(client).toHaveURL(/\/trip\/sign-in$/);
+    await client.getByLabel("Email").fill(CLIENT_EMAIL);
+    await client.getByLabel("Password").fill("not-the-password");
+    await client.getByRole("button", { name: "Sign in" }).click();
+    await expect(client.getByText("That email and password combination is not recognised.")).toBeVisible();
+  });
+
+  await test.step("client signs in and lands on My trip", async () => {
+    await client.getByLabel("Password").fill(CLIENT_PASSWORD);
+    await client.getByRole("button", { name: "Sign in" }).click();
+    await expect(client).toHaveURL(/\/trip$/, { timeout: 30_000 });
     await expect(client.getByRole("link", { name: "My trip", exact: true })).toHaveAttribute("aria-current", "page");
     await expect(client.getByRole("heading", { name: TRIP_NAME })).toBeVisible();
     await expect(client.getByRole("region", { name: "What happens next" })).toContainText("Plan your days");
@@ -144,6 +147,23 @@ test("golden path: trip → health core → client builds → confirm", async ({
     await client.getByRole("link", { name: /Plan my days/ }).click();
     await expect(client).toHaveURL(/\/trip\/itinerary/);
     await expect(client.getByRole("heading", { name: TRIP_NAME })).toBeVisible();
+  });
+
+  await test.step("client explores what is on offer and reads about a provider", async () => {
+    await client.getByRole("link", { name: "Explore", exact: true }).click();
+    await expect(client).toHaveURL(/\/trip\/explore/);
+    await client.getByRole("button", { name: "Heritage & Culture" }).click();
+    await expect(client.getByRole("button", { name: /Comprehensive Blood Panel/ })).toHaveCount(0);
+    await client.getByRole("button", { name: "Everything" }).click();
+    await client.getByLabel("Search experiences").fill("blood");
+    await client.getByRole("button", { name: /^Comprehensive Blood Panel\. Open details/ }).click();
+    const sheet = client.getByRole("dialog");
+    await expect(sheet).toContainText("About Backwater Diagnostics Centre (demo)");
+    await client.goBack();
+    await expect(client.getByRole("dialog")).toHaveCount(0);
+    await expect(client).toHaveURL(/\/trip\/explore/);
+    await client.getByRole("link", { name: "Day by day", exact: true }).click();
+    await expect(client).toHaveURL(/\/trip\/itinerary/);
   });
 
   const card = (day: string, title: string) =>

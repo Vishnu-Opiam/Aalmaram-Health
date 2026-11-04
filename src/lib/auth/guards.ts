@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import type { StaffRole } from "@prisma/client";
 import { unauthenticated } from "@/lib/errors";
-import { readAdminSession, readClientSession } from "@/lib/auth/session";
+import { clientSessionIsCurrent, readAdminSession, readClientSession } from "@/lib/auth/session";
 
 export type CurrentUser = {
   id: string;
@@ -60,9 +60,10 @@ export const getCurrentClient = cache(
     if (!session) return null;
     const client = await prisma.client.findUnique({
       where: { id: session.clientId },
-      select: { id: true, name: true, email: true, status: true },
+      select: { id: true, name: true, email: true, status: true, passwordSetAt: true },
     });
     if (!client || client.status === "ARCHIVED") return null;
+    if (!clientSessionIsCurrent(session.issuedAt, client.passwordSetAt)) return null;
     return { id: client.id, name: client.name, email: client.email };
   },
 );

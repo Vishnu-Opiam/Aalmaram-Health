@@ -21,7 +21,7 @@ const ADMIN_TTL_SECONDS = 60 * 60 * 8; // 8 hours
 const CLIENT_TTL_SECONDS = 60 * 60 * 24 * 14; // 14 days
 
 export type AdminSession = { userId: string };
-export type ClientSession = { clientId: string };
+export type ClientSession = { clientId: string; issuedAt: number };
 
 function secret() {
   return new TextEncoder().encode(env().SESSION_SECRET);
@@ -91,8 +91,16 @@ export async function createClientSession(clientId: string) {
 export async function readClientSession(): Promise<ClientSession | null> {
   const token = (await cookies()).get(CLIENT_COOKIE)?.value;
   if (!token) return null;
-  const payload = await verify<{ clientId?: string }>(token, CLIENT_AUDIENCE);
-  return payload?.clientId ? { clientId: payload.clientId } : null;
+  const payload = await verify<{ clientId?: string; iat?: number }>(token, CLIENT_AUDIENCE);
+  return payload?.clientId && payload.iat ? { clientId: payload.clientId, issuedAt: payload.iat } : null;
+}
+
+/**
+ * A client session is only good while the password it was signed in with is.
+ * `iat` has whole-second precision, so compare in seconds.
+ */
+export function clientSessionIsCurrent(issuedAt: number, passwordSetAt: Date | null): boolean {
+  return passwordSetAt !== null && issuedAt >= Math.floor(passwordSetAt.getTime() / 1000);
 }
 
 export async function destroyClientSession() {

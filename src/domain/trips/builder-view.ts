@@ -88,12 +88,15 @@ export type LibraryComponent = {
   id: string;
   name: string;
   description: string;
+  whatsIncluded: string | null;
+  tags: string[];
   deliverable: string | null;
   price: string;
   currency: string;
   priceUnitLabel: string;
   durationMinutes: number;
   vendorName: string;
+  provider: ProviderInfo;
   branches: BranchOption[];
 };
 

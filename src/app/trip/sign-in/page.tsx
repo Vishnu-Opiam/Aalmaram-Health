@@ -4,29 +4,14 @@ import { getCurrentClient } from "@/lib/auth/guards";
 import { Alert } from "@/components/ui/primitives";
 import { PortalBrand } from "@/components/portal/ui";
 import { param } from "@/lib/utils";
+import { SignInForm } from "./sign-in-form";
 
-export const metadata: Metadata = { title: "Open your trip" };
+export const metadata: Metadata = { title: "Sign in to your trip" };
 
 const MESSAGES: Record<string, { tone: "warning" | "danger"; text: string }> = {
-  invalid: {
-    tone: "danger",
-    text: "That link is not valid. It may have been mistyped, or replaced by a newer one.",
-  },
-  expired: {
-    tone: "warning",
-    text: "That link has expired. Please ask your Aalmaram coordinator for a fresh one.",
-  },
-  inactive: {
-    tone: "warning",
-    text: "This trip is no longer active. Please contact your Aalmaram coordinator.",
-  },
-  rate_limited: {
-    tone: "warning",
-    text: "Too many attempts from this connection. Please wait a few minutes and try again.",
-  },
   signed_out: {
     tone: "warning",
-    text: "You have been signed out. Open your personal link again to return.",
+    text: "You have been signed out. Sign in again to return to your trip.",
   },
 };
 
@@ -38,19 +23,16 @@ export default async function TripSignInPage({
   const client = await getCurrentClient();
   if (client) redirect("/trip");
 
-  const error = param(await searchParams, "error");
-  const message = MESSAGES[error];
+  const message = MESSAGES[param(await searchParams, "error")];
 
   return (
     <div className="mx-auto max-w-xl px-5 py-12 sm:py-16">
       <PortalBrand />
       <h1 className="mt-10 font-display text-[38px] font-semibold leading-tight tracking-tight text-ink-900">
-        Open your personal link
+        Sign in to your trip
       </h1>
       <p className="mt-4 text-[19px] leading-relaxed text-ink-700">
-        Your Aalmaram coordinator sends you a personal link by email. Opening
-        that link is how you reach your trip - there is no password to
-        remember.
+        Use your email address and the password your Aalmaram coordinator gave you.
       </p>
 
       {message && (
@@ -60,16 +42,12 @@ export default async function TripSignInPage({
       )}
 
       <div className="portal-card mt-8 p-6 sm:p-7">
-        <h2 className="text-[19px] font-semibold text-ink-900">
-          Cannot find your link?
-        </h2>
-        <p className="mt-2 text-[17px] leading-relaxed text-ink-700">
-          Search your inbox for an email from Aalmaram Health. If you still
-          cannot find it, reply to any message from your coordinator and we will
-          send a new one. For your security we cannot issue a link from this
-          page.
-        </p>
+        <SignInForm />
       </div>
+
+      <p className="mt-6 text-[17px] leading-relaxed text-ink-700">
+        Forgotten your password? Reply to any message from your coordinator and they will set a new one for you.
+      </p>
     </div>
   );
 }

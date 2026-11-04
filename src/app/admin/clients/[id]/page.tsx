@@ -10,7 +10,8 @@ import {
   EmptyState,
   PageHeader,
 } from "@/components/ui/primitives";
-import { InvitePanel } from "./invite-panel";
+import { PortalAccessPanel } from "./portal-access-panel";
+import { env } from "@/lib/env";
 import {
   ClientStatusBadge,
   TripStatusBadge,
@@ -208,20 +209,16 @@ export default async function ClientDetailPage({
           <Card>
             <CardHeader
               title="Portal access"
-              description="Secure, non-guessable invitation link."
+              description="Email and a password you set."
             />
             <div className="p-5">
-              <InvitePanel
+              <PortalAccessPanel
                 clientId={client.id}
                 clientEmail={client.email}
-                issuedAt={
-                  client.accessTokenIssuedAt
-                    ? formatShortDate(client.accessTokenIssuedAt)
-                    : null
-                }
-                expiresAt={
-                  client.accessTokenExpiresAt
-                    ? formatShortDate(client.accessTokenExpiresAt)
+                signInUrl={`${env().APP_URL.replace(/\/$/, "")}/trip/sign-in`}
+                passwordSetAt={
+                  client.passwordSetAt
+                    ? formatShortDate(client.passwordSetAt)
                     : null
                 }
                 lastLoginAt={

@@ -407,8 +407,13 @@ export const chatMessageSchema = z.object({
     .max(2000, "Please keep messages under 2000 characters."),
 });
 
-export const portalSignInSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Enter a valid email address."),
+/** Staff set the client's portal password; the client signs in with loginSchema. */
+export const clientPasswordSchema = z.object({
+  clientId: requiredText("Client"),
+  password: z
+    .string()
+    .min(10, "Use at least 10 characters.")
+    .max(200, "Please keep it under 200 characters."),
 });
 
 export type BranchInput = z.infer<typeof branchSchema>;

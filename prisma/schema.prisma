@@ -114,6 +114,7 @@ enum AiTask {
   TRIP_REQUIREMENTS_EXTRACTION
   ITINERARY_DRAFT
   CLIENT_CHAT
+  FEED_CURATION
 }
 
 enum AiRunStatus {
@@ -326,12 +327,12 @@ model Client {
 
   relationshipManagerId String?
 
-  // Secure, non-guessable portal access. Only the SHA-256 hash of the
-  // invitation token is stored; the raw token lives only in the invite link.
-  accessTokenHash      String?   @unique
-  accessTokenIssuedAt  DateTime?
-  accessTokenExpiresAt DateTime?
-  lastPortalLoginAt    DateTime?
+  // Portal login: staff set the password and share it with the client.
+  // Sessions issued before passwordSetAt are rejected, so resetting the
+  // password signs the client out everywhere.
+  passwordHash      String?
+  passwordSetAt     DateTime?
+  lastPortalLoginAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -525,6 +526,8 @@ model ChangeRequest {
 
 /// Staff curate the feed; `hiddenAt` takes a post off it (only "positive" news
 /// is shown). `externalId` de-duplicates re-imports of the same post.
+/// Posts pulled from vendors' Instagram are featured or hidden by the AI;
+/// `aiReason` says why, and staff can flip either way.
 model FeedPost {
   id          String     @id @default(cuid())
   source      FeedSource
@@ -535,6 +538,7 @@ model FeedPost {
   publishedAt DateTime
   externalId  String?    @unique
   hiddenAt    DateTime?
+  aiReason    String?
   createdAt   DateTime   @default(now())
 
   vendor Vendor? @relation(fields: [vendorId], references: [id], onDelete: SetNull)
