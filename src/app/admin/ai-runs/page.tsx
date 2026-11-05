@@ -12,6 +12,7 @@ const TASK_LABELS = {
   ITINERARY_DRAFT: "Itinerary draft",
   CLIENT_CHAT: "Client chat reply",
   FEED_CURATION: "Feed: Instagram post picks",
+  VENDOR_PROFILE_EXTRACTION: "Vendor profile from website",
 } as const;
 
 /** Every model call, for debugging and cost. Holds ids and counts only — no prompts or client text. */

@@ -8,8 +8,8 @@
 ## Current focus
 
 - Phase: MVP (Phases 1–4) merged; client portal re-planned for 50+ clients (`docs/platform/portal-ux.md`)
-- Branch: `feat/portal-ux-redesign` (stacked on `feat/portal-workflow-board`, PR #7, not yet merged)
-- Last updated: 2026-11-02 (public homepage, `feat/public-homepage`)
+- Branch: `feat/vendor-draft-from-website` (P1.5, from `main` 99d78f3)
+- Last updated: 2026-11-05 (vendor profile drafted from a web page)
 
 ## Phase 0 — Foundations
 - [x] P0.1 Baseline health check (typecheck / test / build / e2e results recorded below)
@@ -22,7 +22,7 @@
 - [x] P1.2 Domain: validation, missing-fields list, client + planner projections (client projection = `src/domain/trips/builder-view.ts`)
 - [x] P1.3 Admin vendor profile editor (+ branches, practitioners)
 - [x] P1.4 Component editor additions + practitioner links
-- [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
+- [x] P1.5 Draft vendor profile from website (AI, suggestions only) — fake provider + eval fixtures in `evals/vendor-profile/`; scoring waits for P0.4
 - [x] P1.6 Client-facing provider info in portal + leak tests
 - [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
 - [!] P1.8 First real vendors entered by humans — needs Nivedith's curated list
@@ -129,6 +129,12 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 | Date | Decision | Why |
 | --- | --- | --- |
 | 2026-11-03 | Public site rebuilt from the ground up after Vishnu's second review ("looks AI generated, sloppy, not premium"): the 3D backwater, glass panels, eyebrow labels and cream/gold palette are gone. Real Kerala photography carries every page (18 Unsplash-licence photos, one dawn/dusk light, credited in the footer); a night ground with a monsoon-mist field for practical sections and lamp brass on the one button; Gambarino + General Sans (Fontshare ITF Free Font License, self-hosted). three.js removed. Direction dealt by the taste-skill ("The place carries it") and checked with its inspector (0 FAIL on every inner page). | References (Vita Travel, WattBank, Stepout, Tourvia, Explore) share one thing: a real photograph does the selling, type is large and sparse, nothing decorative. Procedural 3D and ornament were what read as generated. |
+| 2026-11-05 | **P1.5 drafts are stateless**: "Draft suggestions" returns per-field suggestions to the page and writes only the `AiRun`; "Save ticked suggestions" writes the ticked fields, branches and practitioners in one transaction, validated by the profile form's own schemas. No suggestion table. | Simplest reversible shape; a draft is reviewed straight away. Add a table only if staff need to park drafts. |
+| 2026-11-05 | Suggestions that would replace a value a person entered start **unticked** and show "Replaces: …"; list fields only ever add entries. Existing branch / practitioner names are skipped. | PLAN P1.5: never overwrite a human-entered value silently. |
+| 2026-11-05 | Services found on the page are listed with "Add as component", not created. | A component needs a catalogue, duration and price that pages rarely state; half-filled components would reach the builder. |
+| 2026-11-05 | A suggested description, accreditation or service that trips `findMedicalClaims` is left out (a claimed service is dropped whole) and the panel says how many were left out. The prompt asks for a description in our own words. | CLAUDE.md §4 no medical claims; descriptions are client-visible. Copying a site's prose also raises the copyright worry from the 2 Nov call. |
+| 2026-11-05 | The page is fetched server-side only on the click: http(s) only, every resolved address must be public (no loopback / private / link-local / metadata), redirects re-checked (max 3), 10 s timeout, 2 MB cap, generic user agent. Known gap noted in code: DNS rebinding between check and fetch. | The URL comes from the browser (SSRF). Staff-only and on-click keeps the residual risk small. |
+| 2026-11-05 | Kerala Tourism's Green Leaf / Olive Leaf Ayurveda classification is read as an accreditation ("Kerala Tourism Green Leaf"); no new field. | Vishnu: Kerala Tourism pages are a source for vendors. Platform lens (Hagiu): an outside certification lowers clients' search costs; `accreditations[]` already carries it. |
 | 2026-09-17 | The four platform lifecycle parts are called **Stages**, not Modules. | `Module` already means Health / Wellness / Heritage content category. |
 | 2026-09-17 | Vendor profile questions are data (`ProfileQuestion`), not hard-coded fields. **Superseded 2026-10-15** (simple fields, below). | Nivedith's question document is pending and will evolve. |
 | 2026-09-17 | AI via Vercel AI Gateway + AI SDK, fake provider default. | App is on Vercel; tests/dev must run offline and deterministically. |
@@ -239,6 +245,17 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
+
+- **2026-11-05** · `feat/vendor-draft-from-website` · P1.5. Vendor page → **Draft from website**: a public address
+  (fetched once, SSRF-guarded) or pasted text → `VENDOR_PROFILE_EXTRACTION` (fast model; fake = deterministic
+  extractor) → suggestions per field, new branches, new practitioners and services → staff tick and save. New
+  migration adds the enum value only. Three fictional fixture pages (own site, tourism-board listing, pasted text)
+  serve unit tests now and evals later. Background: Nivedith shared Hagiu (2007) and de Reuver et al. (2018);
+  this is the search-cost side (richer, verified profiles). Tests: typecheck ✓, unit + integration 177/177 ✓, build ✓,
+  e2e 5/5 ✓ (inventory flaked once on the known client-router link click in the component step, passed on re-run;
+  the new draft step passed both times). Browser pane: draft, refusal of a local address, empty submit, save, 375 px.
+  Lint not run (`next lint` asks to be configured; pre-existing). Evals not run (P0.4 blocked, no key).
+  Next: P2.1 permission split needs a decision; otherwise Phase 5 (P5.1 payment schema).
 
 - **2026-11-04 (polish)** · `feat/site-polish` · Vishnu's review of the live site. (1) The "concierge, not a clinic"
   statement had huge gaps between words: its first-line indent was inherited by every word the scroll animation

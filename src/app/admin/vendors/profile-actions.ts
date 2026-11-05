@@ -3,7 +3,9 @@
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
 import { notFound } from "@/lib/errors";
-import { branchSchema, practitionerSchema } from "@/lib/validation/schemas";
+import { branchSchema, practitionerSchema, vendorDraftRequestSchema } from "@/lib/validation/schemas";
+import { applyVendorDraft, draftVendorProfile, type DraftSelection } from "@/lib/services/vendor-draft";
+import { DRAFT_FIELDS, type VendorSuggestions } from "@/domain/vendors/website-draft";
 import {
   parseForm,
   runAction,
@@ -114,6 +116,61 @@ export async function savePractitionerAction(
     return successState(
       practitionerId ? "Practitioner updated." : "Practitioner added.",
       refreshUrl(`/admin/vendors/${input.vendorId}`),
+    );
+  });
+}
+
+// --- draft from website (P1.5) -------------------------------------------------
+
+export type DraftState = FormState & { suggestions?: VendorSuggestions; draftId?: string };
+
+/** Reads the page and returns suggestions; writes nothing but the AiRun. */
+export async function draftVendorProfileAction(
+  vendorId: string,
+  _prev: DraftState,
+  formData: FormData,
+): Promise<DraftState> {
+  let suggestions: VendorSuggestions | undefined;
+  const state = await runAction("vendor.draft", formData, async () => {
+    const user = await requireUser();
+    const input = parseForm(vendorDraftRequestSchema, formData);
+    suggestions = await draftVendorProfile({ vendorId, ...input }, { userId: user.id });
+    const found = suggestions.fields.length + suggestions.branches.length + suggestions.practitioners.length;
+    return successState(found ? "Suggestions ready. Tick what to keep, then save." : "Nothing new found on that page.");
+  });
+  return { ...state, suggestions, draftId: suggestions && crypto.randomUUID() };
+}
+
+export async function applyVendorDraftAction(
+  vendorId: string,
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return runAction("vendor.draft_apply", formData, async () => {
+    const user = await requireUser();
+    const fields: DraftSelection["fields"] = {};
+    for (const { key } of DRAFT_FIELDS) {
+      const value = formData.get(`field:${key}`);
+      if (formData.get(`use:${key}`) === "on" && typeof value === "string") fields[key] = value;
+    }
+    const rows = (name: string) =>
+      formData.getAll(name).flatMap((v) => {
+        try {
+          const row = JSON.parse(String(v));
+          return row && typeof row === "object" ? [row as Record<string, string>] : [];
+        } catch {
+          return [];
+        }
+      });
+    const result = await applyVendorDraft(
+      vendorId,
+      { fields, branches: rows("branch"), practitioners: rows("practitioner") },
+      { userId: user.id, label: user.name },
+    );
+    const total = result.fields + result.branches + result.practitioners;
+    return successState(
+      total ? `Saved ${total} suggestion${total === 1 ? "" : "s"}.` : "Nothing was ticked, so nothing changed.",
+      refreshUrl(`/admin/vendors/${vendorId}`),
     );
   });
 }

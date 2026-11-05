@@ -142,6 +142,12 @@ export const practitionerSchema = z.object({
   status: recordStatus.default("ACTIVE"),
 });
 
+/** "Draft from website": a public page address, or its text pasted by staff. */
+export const vendorDraftRequestSchema = z.object({
+  url: optionalUrl,
+  pastedText: optionalText(60_000),
+});
+
 // --- module ----------------------------------------------------------------
 
 export const moduleSchema = z.object({

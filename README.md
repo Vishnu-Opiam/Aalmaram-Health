@@ -67,6 +67,12 @@ staff record booking outcomes by hand for now.
 7. **Feed** → *Fetch new posts now*: without Instagram credentials it pulls
    demo posts for each vendor with an Instagram link; the assistant features
    two and hides the promotion and the health claim, each with its reason.
+8. **Vendors** → *Thekkady Trail Guides (demo)* → **Draft from website**: paste
+   a page's text (or a public address) → *Draft suggestions*. Fields that are
+   empty come ticked, ones that would replace what a person typed come
+   unticked; new branches and practitioners are listed to tick. Nothing is
+   saved until *Save ticked suggestions*. Fictional sample pages live in
+   `evals/vendor-profile/`.
 
 ---
 
@@ -203,6 +209,13 @@ itineraries, blocks, requirements and conversations cascade with the client.
   share, each at a sensible time of day); the model may re-pick from the same
   candidates, and anything invalid (unknown ids, clashes, outside the day) is
   dropped.
+- **Vendor profile from a web page** — the fast model reads one public page (the
+  provider's site or a listing such as Kerala Tourism's) and returns profile
+  fields, branches, practitioners and services as suggestions. The page is
+  fetched only on that click, only from public addresses (no local or private
+  networks, redirects re-checked, 10 s and 2 MB caps); its text is never stored.
+  Health claims are left out, and services are listed but never turned into
+  components automatically.
 - **"+" suggestions** — deterministic ranking of what fits the gap.
 - **Chat** — a discovery assistant on **Ask us**, with ready-made questions to
   tap and "Suggest things for my free days"; it answers wishes ("I love art" →

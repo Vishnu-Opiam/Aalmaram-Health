@@ -16,8 +16,14 @@ import {
   Tr,
 } from "@/components/ui/primitives";
 import { toggleVendorStatusAction } from "../actions";
-import { saveBranchAction, savePractitionerAction } from "../profile-actions";
+import {
+  applyVendorDraftAction,
+  draftVendorProfileAction,
+  saveBranchAction,
+  savePractitionerAction,
+} from "../profile-actions";
 import { BranchForm, PractitionerForm } from "../profile-forms";
+import { DraftFromWebsitePanel } from "../draft-panel";
 import { RecordStatusBadge } from "@/components/admin/status-badges";
 import { ActionButton } from "@/components/admin/action-button";
 import { formatMoney } from "@/domain/itineraries/pricing";
@@ -97,6 +103,27 @@ export default async function VendorDetailPage({
           {missing.join(" · ")}
         </Alert>
       )}
+
+      <Card>
+        <details open={missing.length > 0}>
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+            <span>
+              <span className="block text-sm font-semibold text-ink-900">Draft from website</span>
+              <span className="block text-xs text-ink-500">
+                Read a public page and suggest profile fields, branches and practitioners. Nothing is saved until you
+                tick and save.
+              </span>
+            </span>
+            <span className="text-xs text-teal-600">Open</span>
+          </summary>
+          <DraftFromWebsitePanel
+            vendorId={vendor.id}
+            website={vendor.website}
+            draftAction={draftVendorProfileAction.bind(null, vendor.id)}
+            applyAction={applyVendorDraftAction.bind(null, vendor.id)}
+          />
+        </details>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-5">

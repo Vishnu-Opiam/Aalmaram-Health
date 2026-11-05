@@ -82,6 +82,29 @@ test("inventory: vendor and catalogue and component CRUD with status toggles", a
     await expect(page.getByRole("heading", { name: "Practitioners (1)" })).toBeVisible();
   });
 
+  await test.step("draft the profile from pasted page text and save the ticked suggestions", async () => {
+    // The panel starts open while profile fields are missing.
+    await page.getByLabel("Or paste the page's text").fill(
+      [
+        "Established in 1999, a NABH accredited clinic offering preventive check-ups for visitors to Kerala.",
+        "Branches",
+        "Kakkanad (test) — Infopark Road, Kakkanad, Kochi 682030",
+        "Our doctors",
+        "Dr. Riya Menon, Physician, MBBS, 10 years",
+      ].join("\n"),
+    );
+    await page.getByRole("button", { name: "Draft suggestions" }).click();
+    await expect(page.getByText("Suggestions ready")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole("checkbox", { name: "Accreditations" })).toBeChecked();
+    // Nothing is written by drafting.
+    await expect(page.getByRole("heading", { name: "Branches (1)" })).toBeVisible();
+
+    await clickAndSettle(page, page.getByRole("button", { name: "Save ticked suggestions" }));
+    await expect(page.getByRole("heading", { name: "Branches (2)" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Practitioners (2)" })).toBeVisible();
+    await expect(page.getByText("NABH", { exact: true })).toBeVisible();
+  });
+
   await test.step("deactivate and reactivate the vendor", async () => {
     await clickAndSettle(page, page.getByRole("button", { name: "Deactivate" }));
     await expect(page.getByText("Inactive").first()).toBeVisible();
