@@ -26,6 +26,10 @@ test("homepage answers what, why Kerala, how, safety and cost, and offers a free
   await page.getByRole("button", { name: "More wellness" }).click();
   await expect(page.getByText(/Your mix: 50% health, 30% wellness, 20% culture/)).toBeAttached();
 
+  // What it costs: the provider's price plus our fee, nothing else.
+  const pricing = page.locator("#pricing");
+  await expect(pricing.getByRole("heading", { level: 3 })).toHaveText(["What the provider charges", "Our service fee"]);
+
   await page.getByText("Is the first call really free?").click();
   await expect(page.getByText("no obligation to book")).toBeVisible();
   await page.getByRole("link", { name: "Staff sign-in" }).click();
@@ -67,4 +71,25 @@ test("How it works, Why Kerala and Is it safe? are one click from the menu", asy
     await expect(page.getByRole("heading", { level: 2, name: heading })).toBeVisible();
     await expect(page.getByRole("link", { name: "Book a free conversation" }).first()).toHaveAttribute("href", "/talk");
   }
+});
+
+test("health, wellness and culture each have a page, and the homepage links into them", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#why-kerala").getByRole("link", { name: "Health in Kerala" }).click();
+  await expect(page).toHaveURL(/\/health$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Health");
+  await expect(page.getByRole("heading", { level: 3, name: "Health check" })).toBeVisible();
+  await expect(page.locator("#health-check")).toContainText("€250 · ≈ £215");
+
+  // An open Explore tile goes straight to its item.
+  await page.goto("/");
+  await page.locator("#explore").getByRole("button", { name: /Ayurveda/ }).click();
+  await page.locator("#explore").getByRole("link", { name: "More about ayurveda" }).click();
+  await expect(page).toHaveURL(/\/wellness#ayurveda$/);
+
+  await page.getByRole("navigation", { name: "Also in Kerala" }).getByRole("link", { name: "Culture" }).click();
+  await expect(page).toHaveURL(/\/culture$/);
+  await expect(page.getByRole("heading", { level: 3, name: "A Kathakali evening" })).toBeVisible();
+
+  expect((await page.request.get("/not-a-module")).status()).toBe(404);
 });

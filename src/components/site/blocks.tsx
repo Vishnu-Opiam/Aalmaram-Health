@@ -75,18 +75,22 @@ export function PageHero({
   photo,
   children,
   short,
+  veil,
 }: {
   title: string;
   intro: string;
   photo: PhotoData;
   children?: React.ReactNode;
   short?: boolean;
+  /** A night wash over pale photographs, so the title keeps its contrast. */
+  veil?: number;
 }) {
   return (
     <section className={cn("relative isolate flex flex-col justify-end overflow-hidden bg-night text-night-ink", short ? "min-h-[78svh]" : "min-h-svh")}>
       <div data-shutter className="absolute inset-0 -z-10">
         <Photo photo={photo} sizes={fullScreen(photo)} priority drift className="h-full w-full" />
       </div>
+      {veil && <div className="absolute inset-0 -z-10 bg-night" style={{ opacity: veil }} aria-hidden="true" />}
       {/* Neutral scrims under the menu and the words only; the rest of the picture stays as taken. */}
       <div className="absolute inset-x-0 top-0 -z-10 h-44 bg-[linear-gradient(rgb(8_12_14/0.55),transparent)]" aria-hidden="true" />
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_75%_65%_at_10%_95%,rgb(8_12_14/0.78),transparent_72%)]" aria-hidden="true" />

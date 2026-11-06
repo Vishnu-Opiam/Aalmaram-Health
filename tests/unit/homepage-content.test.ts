@@ -17,11 +17,21 @@ describe("homepage copy", () => {
     for (const item of content.EXPERIENCES) expect(formatPrice(item.priceFromEur)).toMatch(/^€[\d,]+ · ≈ £[\d,]+$/);
   });
 
-  it("gives every journey a mix that adds up to 100 and a sensible range", () => {
-    for (const j of content.JOURNEYS) {
-      expect(j.mix.health + j.mix.wellness + j.mix.culture).toBe(100);
-      expect(j.toEur).toBeGreaterThan(j.fromEur);
-    }
+  it("gives health, wellness and culture a page each, and every item a unique anchor on its page", () => {
+    expect(content.MODULES.map((m) => [m.kind, m.href])).toEqual([
+      ["health", "/health"],
+      ["wellness", "/wellness"],
+      ["culture", "/culture"],
+    ]);
+    for (const m of content.MODULES) expect(content.EXPERIENCES.some((item) => item.kind === m.kind)).toBe(true);
+    const hrefs = content.EXPERIENCES.map(content.experienceHref);
+    expect(new Set(hrefs).size).toBe(hrefs.length);
+    expect(content.experienceHref(content.NEEDS[0])).toBe("/health#health-check");
+    expect(content.experienceSlug("Kerala's kitchens")).toBe("kerala-s-kitchens");
+  });
+
+  it("explains cost as the provider's price plus our fee, nothing more", () => {
+    expect(content.PRICING.map((p) => p.title)).toEqual(["What the provider charges", "Our service fee"]);
   });
 
   it("credits every photo and describes it for screen readers", () => {

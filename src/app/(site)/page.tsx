@@ -1,27 +1,22 @@
 import type { Metadata } from "next";
 import { BookButton, ClosingCta, Faq, frame, fullScreen, MoreLink, Photo } from "@/components/site/blocks";
 import { ExploreList } from "@/components/site/explore-list";
-import { JourneyTrack, PlaceBand } from "@/components/site/journey-track";
 import { WhyChapters } from "@/components/site/why-chapters";
 import { YourMix } from "@/components/site/your-mix";
-import { formatPrice, formatPriceRange } from "@/domain/site/prices";
 import { cn } from "@/lib/utils";
 import {
   FAQ,
   HERO,
-  JOURNEY_DAYS,
-  JOURNEYS,
+  MODULES,
   MORE_EXPERIENCES,
   NEEDS,
   PHOTOS,
-  PLACE_NAMES,
   PRICING,
   PROMISES,
   RIGHT_FOR_YOU,
   STATEMENT,
   STEPS,
   VETTING,
-  WHY_CHAPTERS,
 } from "./content";
 
 export const metadata: Metadata = {
@@ -40,9 +35,10 @@ const PROOF = [
 
 /**
  * Homepage and landing page in one. The argument, in order: this is Kerala and
- * someone looks after you (hero, intro); why Kerala at all (five chapters);
- * what you can do and what it costs (explore, your mix); how it works; how we
- * keep it safe; whether it suits you; prices in full; questions; a person.
+ * someone looks after you (hero, intro); why Kerala: health, wellness and
+ * culture, each with its own page; what you can do (explore, your mix); how it
+ * works; how we keep it safe; whether it suits you; what it costs; questions;
+ * a person.
  */
 export default function HomePage() {
   return (
@@ -90,9 +86,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <PlaceBand names={PLACE_NAMES} />
-
-      {/* Why Kerala: five words, five photographs, one page-turn each. */}
+      {/* Why Kerala: health, wellness and culture, one page-turn each, each leading to its own page. */}
       <section id="why-kerala" aria-labelledby="why-title" className="scroll-mt-0">
         <div className={cn(frame, "grid gap-8 pb-20 md:grid-cols-12 md:gap-x-6")}>
           <h2 id="why-title" className="site-head md:col-span-5">Why Kerala</h2>
@@ -104,7 +98,7 @@ export default function HomePage() {
             <MoreLink href="/why-kerala" className="mt-6">Discover Kerala</MoreLink>
           </div>
         </div>
-        <WhyChapters chapters={WHY_CHAPTERS} />
+        <WhyChapters chapters={MODULES} />
       </section>
 
       {/* Explore: what you can do, with a starting price for each. */}
@@ -131,21 +125,7 @@ export default function HomePage() {
         <YourMix />
       </section>
 
-      {/* One journey, day by day, travelled sideways. */}
-      <JourneyTrack
-        title="Ten days, as one journey"
-        intro={`${JOURNEYS[0].title}. Every trip is planned around one person; this is the shape of one.`}
-        days={JOURNEY_DAYS}
-        aside={
-          <div data-rise>
-            <p className="text-[16px] text-night-muted">Everything on the ground, flights not included</p>
-            <p className="site-display mt-3 text-[clamp(2rem,1.5rem+1.5vw,3rem)] leading-tight">{formatPriceRange(JOURNEYS[0].fromEur, JOURNEYS[0].toEur)}</p>
-            <BookButton className="mt-8">Plan one like it</BookButton>
-          </div>
-        }
-      />
-
-      {/* How it works: four verbs, in order. */}
+      {/* How it works: one verb at a time. On wide screens each step holds the screen until the next scrolls up over it. */}
       <section id="how-it-works" aria-labelledby="how-title" className={cn(frame, "scroll-mt-20 bg-mist py-28 text-mist-ink md:py-36")}>
         <div className="grid gap-14 md:grid-cols-12 md:gap-x-6">
           <div className="relative md:sticky md:top-32 md:col-span-4 md:self-start md:pl-8">
@@ -157,13 +137,16 @@ export default function HomePage() {
             <p className="mt-6 leading-relaxed text-mist-muted">One person looks after you at every step. Nothing is booked until you have seen every price, confirmed and paid.</p>
             <MoreLink href="/how-it-works" className="mt-4 max-md:hidden">More on how it works</MoreLink>
           </div>
-          <ol className="space-y-16 md:col-span-7 md:col-start-6 md:space-y-24">
-            {STEPS.map((step) => (
-              <li key={step.verb} data-rise className="grid gap-3 sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] sm:items-baseline sm:gap-10">
-                <p data-split="chars" className="site-display text-[clamp(4rem,8vw,8rem)]" aria-hidden="true">{step.verb}</p>
-                <div>
-                  <h3 className="text-[21px] font-medium">{step.title}</h3>
-                  <p className="mt-2 leading-relaxed text-mist-muted">{step.text}</p>
+          <ol className="space-y-16 md:col-span-7 md:col-start-6 md:space-y-0">
+            {STEPS.map((step, i) => (
+              <li key={step.verb} className="md:h-[85svh] md:last:h-auto">
+                <div data-rise className="grid gap-3 bg-mist sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] sm:items-baseline sm:gap-10 md:sticky md:top-[32svh] md:py-6">
+                  <p data-split="chars" className="site-display text-[clamp(4rem,8vw,8rem)]" aria-hidden="true">{step.verb}</p>
+                  <div>
+                    <p className="text-[15px] tabular-nums text-mist-muted">{i + 1} of {STEPS.length}</p>
+                    <h3 className="text-[21px] font-medium">{step.title}</h3>
+                    <p className="mt-2 leading-relaxed text-mist-muted">{step.text}</p>
+                  </div>
                 </div>
               </li>
             ))}
@@ -194,52 +177,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Is this right for you: an honest filter, beside a quiet photograph. */}
-      <section aria-labelledby="fit-title" className={cn(frame, "grid gap-12 bg-night-raised py-28 md:grid-cols-12 md:gap-x-6 md:py-36")}>
-        <Photo photo={PHOTOS.palms} sizes="(min-width: 768px) 40vw, 100vw" className="aspect-[4/5] md:col-span-5" />
-        <div className="md:col-span-6 md:col-start-7 md:self-center">
-          <h2 id="fit-title" className="site-head">Is this right for you?</h2>
-          <h3 className="mt-10 text-[21px] font-medium">It suits you if</h3>
-          <ul data-rise="left" className="mt-3 space-y-2 leading-relaxed text-night-muted">
-            {RIGHT_FOR_YOU.suits.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-          <h3 className="mt-10 text-[21px] font-medium">It is not for</h3>
-          <ul data-rise="left" className="mt-3 space-y-2 leading-relaxed text-night-muted">
-            {RIGHT_FOR_YOU.notFor.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
+      {/* Is this right for you: an honest filter in two columns, under a wide, quiet photograph. */}
+      <section aria-labelledby="fit-title" className="bg-night-raised">
+        <Photo photo={PHOTOS.palms} sizes="100vw" className="h-[36svh] md:h-[48svh]" />
+        <div className={cn(frame, "grid gap-12 py-20 md:grid-cols-12 md:gap-x-6 md:py-28")}>
+          <h2 id="fit-title" className="site-head md:col-span-4">Is this right for you?</h2>
+          <FitList title="It suits you if" mark="✓" lines={RIGHT_FOR_YOU.suits} className="md:col-span-4" />
+          <FitList title="It is not for" mark="—" lines={RIGHT_FOR_YOU.notFor} className="md:col-span-4" />
         </div>
       </section>
 
-      {/* Prices, set like a menu. */}
+      {/* What it costs: two things, nothing else. */}
       <section id="pricing" aria-labelledby="pricing-title" className={cn(frame, "grid scroll-mt-20 gap-14 bg-mist py-28 text-mist-ink md:grid-cols-12 md:gap-x-6 md:py-36")}>
-        <div className="md:col-span-3">
+        <div className="md:col-span-4">
           <h2 id="pricing-title" className="site-head">What it costs</h2>
-          <p className="mt-6 text-[16px] leading-relaxed text-mist-muted">Indicative, in euros with pounds alongside. Flights are not included.</p>
-          <Photo photo={PHOTOS.mortar} sizes="(min-width: 768px) 22vw, 60vw" className="mt-10 aspect-[4/5] w-3/5 md:w-full" />
+          <p className="mt-6 leading-relaxed text-mist-muted">You see both on your trip page before you decide. Flights are not included.</p>
         </div>
-        <div className="grid gap-x-16 gap-y-14 md:col-span-8 md:col-start-5 lg:grid-cols-2">
-          <PriceGroup title="How we charge">
-            {PRICING.map((p, i) => (
-              <PriceRow key={p.title} name={p.title} price={["No markup", "Shown first", "Then we book"][i]} text={p.text} />
-            ))}
-          </PriceGroup>
-          <PriceGroup title="Care, from">
-            {NEEDS.map((n) => (
-              <PriceRow key={n.title} name={n.title} price={formatPrice(n.priceFromEur)} />
-            ))}
-          </PriceGroup>
-          <PriceGroup title="Whole journeys, on the ground" className="lg:col-span-2">
-            <div className="grid gap-x-16 lg:grid-cols-2">
-              {JOURNEYS.map((j) => (
-                <PriceRow key={j.title} name={`${j.title}, ${j.days} days`} price={formatPriceRange(j.fromEur, j.toEur)} text={j.line} stacked />
-              ))}
-            </div>
-          </PriceGroup>
-        </div>
+        <ol data-rise className="grid gap-12 sm:grid-cols-[1fr_auto_1fr] sm:items-start sm:gap-8 md:col-span-7 md:col-start-6">
+          {PRICING.flatMap((p, i) => [
+            i > 0 && (
+              <li key="plus" aria-hidden="true" className="site-display text-[clamp(3rem,6vw,5rem)] leading-none text-mist-muted">+</li>
+            ),
+            <li key={p.title}>
+              <h3 className="site-display text-[clamp(2rem,1.5rem+1.6vw,3rem)] leading-tight">{p.title}</h3>
+              <p className="mt-3 leading-relaxed text-mist-muted">{p.text}</p>
+            </li>,
+          ])}
+        </ol>
       </section>
 
       {/* Questions, beside a tall photograph. */}
@@ -269,23 +233,18 @@ export default function HomePage() {
   );
 }
 
-function PriceGroup({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
+function FitList({ title, mark, lines, className }: { title: string; mark: string; lines: string[]; className?: string }) {
   return (
     <div className={className}>
-      <h3 data-split="words" className="text-[24px] font-medium">{title}</h3>
-      <div data-rise className="mt-6 space-y-5">{children}</div>
-    </div>
-  );
-}
-
-function PriceRow({ name, price, text, stacked }: { name: string; price: string; text?: string; stacked?: boolean }) {
-  return (
-    <div className={cn(stacked && "pb-4")}>
-      <p className={cn("flex justify-between gap-6 text-[19px]", stacked && "flex-col gap-1")}>
-        <span>{name}</span>
-        <span className="shrink-0 tabular-nums">{price}</span>
-      </p>
-      {text && <p className="mt-1 max-w-[36ch] text-[16px] leading-relaxed text-mist-muted">{text}</p>}
+      <h3 className="text-[21px] font-medium">{title}</h3>
+      <ul data-rise="left" className="mt-5 space-y-4 leading-relaxed text-night-muted">
+        {lines.map((line) => (
+          <li key={line} className="grid grid-cols-[1.75rem_1fr]">
+            <span aria-hidden="true" className="text-brass">{mark}</span>
+            {line}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

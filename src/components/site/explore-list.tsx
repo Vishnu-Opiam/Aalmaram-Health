@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PHOTOS, type Experience } from "@/app/(site)/content";
+import { ArrowRight } from "lucide-react";
+import { experienceHref, PHOTOS, type Experience } from "@/app/(site)/content";
+import { AppLink as Link } from "@/components/ui/primitives";
 import { formatPrice } from "@/domain/site/prices";
 import { cn } from "@/lib/utils";
+import { textLinkClass } from "./nav";
 import { SiteImage } from "./site-image";
 
 const FALLBACK = { health: PHOTOS.check, wellness: PHOTOS.dhara, culture: PHOTOS.kathakaliStage } as const;
@@ -12,7 +15,8 @@ const FALLBACK = { health: PHOTOS.check, wellness: PHOTOS.dhara, culture: PHOTOS
  * What you can do in Kerala, as a list beside one photograph. The row in the
  * middle of the screen (or the one you point at, tap or tab to) opens its
  * details and brings its photograph forward. Without script every row is a
- * plain disclosure button and the first one is open.
+ * plain disclosure button and the first one is open. An open row links on to
+ * the item on its module page.
  */
 export function ExploreList({ items }: { items: Experience[] }) {
   const [active, setActive] = useState(0);
@@ -76,6 +80,9 @@ export function ExploreList({ items }: { items: Experience[] }) {
                 <p className="leading-relaxed">
                   {item.line} <span className="text-mist-muted">{item.duration}. {item.receive}.</span>
                 </p>
+                <Link href={experienceHref(item)} className={cn(textLinkClass, "mt-1")}>
+                  More about {item.title.toLowerCase()} <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                </Link>
               </div>
             </li>
           );

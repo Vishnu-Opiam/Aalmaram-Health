@@ -1,15 +1,15 @@
 import type { Photo as PhotoData } from "@/app/(site)/content";
-import { frame, fullScreen, Photo } from "./blocks";
+import { frame, fullScreen, MoreLink, Photo } from "./blocks";
 import { cn } from "@/lib/utils";
 
 /**
- * Kerala told in single words: each chapter is a full-screen photograph with
+ * Kerala told in single words (Health, Wellness, Culture): each chapter is a full-screen photograph with
  * its word across the middle. A chapter holds still for a moment, then the
  * next one pushes it up and away (CSS sticky, so it reads the same without
  * script). With motion, the photo settles and the word assembles letter by
  * letter as each chapter arrives (motion.tsx, chapterScenes).
  */
-export function WhyChapters({ chapters }: { chapters: { word: string; text: string; photo: PhotoData; veil?: number }[] }) {
+export function WhyChapters({ chapters }: { chapters: { word: string; text: string; href: string; photo: PhotoData; veil?: number }[] }) {
   return (
     <div>
       {chapters.map((c) => (
@@ -22,7 +22,10 @@ export function WhyChapters({ chapters }: { chapters: { word: string; text: stri
             <div className="absolute inset-0 -z-10 bg-night" style={{ opacity: c.veil ?? 0.3 }} aria-hidden="true" />
             <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(transparent,rgb(8_12_14/0.6))]" aria-hidden="true" />
             <h3 data-chapter-word className="site-display absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[clamp(4.25rem,15vw,17rem)]">{c.word}</h3>
-            <p data-chapter-text className={cn(frame, "box-content max-w-[36rem] pb-12 leading-relaxed sm:pb-16")}>{c.text}</p>
+            <div data-chapter-text className={cn(frame, "box-content max-w-[36rem] pb-12 sm:pb-16")}>
+              <p className="leading-relaxed">{c.text}</p>
+              <MoreLink href={c.href} className="mt-3">{c.word} in Kerala</MoreLink>
+            </div>
           </div>
         </article>
       ))}
