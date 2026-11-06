@@ -1,12 +1,12 @@
 import localFont from "next/font/local";
 import { AppLink as Link } from "@/components/ui/primitives";
-import { frame, Photo, telHref } from "@/components/site/blocks";
+import { frame, telHref } from "@/components/site/blocks";
 import { SITE_MENU } from "@/components/site/nav";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteMotion } from "@/components/site/motion";
 import { contactEmail, contactPhone } from "@/lib/env";
 import { cn } from "@/lib/utils";
-import { PHOTOS } from "./content";
+import { MODULES, PHOTOS } from "./content";
 import "./site.css";
 
 // A narrow, sharp serif for the few big words and a plain sans for everything read.
@@ -46,70 +46,78 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       </main>
       <SiteMotion />
 
-      {/* Footer: the place, larger than anywhere above, beside the whole menu. */}
-      <footer className="grid bg-night-raised md:min-h-svh md:grid-cols-2">
-        <Photo photo={PHOTOS.canal} sizes="(min-width: 768px) 50vw, 100vw" decorative className="h-[50svh] md:h-auto" />
-        <div className={cn(frame, "flex flex-col py-14 md:py-20 md:pl-[6vw]")}>
-          <Link href="/" className="site-display text-[28px]">Aalmaram Health</Link>
-          <nav aria-label="Footer" className="mt-10">
-            <ul data-rise="left" className="space-y-2">
-              {[...SITE_MENU, { href: "/talk", label: "Book a free conversation" }, { href: "/trip/sign-in", label: "My trip" }].map((item) => (
-                <li key={item.href}>
-                  <a href={item.href} className="site-display inline-flex min-h-12 items-center text-[clamp(1.9rem,2.6vw,2.75rem)] transition-[opacity,transform] duration-300 hover:translate-x-3 hover:opacity-80">
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="mt-14 grid gap-8 text-[16px] sm:grid-cols-2">
-            <div>
-              <h2 className="font-medium">Talk to us</h2>
-              <ul className="mt-2 space-y-1 text-night-muted">
-                {phone && (
-                  <li>
-                    <a href={telHref(phone)} className="inline-flex min-h-11 items-center hover:text-night-ink">{phone}</a>
-                  </li>
-                )}
-                {email && (
-                  <li>
-                    <a href={`mailto:${email}`} className="inline-flex min-h-11 items-center break-all hover:text-night-ink">{email}</a>
-                  </li>
-                )}
-                <li>
-                  <Link href="/talk" className="inline-flex min-h-11 items-center hover:text-night-ink">Ask for a free conversation</Link>
-                </li>
-              </ul>
-            </div>
-            <p className="leading-relaxed text-night-muted">
+      {/*
+        Footer: no photograph (the last section above already ends on one), the
+        three modules, the pages, a way to a person, and the small print.
+      */}
+      <footer className={cn(frame, "bg-night-raised pb-10 pt-20 md:pt-28")}>
+        <div className="grid gap-14 md:grid-cols-12 md:gap-x-6">
+          <div className="md:col-span-4">
+            <Link href="/" className="site-display text-[clamp(2.25rem,1.6rem+2vw,3.5rem)] leading-none">Aalmaram Health</Link>
+            <p className="mt-5 max-w-[24rem] leading-relaxed text-night-muted">
               Aalmaram is Malayalam for the banyan, the tree a village gathers under. We plan health, wellness and
               culture journeys in Kerala.
             </p>
           </div>
 
-          <div className="mt-auto space-y-3 pt-14 text-[15px] leading-relaxed text-night-muted">
-            <p>
-              Aalmaram Health coordinates trips with independent, licensed providers in Kerala. We do not provide medical
-              advice, diagnosis or treatment; clinical decisions rest with the providers who care for you.
-            </p>
-            <p>
-              Photographs from Unsplash by{" "}
-              {Object.values(PHOTOS).map((photo, i, all) => (
-                <span key={photo.src}>
-                  <a href={photo.href} className="underline underline-offset-2 hover:text-night-ink" rel="noopener noreferrer">
-                    {photo.credit}
-                  </a>
-                  {i < all.length - 1 ? ", " : "."}
-                </span>
-              ))}
-            </p>
-            <Link href="/login" className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-night-ink">
-              Staff sign-in
-            </Link>
-          </div>
+          <FooterColumn title="What we arrange" className="md:col-span-2 md:col-start-6">
+            {MODULES.map((m) => (
+              <FooterLink key={m.href} href={m.href}>{m.word}</FooterLink>
+            ))}
+          </FooterColumn>
+
+          <FooterColumn title="About" className="md:col-span-2">
+            {SITE_MENU.map((item) => (
+              <FooterLink key={item.href} href={item.href}>{item.label}</FooterLink>
+            ))}
+          </FooterColumn>
+
+          <FooterColumn title="Talk to us" className="md:col-span-3">
+            <FooterLink href="/talk">Book a free conversation</FooterLink>
+            {phone && <FooterLink href={telHref(phone)}>{phone}</FooterLink>}
+            {email && <FooterLink href={`mailto:${email}`}>{email}</FooterLink>}
+            <FooterLink href="/trip/sign-in">My trip</FooterLink>
+          </FooterColumn>
+        </div>
+
+        <div className="mt-20 grid gap-6 border-t border-night-ink/15 pt-8 text-[15px] leading-relaxed text-night-muted md:grid-cols-12 md:gap-x-6">
+          <p className="md:col-span-5">
+            Aalmaram Health coordinates trips with independent, licensed providers in Kerala. We do not provide medical
+            advice, diagnosis or treatment; clinical decisions rest with the providers who care for you.
+          </p>
+          <p className="md:col-span-5 md:col-start-7">
+            Photographs from Unsplash by{" "}
+            {Object.values(PHOTOS).map((photo, i, all) => (
+              <span key={photo.src}>
+                <a href={photo.href} className="underline underline-offset-2 hover:text-night-ink" rel="noopener noreferrer">
+                  {photo.credit}
+                </a>
+                {i < all.length - 1 ? ", " : "."}
+              </span>
+            ))}
+          </p>
+          <Link href="/login" className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-night-ink md:col-span-2 md:justify-self-end">
+            Staff sign-in
+          </Link>
         </div>
       </footer>
     </div>
+  );
+}
+
+function FooterColumn({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
+  return (
+    <nav aria-label={title} className={className}>
+      <h2 className="text-[16px] font-medium text-night-muted">{title}</h2>
+      <ul data-rise="left" className="mt-3 space-y-1">{children}</ul>
+    </nav>
+  );
+}
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <li>
+      <a href={href} className="inline-flex min-h-12 items-center text-[19px] [overflow-wrap:anywhere] transition-opacity hover:opacity-75">{children}</a>
+    </li>
   );
 }

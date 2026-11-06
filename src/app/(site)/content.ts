@@ -62,14 +62,41 @@ export const HERO = {
   context: "If waiting lists or private prices at home are holding you back, Kerala can be a calm, well-organised alternative.",
 };
 
-/** Why Kerala, told in five words over five photographs (placeholder copy). */
-export const WHY_CHAPTERS = [
-  { word: "Backwaters", photo: PHOTOS.river, text: "Lakes, canals and lagoons run behind the coast for hundreds of kilometres. You see them best slowly, from a houseboat or a canoe." },
-  { word: "Ayurveda", photo: PHOTOS.dhara, text: "Kerala is known for classical Ayurveda, practised by doctors trained in it. We tell you what a programme involves, never what it will do for you." },
-  { word: "Hospitals", photo: PHOTOS.eyeClinic, veil: 0.55, text: "Kochi and Thiruvananthapuram have large private hospitals; several hold national (NABH) or international (JCI) accreditation. English is widely spoken." },
-  { word: "Hills", photo: PHOTOS.tea, text: "A few hours inland, tea gardens and cool air in the Western Ghats. Days for walking, or for doing very little." },
-  { word: "Heritage", photo: PHOTOS.kathakali, text: "Centuries of trade in Fort Kochi, Kathakali by lamplight, temple festivals and a sadya on a banana leaf." },
+/**
+ * The three modules we arrange (5 Nov call): Why Kerala shows one chapter
+ * each, and each has its own page listing what belongs to it (placeholder copy).
+ */
+export const MODULES: { kind: MixKey; word: string; href: string; photo: Photo; veil?: number; text: string; intro: string }[] = [
+  {
+    kind: "health",
+    word: "Health",
+    href: "/health",
+    photo: PHOTOS.eyeClinic,
+    veil: 0.55,
+    text: "Kochi and Thiruvananthapuram have large private hospitals; several hold national (NABH) or international (JCI) accreditation. English is widely spoken.",
+    intro: "Check-ups, specialist consultations and planned treatment at private hospitals and clinics we have looked at closely. Medical advice comes only from the doctors you see.",
+  },
+  {
+    kind: "wellness",
+    word: "Wellness",
+    href: "/wellness",
+    photo: PHOTOS.dhara,
+    text: "Kerala is known for classical Ayurveda, quiet retreats and cool days in the tea hills. We tell you what a programme involves, never what it will do for you.",
+    intro: "Classical Ayurveda, quiet retreats and slow days in the hills, with practitioners and places we know. We describe what each involves, not what it will do for you.",
+  },
+  {
+    kind: "culture",
+    word: "Culture",
+    href: "/culture",
+    photo: PHOTOS.kathakali,
+    text: "The backwaters, centuries of trade in Fort Kochi, Kathakali by lamplight and a sadya on a banana leaf.",
+    intro: "The backwaters, Fort Kochi's old streets, Kathakali by lamplight and Kerala's kitchens — arranged privately, at your pace.",
+  },
 ];
+
+/** "Health check" → "health-check": the anchor of an item on its module page. */
+export const experienceSlug = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export const experienceHref = (item: Experience) => `/${item.kind}#${experienceSlug(item.title)}`;
 
 export const STATEMENT =
   "We are a concierge, not a clinic. We plan check-ups, Ayurveda and time in Kerala with providers we have looked at closely — and one person looks after the details with you, from the first call until you are home.";
@@ -138,26 +165,6 @@ export const SAFETY = [
   { title: "Your data", text: "Shared only with the providers you book and the doctor you name. Our privacy notice for European clients (GDPR) is being prepared." },
 ];
 
-/** Sample journeys (placeholder): realistic shapes, not packages. Flights not included. */
-export const JOURNEYS: { title: string; days: number; mix: Record<MixKey, number>; line: string; fromEur: number; toEur: number; photo: Photo }[] = [
-  { title: "A thorough check-up, then the backwaters", days: 10, mix: { health: 50, wellness: 20, culture: 30 }, line: "Two days of tests and consultations in Kochi, then a houseboat, Fort Kochi and time to rest.", fromEur: 2200, toEur: 3000, photo: PHOTOS.prow },
-  { title: "Two weeks of classical Ayurveda", days: 16, mix: { health: 10, wellness: 70, culture: 20 }, line: "A consultation and daily treatments at an Ayurveda centre, with a few gentle outings.", fromEur: 2600, toEur: 3800, photo: PHOTOS.treatmentRoom },
-  { title: "A heart check and Kerala's culture", days: 9, mix: { health: 40, wellness: 20, culture: 40 }, line: "A cardiology assessment, then the tea hills, a Kathakali evening and Kerala's kitchens.", fromEur: 1600, toEur: 2400, photo: PHOTOS.tea },
-];
-
-/** The first sample journey, told day by day (placeholder). */
-export const JOURNEY_DAYS: { when: string; title: string; text: string; photo: Photo }[] = [
-  { when: "Day 1", title: "Arrive in Kochi", text: "Someone meets you at the airport. A quiet first evening in Fort Kochi, by the water.", photo: PHOTOS.nets },
-  { when: "Days 2–3", title: "Your health check", text: "Tests, scans and a consultation, booked and explained in advance. Results in English, for you and your own doctor.", photo: PHOTOS.check },
-  { when: "Days 4–5", title: "Onto the backwaters", text: "A houseboat through palm-lined canals. Nothing to do but watch the water go by.", photo: PHOTOS.river },
-  { when: "Day 6", title: "A Kathakali evening", text: "Watch the make-up go on, then a performance of Kerala's classical dance-drama.", photo: PHOTOS.kathakaliStage },
-  { when: "Days 7–9", title: "Up to the tea hills", text: "Cool air, walks between tea gardens and time to do very little.", photo: PHOTOS.tea },
-  { when: "Day 10", title: "Home, with your results", text: "Your reports travel with you — and to your own doctor, if you wish.", photo: PHOTOS.prow },
-];
-
-/** Places that slide past between sections. */
-export const PLACE_NAMES = ["Kochi", "Alappuzha", "Kumarakom", "Munnar", "Thekkady", "Varkala", "Kovalam", "Thiruvananthapuram"];
-
 export const RIGHT_FOR_YOU = {
   suits: [
     "You want a planned check-up, assessment or treatment — not urgent care",
@@ -179,10 +186,10 @@ export const GUIDES = [
   { title: "Planning your trip: visas, flights and the seasons", kind: "Guide" },
 ];
 
+/** What it costs, and nothing else (5 Nov call: "keep it very simple"). */
 export const PRICING = [
-  { title: "Provider prices, unchanged", text: "What the hospital, clinic or guide charges is what you pay. We add no markup." },
-  { title: "One clear service fee", text: "For planning and looking after you. You see it before you confirm anything." },
-  { title: "Pay, then we book", text: "Every price is on your trip page. Bookings are made once you have confirmed and paid." },
+  { title: "What the provider charges", text: "The hospital, clinic, retreat or guide's own price, passed on to you unchanged." },
+  { title: "Our service fee", text: "One clear fee for planning your trip and looking after you." },
 ];
 
 /** After someone asks for a free conversation (placeholder). */
@@ -198,7 +205,7 @@ export const FAQ = [
   { q: "Can my own doctor be involved?", a: "Yes. With your permission we send your results and reports to your doctor at home." },
   { q: "How do I know what it will cost?", a: "Your trip page shows every provider's price and our service fee before you confirm. Nothing is booked until you have paid." },
   // Placeholders from here (3 Nov redesign), for Nivedith to confirm.
-  { q: "What does a whole trip cost?", a: "It depends on what you choose and for how long. The sample journeys on this page show typical ranges, without flights. Your trip page shows every price before you decide." },
+  { q: "What does a whole trip cost?", a: "It depends on what you choose and for how long: what each provider charges, plus our service fee, without flights. \"Choose what you need\" shows where prices start, and your trip page shows every price before you decide." },
   { q: "How do I pay?", a: "Once you have confirmed your plan, you pay through your trip page, and we book after that. We explain the payment options on your first call." },
   { q: "Is Kerala safe to travel to?", a: "Kerala is one of India's most visited regions. Before you go, check your own government's travel advice — in the UK, the Foreign Office (FCDO) travel advice for India." },
   { q: "Do I need a visa?", a: "Most visitors need a visa for India, and many nationalities can apply for an e-Visa online. We point you to the official information when you plan." },

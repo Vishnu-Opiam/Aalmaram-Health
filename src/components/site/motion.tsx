@@ -36,8 +36,6 @@ const onEnter = (trigger: Element, start = "top 88%") => ({ trigger, start, once
  * Scenes
  *   data-hero             the homepage title: letters rise after the shutter, then lift away on scroll
  *   data-chapter          a Why Kerala chapter: photo settles, word assembles, sentence follows
- *   data-hscroll          a sticky track that moves sideways as you scroll down
- *   data-marquee          a line of words that slides sideways with the scroll
  *   data-progress         a bar that fills as its section is read
  *   data-count            a number that counts up to its value
  */
@@ -127,10 +125,6 @@ export function SiteMotion() {
       for (const el of gsap.utils.toArray<HTMLElement>("[data-days]")) {
         gsap.fromTo(el.children, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.2, ease: "power4.inOut", stagger: 0.07, scrollTrigger: onEnter(el, "top 85%") });
       }
-      for (const el of gsap.utils.toArray<HTMLElement>("[data-marquee]")) {
-        const dir = el.dataset.marquee === "right" ? 1 : -1;
-        gsap.fromTo(el, { xPercent: dir === -1 ? 0 : -30 }, { xPercent: dir === -1 ? -30 : 0, ease: "none", scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: 0.4 } });
-      }
       for (const el of gsap.utils.toArray<HTMLElement>("[data-progress]")) {
         gsap.fromTo(el, { scaleY: 0 }, { scaleY: 1, ease: "none", transformOrigin: "top", scrollTrigger: { trigger: el.closest("section"), start: "top 60%", end: "bottom 70%", scrub: true } });
       }
@@ -145,27 +139,6 @@ export function SiteMotion() {
         lenis?.destroy();
         lenis = undefined;
       };
-    });
-
-    // Sideways journeys need the room of a wide screen; phones keep the swipeable row.
-    mm.add(`${MOTION} and (min-width: 768px)`, () => {
-      const sections = gsap.utils.toArray<HTMLElement>("[data-hscroll]");
-      for (const el of sections) {
-        el.setAttribute("data-on", "");
-        const track = el.querySelector<HTMLElement>("[data-track]");
-        if (!track) continue;
-        gsap.to(track, {
-          x: () => -(track.scrollWidth - window.innerWidth),
-          ease: "none",
-          scrollTrigger: { trigger: el, start: "top top", end: "bottom bottom", scrub: 0.6, invalidateOnRefresh: true },
-        });
-        // Each card's picture eases into place as the row slides.
-        for (const img of gsap.utils.toArray<HTMLElement>(track.querySelectorAll("[data-card-photo]"))) {
-          gsap.fromTo(img, { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: { trigger: el, start: "top top", end: "bottom bottom", scrub: true } });
-        }
-      }
-      ScrollTrigger.refresh();
-      return () => sections.forEach((el) => el.removeAttribute("data-on"));
     });
 
     // Measure again once fonts and photographs have settled the layout.

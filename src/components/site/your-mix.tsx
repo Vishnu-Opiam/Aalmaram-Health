@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Minus, Plus } from "lucide-react";
-import { EXPERIENCES, PHOTOS, type Photo } from "@/app/(site)/content";
+import { EXPERIENCES, experienceHref, PHOTOS, type Photo } from "@/app/(site)/content";
+import { AppLink as Link } from "@/components/ui/primitives";
 import { adjustMix, MIX_KEYS, MIX_PRESETS, MIX_STEP, pickExamples, type Mix, type MixKey } from "@/domain/site/mix";
 import { formatPrice } from "@/domain/site/prices";
 import { cn } from "@/lib/utils";
@@ -30,7 +31,7 @@ function tripDays(mix: Mix): { kind: MixKey; photo: Photo }[] {
  * day. Choose a starting point, then move days between health, rest and
  * culture with large buttons (no sliders: hard for many older visitors).
  * Each day that changes turns over to its new photograph, left to right, and
- * the examples below follow. Changes are announced politely.
+ * the short list of examples below follows. Changes are announced politely.
  */
 export function YourMix() {
   const [mix, setMix] = useState<Mix>(MIX_PRESETS[1].mix);
@@ -76,7 +77,7 @@ export function YourMix() {
       </div>
 
       {/* Ten days, ten photographs. Decorative: the counts below say the same in words. */}
-      <ol data-days aria-hidden="true" className="mt-12 grid h-[clamp(300px,44svh,620px)] grid-cols-10 gap-1 sm:gap-2 md:h-[clamp(360px,60svh,640px)]">
+      <ol data-days aria-hidden="true" className="mt-10 grid h-[clamp(260px,40svh,560px)] grid-cols-10 gap-1 sm:gap-2 md:h-[clamp(320px,46svh,520px)]">
         {days.map((day, i) => {
           const was = previous[i];
           const turned = was && was.photo.src !== day.photo.src;
@@ -110,7 +111,7 @@ export function YourMix() {
         )}
       </div>
 
-      <div className="mt-10 grid gap-2 md:grid-cols-3 md:gap-3">
+      <div className="mt-8 grid gap-2 md:grid-cols-3 md:gap-3">
         {MIX_KEYS.map((k) => {
           const n = daysOf(mix, k);
           return (
@@ -143,23 +144,22 @@ export function YourMix() {
         Ten days is only the example; your trip can be as long as you like, in the same proportions.
       </p>
 
-      <h3 className="mt-20 text-[19px] font-medium">A trip like this could include</h3>
+      {/* What this split could include: a short list, not more pictures (the strip above is the picture). */}
+      <h3 className="mt-14 text-[19px] font-medium">A trip like this could include</h3>
       <p className="sr-only" aria-live="polite">
         Your mix: {describeMix(mix)}. Showing {examples.map((e) => e.title).join(", ")}.
       </p>
-      <ul className="mt-6 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-4 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
         {examples.map((item) => (
           <li key={item.title} className="animate-[site-rise_600ms_ease-out_both] motion-reduce:animate-none">
-            {item.photo && (
-              <div className="relative aspect-[3/2] overflow-hidden bg-night-raised">
-                <SiteImage photo={item.photo} alt="" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" />
-              </div>
-            )}
-            <h4 className="site-display mt-5 text-[30px] leading-tight">{item.title}</h4>
-            <p className="mt-2 leading-relaxed text-night-muted">{item.line}</p>
-            <p className="mt-3 text-[16px] tabular-nums">
-              {MIX_LABEL[item.kind]} · {item.duration} · from {formatPrice(item.priceFromEur)}
-            </p>
+            <Link href={experienceHref(item)} className="group flex min-h-14 flex-col justify-center py-2">
+              <span className="site-display text-[24px] leading-tight underline decoration-transparent decoration-1 underline-offset-[6px] transition-[text-decoration-color] group-hover:decoration-current">
+                {item.title}
+              </span>
+              <span className="text-[16px] tabular-nums text-night-muted">
+                {MIX_LABEL[item.kind]} · {item.duration} · from {formatPrice(item.priceFromEur)}
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
