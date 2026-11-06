@@ -25,6 +25,7 @@
 - [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
 - [x] P1.6 Client-facing provider info in portal + leak tests
 - [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
+- [x] P1.8 Add several branches of a vendor at once (chains such as Taj or Fab India, all of Kerala; 5 Nov call)
 - [!] P1.8 First real vendors entered by humans — needs Nivedith's curated list
 - [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
 
@@ -128,6 +129,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-06 | A chain (Taj hotels, spa franchises, Fab India) is one Vendor with a Branch per location; branches cover all of Kerala, not only Kochi. Staff add many at once by pasting `Name, City[, address]` lines; names already on the vendor are skipped. No schema change. | Nivedith (5 Nov): bring in all of a certified vendor's Kerala branches without listing each as a vendor; Kochi first for testing but the plan is all of Kerala. The model already had Vendor → Branch; only the entry was slow. |
 | 2026-11-03 | Public site rebuilt from the ground up after Vishnu's second review ("looks AI generated, sloppy, not premium"): the 3D backwater, glass panels, eyebrow labels and cream/gold palette are gone. Real Kerala photography carries every page (18 Unsplash-licence photos, one dawn/dusk light, credited in the footer); a night ground with a monsoon-mist field for practical sections and lamp brass on the one button; Gambarino + General Sans (Fontshare ITF Free Font License, self-hosted). three.js removed. Direction dealt by the taste-skill ("The place carries it") and checked with its inspector (0 FAIL on every inner page). | References (Vita Travel, WattBank, Stepout, Tourvia, Explore) share one thing: a real photograph does the selling, type is large and sparse, nothing decorative. Procedural 3D and ornament were what read as generated. |
 | 2026-09-17 | The four platform lifecycle parts are called **Stages**, not Modules. | `Module` already means Health / Wellness / Heritage content category. |
 | 2026-09-17 | Vendor profile questions are data (`ProfileQuestion`), not hard-coded fields. **Superseded 2026-10-15** (simple fields, below). | Nivedith's question document is pending and will evolve. |
@@ -239,6 +241,12 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
+
+- **2026-11-06 (chains)** · `feat/vendor-bulk-branches` · "Add several branches" on the vendor page (from the 5 Nov
+  call): paste one branch per line, existing names skipped, one `branch.bulk_added` activity row with counts only.
+  Parser in `src/domain/vendors/branches.ts` with unit tests; inventory e2e extended. Browser check as demo admin: error
+  state (line without a city) and success (one added, one skipped). `npm test` 167/167, `db:seed` restored, `next
+  build` ok, inventory e2e 1/1. Next: human review; real chains' branch lists from Nivedith's vendor sheet.
 
 - **2026-11-04 (polish)** · `feat/site-polish` · Vishnu's review of the live site. (1) The "concierge, not a clinic"
   statement had huge gaps between words: its first-line indent was inherited by every word the scroll animation

@@ -35,6 +35,37 @@ function StatusField({ value, idPrefix }: { value: string; idPrefix: string }) {
   );
 }
 
+/** Paste a chain's branches, one per line. */
+export function BranchListForm({ vendorId, action }: { vendorId: string; action: Action }) {
+  const [state, formAction] = useActionState(action, idleState);
+  useActionRedirect(state);
+
+  return (
+    <form action={formAction} className="space-y-4" noValidate>
+      <FormFeedback state={state} />
+      <input type="hidden" name="vendorId" value={vendorId} />
+      <Field
+        label="Branches, one per line"
+        htmlFor="branch-list"
+        required
+        hint="Name, City — an address may follow after another comma. Names this vendor already has are skipped."
+        errors={state.fieldErrors.lines}
+      >
+        <Textarea
+          id="branch-list"
+          name="lines"
+          rows={6}
+          defaultValue={state.values?.lines ?? ""}
+          placeholder={"Malabar, Kochi\nBekal, Kasaragod, Beach Road"}
+        />
+      </Field>
+      <SubmitButton size="sm" pendingLabel="Adding…">
+        Add branches
+      </SubmitButton>
+    </form>
+  );
+}
+
 export function BranchForm({
   vendorId,
   branch,

@@ -75,6 +75,13 @@ test("inventory: vendor and catalogue and component CRUD with status toggles", a
     await clickAndSettle(page, page.getByRole("button", { name: "Add branch" }));
     await expect(page.getByRole("heading", { name: "Branches (1)" })).toBeVisible();
 
+    // A chain's other locations in one paste; the one already there is skipped.
+    await page.getByText("Add several branches").click();
+    await page.locator("#branch-list").fill("Edappally (test), Kochi\nKakkanad (test), Kochi\nVarkala (test), Varkala, Cliff Road");
+    await clickAndSettle(page, page.getByRole("button", { name: "Add branches" }));
+    await expect(page.getByRole("heading", { name: "Branches (3)" })).toBeVisible();
+    await expect(page.getByText("Cliff Road, Varkala")).toBeVisible();
+
     await page.getByText("Add a practitioner").click();
     await page.locator("#new-practitioner-name").fill("Dr Test (demo)");
     await page.locator("#new-practitioner-role").fill("Consultant physician");

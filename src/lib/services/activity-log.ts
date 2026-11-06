@@ -21,6 +21,7 @@ export const ACTIVITY_ACTIONS = {
   VENDOR_UPDATED: "vendor.updated",
   BRANCH_CREATED: "branch.created",
   BRANCH_UPDATED: "branch.updated",
+  BRANCHES_ADDED: "branch.bulk_added",
   PRACTITIONER_CREATED: "practitioner.created",
   PRACTITIONER_UPDATED: "practitioner.updated",
   TRIP_CREATED: "trip.created",
