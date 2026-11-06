@@ -94,6 +94,7 @@
 - [x] W.1 Homepage / landing page at `/` (placeholder copy; one CTA: a free call)
 - [x] W.1b Redesign "Under the banyan" + `/talk` free-conversation request (direction: `website/DESIGN_DIRECTION.md`)
 - [x] W.1d Whole public site rebuilt photography-first after the 3 Nov review (direction: `website/DESIGN_DIRECTION.md` §11)
+- [x] W.1g Homepage changes from Nivedith's 5 Nov walk-through: Health / Wellness / Culture with a page each, four overlapping sections cut to two, simple pricing, new footer (notes in `inputs/2026-11-05-website-call-notes.md`)
 - [~] W.2 Why Kerala page (a full, beautiful page: Kerala's beauty + quality of care) — built at `/why-kerala` with placeholder copy; needs Nivedith's review and our own photos
 - [~] W.3 Safety & quality page with the formal vetting process — built at `/safety`; the vetting checklist is placeholder until Nivedith's formal process exists
 - [~] W.4 How it works, About / our network & team pages — `/how-it-works` built; About waits for names and photos
@@ -128,6 +129,7 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-06 | Module pages are one route, `(site)/[module]`, with `dynamicParams = false` (only `/health`, `/wellness`, `/culture`). Items are the site's placeholder `EXPERIENCES`, not the admin catalogue. The homepage keeps Your mix (its ten-day strip is "the timeline" he liked) and drops the sideways ten-day journey and the sample-journey prices. | Nivedith (5 Nov): three modules, a page each, then break into catalogues; condense four sections into two; pricing = provider price + our fee. Reading from the live catalogue waits until real vendor content exists. |
 | 2026-11-03 | Public site rebuilt from the ground up after Vishnu's second review ("looks AI generated, sloppy, not premium"): the 3D backwater, glass panels, eyebrow labels and cream/gold palette are gone. Real Kerala photography carries every page (18 Unsplash-licence photos, one dawn/dusk light, credited in the footer); a night ground with a monsoon-mist field for practical sections and lamp brass on the one button; Gambarino + General Sans (Fontshare ITF Free Font License, self-hosted). three.js removed. Direction dealt by the taste-skill ("The place carries it") and checked with its inspector (0 FAIL on every inner page). | References (Vita Travel, WattBank, Stepout, Tourvia, Explore) share one thing: a real photograph does the selling, type is large and sparse, nothing decorative. Procedural 3D and ornament were what read as generated. |
 | 2026-09-17 | The four platform lifecycle parts are called **Stages**, not Modules. | `Module` already means Health / Wellness / Heritage content category. |
 | 2026-09-17 | Vendor profile questions are data (`ProfileQuestion`), not hard-coded fields. **Superseded 2026-10-15** (simple fields, below). | Nivedith's question document is pending and will evolve. |
@@ -239,6 +241,16 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
+
+- **2026-11-06 (5 Nov walk-through)** · `feat/site-meeting-11-05` · W.1g from Nivedith's recorded walk-through of the
+  live homepage (notes: `inputs/2026-11-05-website-call-notes.md`). Place-name band removed; Why Kerala is Health,
+  Wellness, Culture with a page each (`/health`, `/wellness`, `/culture`, items anchored so Explore and Your mix link
+  straight to them); the could-include photo grid is a short list and the sideways ten-day journey is gone (four
+  sections → two); How it works holds one step at a time; "Is this right for you?" is two marked columns; What it
+  costs is provider price + our fee only; footer has no photograph and lists modules, pages and contact. Checked in
+  the browser at desktop and 375 px (no sideways scroll). Unit 127/127, typecheck ok, homepage e2e 4/4 (includes
+  `next build`). Note: a 404 on an unknown single segment logs Next's internal `NoFallbackError`; the response is a
+  correct 404. Next: Nivedith's review of the module pages' copy.
 
 - **2026-11-04 (polish)** · `feat/site-polish` · Vishnu's review of the live site. (1) The "concierge, not a clinic"
   statement had huge gaps between words: its first-line indent was inherited by every word the scroll animation
