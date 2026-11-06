@@ -16,8 +16,8 @@ import {
   Tr,
 } from "@/components/ui/primitives";
 import { toggleVendorStatusAction } from "../actions";
-import { saveBranchAction, savePractitionerAction } from "../profile-actions";
-import { BranchForm, PractitionerForm } from "../profile-forms";
+import { addBranchesAction, saveBranchAction, savePractitionerAction } from "../profile-actions";
+import { BranchForm, BranchListForm, PractitionerForm } from "../profile-forms";
 import { RecordStatusBadge } from "@/components/admin/status-badges";
 import { ActionButton } from "@/components/admin/action-button";
 import { formatMoney } from "@/domain/itineraries/pricing";
@@ -155,7 +155,7 @@ export default async function VendorDetailPage({
       <Card>
         <CardHeader
           title={`Branches (${vendor.branches.length})`}
-          description="Where the client goes. The client picks the branch nearest to where they stay."
+          description="Where the client goes. A chain is one vendor with a branch for each location in Kerala; the client picks the one nearest to where they stay."
         />
         <ul className="divide-y divide-sand-200">
           {vendor.branches.map((branch) => (
@@ -190,6 +190,16 @@ export default async function VendorDetailPage({
               </summary>
               <div className="mt-4">
                 <BranchForm vendorId={vendor.id} action={saveBranchAction.bind(null, null)} />
+              </div>
+            </details>
+          </li>
+          <li>
+            <details className="px-5 py-3">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-medium text-teal-600">
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" /> Add several branches
+              </summary>
+              <div className="mt-4">
+                <BranchListForm vendorId={vendor.id} action={addBranchesAction} />
               </div>
             </details>
           </li>

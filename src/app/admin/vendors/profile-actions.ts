@@ -2,8 +2,9 @@
 
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth/guards";
-import { notFound } from "@/lib/errors";
-import { branchSchema, practitionerSchema } from "@/lib/validation/schemas";
+import { notFound, validation } from "@/lib/errors";
+import { parseBranchLines } from "@/domain/vendors/branches";
+import { branchListSchema, branchSchema, practitionerSchema } from "@/lib/validation/schemas";
 import {
   parseForm,
   runAction,
@@ -66,6 +67,45 @@ export async function saveBranchAction(
 
     return successState(
       branchId ? "Branch updated." : "Branch added.",
+      refreshUrl(`/admin/vendors/${input.vendorId}`),
+    );
+  });
+}
+
+/**
+ * A chain (every Taj hotel, every Fab India shop in Kerala) is one vendor with
+ * many branches; this adds them from a pasted list in one go. Names the vendor
+ * already has are skipped, so pasting the same list twice changes nothing.
+ */
+export async function addBranchesAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  return runAction("branch.bulk_add", formData, async () => {
+    const user = await requireUser();
+    const input = parseForm(branchListSchema, formData);
+    await assertVendor(input.vendorId);
+
+    const existing = await prisma.branch.findMany({ where: { vendorId: input.vendorId }, select: { name: true } });
+    const { branches, skipped, errors } = parseBranchLines(input.lines, existing.map((b) => b.name));
+    if (errors.length > 0) throw validation("Please correct the highlighted fields.", { lines: errors });
+    if (branches.length === 0) throw validation("Every branch in the list is already on this vendor.", { lines: ["Nothing new to add."] });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.branch.createMany({ data: branches.map((b) => ({ ...b, vendorId: input.vendorId })) });
+      await logActivity(
+        {
+          action: ACTIVITY_ACTIONS.BRANCHES_ADDED,
+          entityType: "Vendor",
+          entityId: input.vendorId,
+          actorUserId: user.id,
+          actorLabel: user.name,
+          metadata: { added: branches.length, skipped: skipped.length },
+        },
+        tx,
+      );
+    });
+
+    const note = skipped.length ? ` ${skipped.length} already on this vendor, skipped.` : "";
+    return successState(
+      `${branches.length} ${branches.length === 1 ? "branch" : "branches"} added.${note}`,
       refreshUrl(`/admin/vendors/${input.vendorId}`),
     );
   });

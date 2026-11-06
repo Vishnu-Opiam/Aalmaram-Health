@@ -131,6 +131,12 @@ export const branchSchema = z.object({
   status: recordStatus.default("ACTIVE"),
 });
 
+/** Many branches at once: one "Name, City[, address]" per line (parsed in src/domain/vendors/branches.ts). */
+export const branchListSchema = z.object({
+  vendorId: requiredText("Vendor"),
+  lines: requiredText("Branches", 40000),
+});
+
 export const practitionerSchema = z.object({
   vendorId: requiredText("Vendor"),
   name: requiredText("Name", 200),
