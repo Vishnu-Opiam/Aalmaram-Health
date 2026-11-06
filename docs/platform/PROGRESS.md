@@ -248,7 +248,7 @@ Append one short entry per working session: date, branch, tasks touched, test st
   straight to them); the could-include photo grid is a short list and the sideways ten-day journey is gone (four
   sections → two); How it works holds one step at a time; "Is this right for you?" is two marked columns; What it
   costs is provider price + our fee only; footer has no photograph and lists modules, pages and contact. Checked in
-  the browser at desktop and 375 px (no sideways scroll). Unit 127/127, typecheck ok, homepage e2e 4/4 (includes
+  the browser at desktop and 375 px (no sideways scroll). Unit 123/123, typecheck ok, homepage e2e 4/4 (includes
   `next build`). Note: a 404 on an unknown single segment logs Next's internal `NoFallbackError`; the response is a
   correct 404. Next: Nivedith's review of the module pages' copy.
 
