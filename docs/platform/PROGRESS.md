@@ -25,6 +25,7 @@
 - [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
 - [x] P1.6 Client-facing provider info in portal + leak tests
 - [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
+- [x] P1.8 Add several branches of a vendor at once (chains such as Taj or Fab India, all of Kerala; 5 Nov call)
 - [!] P1.8 First real vendors entered by humans — needs Nivedith's curated list
 - [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
 
