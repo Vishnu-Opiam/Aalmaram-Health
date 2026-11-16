@@ -1,48 +1,89 @@
-import { ExternalLink, Newspaper, Palmtree, Store } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { AppLink } from "@/components/ui/primitives";
 import { FEED_SOURCE_LABELS, type ClientFeedPost } from "@/domain/feed/queries";
-import { formatShortDate } from "@/domain/shared/dates";
+import { Photo, type PhotoSource } from "./kit";
+import { cn } from "@/lib/utils";
 
-const SOURCE_LOOK = {
-  VENDOR_INSTAGRAM: { Icon: Store, tint: "from-lagoon-100 via-sand-100 to-lagoon-50 text-lagoon-700" },
-  KERALA_TOURISM: { Icon: Palmtree, tint: "from-leaf-100 via-sand-100 to-leaf-50 text-leaf-700" },
-  NEWS: { Icon: Newspaper, tint: "from-marigold-100 via-sand-100 to-marigold-50 text-marigold-700" },
-} as const;
+const DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
 
-/** One post from Kerala: a picture (or a calm placeholder), who it is from, the words. */
-export function FeedCard({ post }: { post: ClientFeedPost }) {
-  const { Icon, tint } = SOURCE_LOOK[post.source];
-  return (
-    <article className="portal-card flex h-full flex-col overflow-hidden">
-      {post.mediaUrl ? (
-        // External social images: next/image would need every host allow-listed.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.mediaUrl} alt="" className="aspect-[4/3] w-full object-cover" loading="lazy" />
-      ) : (
-        <div className={`flex h-32 items-center justify-center bg-gradient-to-br ${tint}`}>
-          <Icon className="h-12 w-12 opacity-70" aria-hidden="true" />
-        </div>
-      )}
-      <div className="flex flex-1 flex-col p-6">
-        <p className="flex items-center gap-2 text-[16px] font-semibold text-ink-600">
-          <Icon className="h-4.5 w-4.5" aria-hidden="true" />
-          {post.vendor?.name ?? FEED_SOURCE_LABELS[post.source]} · {formatShortDate(post.publishedAt)}
+/** The post's own picture, else its place's lead photo; null makes a typographic postcard. */
+export function feedPhoto(post: ClientFeedPost): PhotoSource | null {
+  const source = post.vendor?.name ?? FEED_SOURCE_LABELS[post.source];
+  if (post.mediaUrl) return { src: post.mediaUrl, alt: `A photo shared by ${source}` };
+  const hero = post.vendor?.heroPhoto;
+  return hero ? { src: hero.url, alt: hero.alt, credit: hero.credit, w: hero.width, h: hero.height } : null;
+}
+
+/**
+ * One postcard from Kerala: a square photo (or the caption set large when
+ * there is none), then source, date, words and one quiet link out.
+ */
+export function FeedCard({
+  post,
+  ratio = "4/5",
+  sizes = "(min-width:1024px) 33vw, 100vw",
+  lead,
+  priority,
+}: {
+  post: ClientFeedPost;
+  ratio?: string;
+  sizes?: string;
+  lead?: boolean;
+  priority?: boolean;
+}) {
+  const photo = feedPhoto(post);
+  const name = post.vendor?.name ?? FEED_SOURCE_LABELS[post.source];
+  const source = post.vendor ? (
+    <AppLink href={`/trip/explore/${post.vendor.slug}`} className="font-medium underline decoration-mist-muted/40 underline-offset-4 hover:decoration-mist-ink">
+      {name}
+    </AppLink>
+  ) : (
+    <span className="font-medium">{name}</span>
+  );
+  const meta = (
+    <p className="pk-label flex flex-wrap items-baseline gap-x-2 text-mist-ink">
+      {source}
+      <span className="whitespace-nowrap font-normal text-mist-muted">
+        <span aria-hidden="true">· </span>
+        <time dateTime={post.publishedAt.toISOString()}>{DATE.format(post.publishedAt)}</time>
+      </span>
+    </p>
+  );
+  const original = (
+    <a
+      href={post.link}
+      target="_blank"
+      rel="noreferrer"
+      className="mt-3 inline-flex min-h-12 items-center gap-1 self-start text-[16px] text-mist-muted underline decoration-mist-muted/40 underline-offset-4 hover:text-mist-ink hover:decoration-mist-ink"
+    >
+      See the original <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+      <span className="sr-only">(opens in a new tab)</span>
+    </a>
+  );
+
+  if (!photo) {
+    return (
+      <article className="flex h-full flex-col border border-paper-line border-t-[3px] border-t-gold-500 bg-paper-raised px-6 pb-4 pt-8 md:px-8">
+        <p className={cn("flex-1 font-display leading-[1.12] tracking-[-0.01em] text-mist-ink text-pretty", lead ? "text-[34px] md:text-[44px]" : "text-[26px] md:text-[30px]")}>
+          {post.caption}
         </p>
-        <p className="mt-3 flex-1 text-[18px] leading-relaxed text-ink-900">{post.caption}</p>
-        {post.vendor?.description && (
-          <details className="mt-4 text-[16px] text-ink-700">
-            <summary className="min-h-11 cursor-pointer py-2 font-semibold text-forest-800">About this provider</summary>
-            <p className="leading-relaxed">{post.vendor.description}</p>
-          </details>
-        )}
-        <a
-          href={post.link}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-flex min-h-11 items-center gap-2 text-[17px] font-semibold text-forest-800 underline-offset-4 hover:underline"
-        >
-          See the original post <ExternalLink className="h-4.5 w-4.5" aria-hidden="true" />
-          <span className="sr-only">(opens in a new tab)</span>
-        </a>
+        <div className="mt-6 border-t border-paper-line pt-4">
+          {meta}
+          {original}
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <article className={cn("flex h-full flex-col", lead && "lg:flex-row lg:gap-10")}>
+      <div className={cn("-mx-4 min-[390px]:-mx-5 md:mx-0", lead && "lg:mx-0 lg:w-[62%] lg:shrink-0")}>
+        <Photo photo={photo} ratio={lead ? "16/9" : ratio} sizes={lead ? "(min-width:1024px) 60vw, 100vw" : sizes} priority={priority} reveal={!priority} />
+      </div>
+      <div className={cn("mt-4 flex flex-1 flex-col", lead && "lg:mt-0 lg:justify-end lg:pb-1")}>
+        {meta}
+        <p className={cn("mt-2 text-mist-ink", lead ? "font-display text-[28px] leading-[1.15] md:text-[34px]" : "pk-body")}>{post.caption}</p>
+        {original}
       </div>
     </article>
   );

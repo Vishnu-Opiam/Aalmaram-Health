@@ -1,10 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { CheckCheck } from "lucide-react";
+import { buttonClass } from "@/components/portal/kit/button";
+import { FormFeedback, useActionRedirect } from "@/components/ui/form-status";
 import { AppLink as Link } from "@/components/ui/primitives";
-import { FormFeedback, SubmitButton, useActionRedirect } from "@/components/ui/form-status";
-import { pill } from "@/components/portal/ui";
 import { idleState, type FormState } from "@/lib/validation/form";
 
 /** "Yes, confirm my trip": locks the itinerary ahead of payment and booking. Asked once, on the review page. */
@@ -15,15 +14,15 @@ export function ConfirmPanel({
   tripId: string;
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
 }) {
-  const [state, dispatch] = useActionState(action, idleState);
+  const [state, dispatch, pending] = useActionState(action, idleState);
   useActionRedirect(state);
   return (
-    <form action={dispatch} className="flex flex-wrap items-center gap-3">
+    <form action={dispatch} className="flex flex-wrap items-center gap-x-6 gap-y-3">
       <input type="hidden" name="tripId" value={tripId} />
-      <SubmitButton size="lg" pendingLabel="Confirming…" className={pill("primary", "min-h-14 px-8 text-[18px]")}>
-        <CheckCheck className="h-6 w-6" aria-hidden="true" /> Yes, confirm my trip
-      </SubmitButton>
-      <Link href={`/trip/itinerary?trip=${tripId}`} className={pill("secondary", "min-h-14")}>
+      <button type="submit" disabled={pending} aria-busy={pending} className={buttonClass("primary", "w-full px-9 text-[18px] min-[480px]:w-auto")}>
+        {pending ? "Confirming…" : "Yes, confirm my trip"}
+      </button>
+      <Link href={`/trip/itinerary?trip=${tripId}`} className={buttonClass("quiet")}>
         Not yet — keep planning
       </Link>
       <FormFeedback state={state} className="w-full" />

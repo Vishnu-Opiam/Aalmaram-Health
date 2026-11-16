@@ -40,6 +40,7 @@ import { logger } from "@/lib/logger";
 import { OPS_INBOX, sendStaffTripNotice } from "@/lib/services/notifications";
 import { refreshUrl } from "@/lib/refresh-url";
 import { safePortalReturn } from "@/domain/trips/return-to";
+import { blockDay, formatTime } from "@/domain/trips/blocks";
 import { describePersonRequest, resolvePersonRequest } from "@/lib/services/person-request";
 
 /**
@@ -87,10 +88,21 @@ export async function placeClientIdeaAction(_prev: FormState, formData: FormData
   });
 }
 
+/**
+ * Where a block was, as `<componentId>.<day>.<HH:MM>.<branchId|->`, for an Undo
+ * link. Read before the change and only returned after the scoped service call
+ * has proved the block is the client's.
+ */
+async function blockWhereabouts(blockId: string): Promise<string | null> {
+  const block = await prisma.itineraryItem.findUnique({ where: { id: blockId }, select: { componentId: true, branchId: true, startsAt: true } });
+  return block ? [block.componentId, blockDay(block.startsAt), formatTime(block.startsAt), block.branchId ?? "-"].join(".") : null;
+}
+
 export async function moveClientBlockAction(_prev: FormState, formData: FormData): Promise<FormState> {
   return runAction("portal.block.move", formData, async () => {
     const client = await requireClient();
     const input = parseForm(blockMoveSchema, formData);
+    const before = await blockWhereabouts(input.blockId);
     const { tripId } = await moveBlock({ ...input, scope: { kind: "client", clientId: client.id } });
     await logActivity({
       action: ACTIVITY_ACTIONS.BLOCK_MOVED,
@@ -99,7 +111,9 @@ export async function moveClientBlockAction(_prev: FormState, formData: FormData
       actorLabel: client.name,
       metadata: { blockId: input.blockId },
     });
-    return successState("Moved.", itineraryUrl(tripId, `#day-${input.day}`, input.blockId, true));
+    // `from` = where it was, so Day by day can offer Undo (a move back).
+    const url = itineraryUrl(tripId, `#day-${input.day}`, input.blockId, true);
+    return successState("Moved.", before ? url.replace("#", `&from=${encodeURIComponent(before)}#`) : url);
   });
 }
 
@@ -107,6 +121,7 @@ export async function removeClientBlockAction(_prev: FormState, formData: FormDa
   return runAction("portal.block.remove", formData, async () => {
     const client = await requireClient();
     const input = parseForm(blockRemoveSchema, formData);
+    const before = await blockWhereabouts(input.blockId);
     const { tripId } = await removeBlock({ ...input, scope: { kind: "client", clientId: client.id } });
     await logActivity({
       action: ACTIVITY_ACTIONS.BLOCK_REMOVED,
@@ -116,8 +131,14 @@ export async function removeClientBlockAction(_prev: FormState, formData: FormDa
       metadata: { blockId: input.blockId },
     });
     // Back to the same day, so the client sees what changed.
+    // `day` keeps that day in view; `removed` = what it was, so the page can offer Undo (adding it back).
     const day = String(formData.get("day") ?? "");
-    return successState("Removed.", itineraryUrl(tripId, /^\d{4}-\d{2}-\d{2}$/.test(day) ? `#day-${day}` : ""));
+    const isDay = /^\d{4}-\d{2}-\d{2}$/.test(day);
+    const marks = `${isDay ? `&day=${day}` : ""}${before ? `&removed=${encodeURIComponent(before)}` : ""}`;
+    return successState(
+      "Removed.",
+      `${refreshUrl(`/trip/itinerary?trip=${encodeURIComponent(tripId)}${marks}`)}${isDay ? `#day-${day}` : ""}`,
+    );
   });
 }
 

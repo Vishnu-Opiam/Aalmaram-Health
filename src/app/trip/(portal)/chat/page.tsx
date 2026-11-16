@@ -42,41 +42,40 @@ export default async function AskUsPage({
   const contact = manager ? firstName(manager.name) : "your team";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-14 pt-6 sm:px-6 sm:pt-10">
-      {trip && <TripSwitcher trips={trips} currentId={trip.id} path="/trip/chat" />}
-      <h1 className="font-display text-[38px] font-semibold leading-tight tracking-tight text-ink-900 sm:text-[46px]">Ask us</h1>
-      <p className="mt-3 max-w-2xl text-[19px] leading-relaxed text-ink-700">
-        {manager ? `${contact} is` : "Your team is"} the quickest way to anything about your trip. Our assistant can suggest things to do.
-      </p>
-
-      <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
-        <ContactCard
-          tripId={trip?.id ?? null}
-          name={manager?.name ?? null}
-          email={manager?.email ?? null}
-          asked={param(params, "asked") === "1"}
-          action={talkToPersonAction}
-        />
-        {trip ? (
-          <ChatPanel
-            tripId={trip.id}
-            greeting={CHAT_GREETING}
-            initial={chat}
-            send={sendChatMessageAction}
-            build={buildMyItineraryAction}
-            place={placeClientIdeaAction}
-            editable={trip.editable}
-            days={trip.days}
-            library={library}
-            contact={contact}
-            about={param(params, "about") || null}
-          />
-        ) : (
-          <p className="portal-card p-6 text-[18px] leading-relaxed text-ink-700">
-            Our assistant opens once your trip is set up. Until then, {contact} is happy to help.
-          </p>
-        )}
+    <>
+      <h1 className="sr-only">Ask us</h1>
+      <ContactCard
+        bleed
+        tripId={trip?.id ?? null}
+        name={manager?.name ?? null}
+        email={manager?.email ?? null}
+        asked={param(params, "asked") === "1"}
+        action={talkToPersonAction}
+      />
+      <div className="pk-paper pb-16 pt-10 md:pb-24 md:pt-16">
+        <div className="pk-frame">
+          {trip && <TripSwitcher trips={trips} currentId={trip.id} path="/trip/chat" />}
+          {trip ? (
+            <ChatPanel
+              tripId={trip.id}
+              greeting={CHAT_GREETING}
+              initial={chat}
+              send={sendChatMessageAction}
+              build={buildMyItineraryAction}
+              place={placeClientIdeaAction}
+              editable={trip.editable}
+              days={trip.days}
+              library={library}
+              contact={contact}
+              about={param(params, "about") || null}
+            />
+          ) : (
+            <p className="pk-body pk-read text-mist-muted">
+              Our assistant opens once your trip is set up. Until then, {contact} is happy to help.
+            </p>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

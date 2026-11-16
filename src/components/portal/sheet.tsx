@@ -3,51 +3,89 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
-import { pill } from "./ui";
+import { buttonClass } from "./kit/button";
 
 /**
- * A panel that slides in from the right (full screen on a phone). Esc, the
- * backdrop and a large "Close" button all close it; focus returns to whatever
- * opened it.
+ * A panel on paper: a bottom sheet on phones (sliding up, 20px top corners),
+ * a 680px drawer from the right on wider screens. Esc, the backdrop and a
+ * large "Close" button close it; focus goes to its first heading, Tab stays
+ * inside, and focus returns to whatever opened it. An optional `footer` sticks
+ * to the bottom, so the price and the main action never scroll away.
  */
-export function Sheet({ label, onClose, children }: { label: string; onClose: () => void; children: React.ReactNode }) {
+export function Sheet({
+  label,
+  onClose,
+  children,
+  footer,
+}: {
+  label: string;
+  onClose: () => void;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+}) {
   const panelRef = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
 
   useEffect(() => {
+    const panel = panelRef.current;
     const opener = document.activeElement as HTMLElement | null;
-    panelRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close.current();
+    const heading = panel?.querySelector<HTMLElement>("h1, h2");
+    if (heading) {
+      heading.tabIndex = -1;
+      heading.style.outline = "none"; // a starting point for screen readers, not a control
+      heading.focus({ preventScroll: true });
+    } else panel?.querySelector<HTMLButtonElement>("button")?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      // A lightbox opened from inside the sheet handles its own keys.
+      if (document.querySelectorAll("[role=dialog][aria-modal=true]").length > 1) return;
+      if (e.key === "Escape") close.current();
+      if (e.key !== "Tab" || !panel) return;
+      const focusable = [...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex='0']")].filter(
+        (el) => el.offsetParent !== null,
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     document.addEventListener("keydown", onKey);
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = overflow;
-      opener?.focus();
+      if (opener?.isConnected) opener.focus({ preventScroll: true });
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label={label}>
-      <button
-        type="button"
-        className="portal-fade absolute inset-0 bg-forest-950/45"
-        aria-hidden="true"
-        tabIndex={-1}
-        onClick={onClose}
-      />
+    <div className="fixed inset-0 z-[60] flex items-end md:items-stretch" role="dialog" aria-modal="true" aria-label={label}>
+      <button type="button" className="portal-fade absolute inset-0 bg-night/50" aria-hidden="true" tabIndex={-1} onClick={onClose} />
       <div
         ref={panelRef}
-        className="portal-panel relative ml-auto flex h-full w-full flex-col overflow-y-auto bg-sand-50 shadow-2xl sm:max-w-[580px] sm:rounded-l-[2rem]"
+        className="pk-paper pk-sheet-up relative flex max-h-[calc(100svh-24px)] w-full flex-col overflow-hidden rounded-t-[20px] shadow-float md:ml-auto md:h-full md:max-h-none md:max-w-[680px] md:rounded-none"
       >
-        <div className="sticky top-0 z-10 flex justify-end bg-sand-50/95 px-4 py-3 backdrop-blur sm:px-6">
-          <button type="button" onClick={onClose} className={pill("secondary", "min-h-12 px-5 text-[16px]")}>
-            <X className="h-5 w-5" aria-hidden="true" /> Close
-          </button>
+        <div className="flex-1 overflow-y-auto overscroll-contain">
+          <div className="sticky top-0 z-10 flex justify-end border-b border-paper-line bg-paper px-4 py-2 md:px-6">
+            <button type="button" onClick={onClose} className={buttonClass("quiet", "gap-1.5 px-3 no-underline")}>
+              <X className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" /> Close
+            </button>
+          </div>
+          <div className="px-5 pb-12 pt-6 md:px-10">{children}</div>
         </div>
-        <div className="px-5 pb-12 sm:px-9">{children}</div>
+        {footer && (
+          <div className="border-t border-paper-line bg-paper-raised px-5 py-3 pb-[calc(12px+env(safe-area-inset-bottom))] md:px-10 md:py-4">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

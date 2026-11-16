@@ -1,0 +1,10 @@
+/* Day by day has a sticky date strip under the header: leave room for it so a
+   focused or jumped-to element is never hidden behind it (WCAG 2.4.11). */
+:global(html):has(.page) {
+  scroll-padding-top: 13rem;
+}
+@media (max-width: 767px) {
+  :global(html):has(.page) {
+    scroll-padding-top: 7.5rem;
+  }
+}

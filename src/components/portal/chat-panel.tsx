@@ -1,17 +1,17 @@
 "use client";
 
 import { startTransition, useActionState, useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Send, Sparkles } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import { Alert } from "@/components/ui/primitives";
-import { FormFeedback, SubmitButton, useActionRedirect } from "@/components/ui/form-status";
+import { FormFeedback, useActionRedirect } from "@/components/ui/form-status";
 import type { ChatMessage } from "@/domain/ai/chat";
 import type { ChatState } from "@/app/trip/actions";
 import { formatMoney } from "@/domain/itineraries/pricing";
 import { formatDuration } from "@/domain/vendors/profile";
 import type { BuilderDay, Library, LibraryComponent } from "@/domain/trips/builder-view";
 import { idleState, type FormState } from "@/lib/validation/form";
-import { cn } from "@/lib/utils";
-import { pill } from "./ui";
+import { KitSubmit } from "./contact-card";
+import { Button, Chip, ModuleDot, SectionHeading, buttonClass } from "./kit";
 
 type Action = (prev: FormState, formData: FormData) => Promise<FormState>;
 
@@ -19,9 +19,9 @@ type Action = (prev: FormState, formData: FormData) => Promise<FormState>;
 const PROMPTS = ["Art and dance", "The backwaters by boat", "Somewhere nice to eat", "Ayurveda and massage"];
 
 /**
- * The trip assistant on its own page: one conversation, large type, ready-made
- * questions to tap, and ideas that go straight into a chosen day. Everything
- * said is kept on the trip's AI_CHAT conversation for the team.
+ * The trip assistant on its own page: one conversation as a calm transcript,
+ * ready-made questions to tap, and ideas that go straight into a chosen day.
+ * Everything said is kept on the trip's AI_CHAT conversation for the team.
  */
 export function ChatPanel({
   tripId,
@@ -57,6 +57,7 @@ export function ChatPanel({
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const [asking, setAsking] = useState<string | null>(null);
   const components = useMemo(() => {
     const map = new Map<string, LibraryComponent>();
     for (const m of library.modules) for (const c of m.catalogues) for (const comp of c.components) map.set(comp.id, comp);
@@ -78,6 +79,7 @@ export function ChatPanel({
 
   function ask(text: string) {
     if (!inputRef.current) return;
+    setAsking(text);
     inputRef.current.value = text;
     formRef.current?.requestSubmit();
   }
@@ -94,49 +96,39 @@ export function ChatPanel({
   const ideas = chat.suggestions.filter((s) => components.has(s.componentId));
 
   return (
-    <section aria-labelledby="assistant-heading" className="portal-card p-5 sm:p-7">
-      <h2 id="assistant-heading" className="flex items-center gap-3 font-display text-[26px] font-semibold text-ink-900">
-        <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-marigold-50 text-marigold-700" aria-hidden="true">
-          <Sparkles className="h-5.5 w-5.5" />
-        </span>
-        Our trip assistant
-      </h2>
-      <p className="mt-2 text-[17px] leading-relaxed text-ink-700">
-        It suggests things to do around your appointments. For anything about your health or your appointments, please ask {contact}.
-      </p>
+    <section aria-labelledby="assistant-heading" className="max-w-[760px]">
+      <SectionHeading
+        id="assistant-heading"
+        label="Planning assistant"
+        title="Ideas for your free days"
+        lead={`An assistant that suggests things to do around your appointments. It can be wrong, and it never gives medical advice. For anything about your health or your appointments, please ask ${contact}.`}
+      />
 
-      <ol className="mt-6 space-y-4" aria-live="polite" aria-label="Conversation">
+      <ol className="mt-10 border-b border-paper-line" aria-live="polite" aria-label="Conversation">
         {messages.map((message, index) => (
-          <li key={index} className={cn("flex", message.role === "client" ? "justify-end" : "justify-start")}>
-            <div
-              className={cn(
-                "max-w-[88%] whitespace-pre-wrap rounded-[1.5rem] px-5 py-3.5 text-[18px] leading-relaxed sm:max-w-[80%]",
-                message.role === "client" ? "rounded-br-md bg-forest-900 text-white" : "rounded-bl-md bg-sand-100 text-ink-900",
-              )}
-            >
-              <span className="sr-only">{message.role === "client" ? "You:" : "Assistant:"} </span>
-              {message.text}
-            </div>
+          <li key={index} className="border-t border-paper-line py-6">
+            <p className="pk-label">{message.role === "client" ? "You" : "Assistant"}</p>
+            <p className="pk-body mt-1 whitespace-pre-wrap text-mist-ink">{message.text}</p>
           </li>
         ))}
         {pending && (
-          <li className="text-[17px] text-ink-600" role="status">
+          <li className="border-t border-paper-line py-6 text-[17px] text-mist-muted" role="status">
             The assistant is writing…
           </li>
         )}
       </ol>
 
       {ideas.length > 0 && (
-        <ul className="mt-5 space-y-3" aria-label="Ideas from the assistant">
+        <ul className="mt-8 border-b border-paper-line" aria-label="Ideas from the assistant">
           {ideas.map((s) => (
-            <li key={s.componentId}>
+            <li key={s.componentId} className="border-t border-paper-line py-6">
               <IdeaCard component={components.get(s.componentId)!} reason={s.reason} days={days} editable={editable} onPlace={placeIdea} />
             </li>
           ))}
         </ul>
       )}
       {placing && (
-        <p role="status" className="mt-3 text-[17px] font-semibold text-ink-800">
+        <p role="status" className="mt-3 text-[17px] font-medium text-mist-ink">
           Adding to your trip…
         </p>
       )}
@@ -148,58 +140,55 @@ export function ChatPanel({
       )}
       <div ref={endRef} />
 
-      <div className="mt-6 flex flex-wrap gap-2" role="group" aria-label="Ask about">
-        {PROMPTS.map((text) => (
-          <button
-            key={text}
-            type="button"
-            disabled={pending}
-            onClick={() => ask(text)}
-            className="min-h-12 rounded-full border-2 border-sand-200 bg-white px-5 text-[16px] font-semibold text-ink-800 hover:border-forest-800 disabled:opacity-50"
-          >
-            {text}
-          </button>
-        ))}
-      </div>
-
-      <form ref={formRef} action={dispatch} className="mt-4">
-        <input type="hidden" name="tripId" value={tripId} />
-        <label htmlFor="chat-text" className="text-[17px] font-semibold text-ink-900">
-          Your message
-        </label>
-        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end">
-          <textarea
-            ref={inputRef}
-            id="chat-text"
-            name="text"
-            rows={2}
-            required
-            maxLength={2000}
-            placeholder="For example: we love music and quiet places"
-            className="block min-h-16 flex-1 resize-y rounded-3xl border-2 border-sand-200 bg-white px-5 py-3.5 text-[18px] leading-snug text-ink-900 placeholder:text-ink-600/70 focus:border-forest-800 focus:outline-none"
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                event.currentTarget.form?.requestSubmit();
-              }
-            }}
-          />
-          <SubmitButton size="lg" pendingLabel="Sending…" className={pill("primary", "min-h-14")}>
-            <Send className="h-5 w-5" aria-hidden="true" /> Send
-          </SubmitButton>
-        </div>
-      </form>
-
       {editable && (
-        <form action={buildDispatch} className="mt-6 border-t border-sand-200 pt-5">
+        <form action={buildDispatch} className="mt-10">
           <input type="hidden" name="tripId" value={tripId} />
-          <p className="text-[17px] text-ink-700">When you have told the assistant what you enjoy, it can fill your free days with suggestions.</p>
-          <SubmitButton size="lg" pendingLabel="Finding ideas…" className={pill("secondary", "mt-3")}>
-            <Sparkles className="h-5 w-5" aria-hidden="true" /> Suggest things for my free days
-          </SubmitButton>
+          <p className="pk-body text-mist-muted">When you have told the assistant what you enjoy, it can fill your free days with suggestions.</p>
+          <KitSubmit pendingLabel="Finding ideas…" className={buttonClass("secondary", "mt-4")}>
+            Suggest things for my free days
+          </KitSubmit>
           <FormFeedback state={buildState} className="mt-2" />
         </form>
       )}
+
+      <div className="-mx-4 mt-10 flex gap-3 overflow-x-auto px-4 pb-1 min-[390px]:-mx-5 min-[390px]:px-5 md:mx-0 md:flex-wrap md:px-0" role="group" aria-label="Ask about">
+        {PROMPTS.map((text) => (
+          <Chip key={text} pressed={pending && asking === text} disabled={pending} onClick={() => ask(text)}>
+            {text}
+          </Chip>
+        ))}
+      </div>
+
+      {/* Sticks above the phone tab bar; on desktop to the bottom of the viewport. */}
+      <div className="pk-paper sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-20 -mx-4 mt-4 border-t border-paper-line px-4 pb-3 pt-3 min-[390px]:-mx-5 min-[390px]:px-5 md:bottom-0 md:mx-0 md:px-0">
+        <form ref={formRef} action={dispatch}>
+          <input type="hidden" name="tripId" value={tripId} />
+          <label htmlFor="chat-text" className="sr-only">
+            Your message
+          </label>
+          <div className="flex gap-3">
+            <textarea
+              ref={inputRef}
+              id="chat-text"
+              name="text"
+              rows={1}
+              required
+              maxLength={2000}
+              placeholder="Tell us what you enjoy"
+              className="block min-h-14 flex-1 resize-y border-2 border-mist-ink/60 bg-paper-raised px-4 py-3.5 text-[18px] leading-snug text-mist-ink placeholder:text-mist-muted focus:border-mist-ink"
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
+            />
+            <KitSubmit pendingLabel="Sending…" className={buttonClass("primary", "shrink-0 px-6 sm:px-8")}>
+              <Send className="h-5 w-5" aria-hidden="true" /> Send
+            </KitSubmit>
+          </div>
+        </form>
+      </div>
     </section>
   );
 }
@@ -219,38 +208,34 @@ function IdeaCard({
 }) {
   const [picking, setPicking] = useState(false);
   return (
-    <div className="rounded-3xl border-2 border-sand-200 bg-white p-5">
-      <p className="text-[18px] font-semibold leading-snug text-ink-900">{component.name}</p>
-      <p className="mt-1 text-[16px] text-ink-600">
+    <div>
+      <ModuleDot moduleName={component.moduleName} className="text-[16px] text-mist-muted" />
+      <p className="pk-h3 mt-1">{component.name}</p>
+      <p className="mt-1 text-[16px] text-mist-muted">
         {component.vendorName} · {formatDuration(component.durationMinutes)} · {formatMoney(component.price, component.currency)}{" "}
         {component.priceUnitLabel}
       </p>
-      <p className="mt-2 text-[16px] font-medium text-marigold-700">{reason}</p>
+      <p className="mt-2 text-[17px] text-mist-ink">{reason}</p>
       {editable &&
         (picking ? (
           <div className="mt-4" role="group" aria-label={`Choose a day for ${component.name}`}>
-            <p className="text-[17px] font-semibold text-ink-900">Which day?</p>
+            <p className="pk-label text-mist-ink">Which day?</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {days.map((d) => (
-                <button
-                  key={d.key}
-                  type="button"
-                  onClick={() => onPlace(component.id, d.key)}
-                  className="min-h-12 rounded-full border-2 border-forest-900 bg-white px-4 text-[16px] font-semibold text-forest-900 hover:bg-forest-900 hover:text-white"
-                >
+                <Button key={d.key} variant="secondary" onClick={() => onPlace(component.id, d.key)} className="min-h-12 px-5">
                   Day {d.dayNumber}
-                </button>
+                </Button>
               ))}
-              <button type="button" onClick={() => setPicking(false)} className={pill("quiet", "min-h-12")}>
+              <Button variant="quiet" onClick={() => setPicking(false)}>
                 Cancel
-              </button>
+              </Button>
             </div>
-            <p className="mt-2 text-[15px] text-ink-600">We choose a good time; you can change it afterwards.</p>
+            <p className="mt-2 text-[16px] text-mist-muted">We choose a good time; you can change it afterwards.</p>
           </div>
         ) : (
-          <button type="button" onClick={() => setPicking(true)} className={pill("secondary", "mt-4")}>
+          <Button variant="secondary" onClick={() => setPicking(true)} className="mt-4">
             <Plus className="h-5 w-5" aria-hidden="true" /> Add to my trip
-          </button>
+          </Button>
         ))}
     </div>
   );
