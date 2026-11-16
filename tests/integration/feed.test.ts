@@ -47,7 +47,7 @@ describe("vendor Instagram ingest (integration)", () => {
       where: { id: vendor.id },
       data: { socialLinks: ["https://instagram.com/inactive_one"], status: "INACTIVE" },
     });
-    await prisma.vendor.create({ data: { name: "No socials (demo)", socialLinks: ["https://example.com"] } });
+    await prisma.vendor.create({ data: { name: "No socials (demo)", slug: "no-socials-demo", socialLinks: ["https://example.com"] } });
     expect(await ingestVendorInstagram(ACTOR)).toMatchObject({ vendors: 0, added: 0 });
   });
 });

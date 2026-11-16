@@ -72,6 +72,12 @@ describe("client portal (integration)", () => {
   it("shows only visible feed posts, newest first, without vendor contact details", async () => {
     const { vendor } = await createInventory();
     await prisma.vendor.update({ where: { id: vendor.id }, data: { email: "secret@vendor.demo", notes: "SECRET-NOTE" } });
+    await prisma.vendorPhoto.createMany({
+      data: [
+        { vendorId: vendor.id, url: "/p/2.webp", alt: "Second", width: 1600, height: 900, sortOrder: 0, sourceUrl: "https://SECRET-SOURCE.example" },
+        { vendorId: vendor.id, url: "/p/1.webp", alt: "Hero", width: 1600, height: 900, sortOrder: 1, isHero: true },
+      ],
+    });
     await prisma.feedPost.createMany({
       data: [
         { source: "NEWS", caption: "Older", link: "https://example.com/1", publishedAt: new Date("2026-01-01") },
@@ -84,6 +90,10 @@ describe("client portal (integration)", () => {
     const serialised = JSON.stringify(feed);
     expect(serialised).not.toContain("secret@vendor.demo");
     expect(serialised).not.toContain("SECRET-NOTE");
+    expect(serialised).not.toContain("SECRET-SOURCE");
+    // A post links to its place and can borrow the place's hero photo.
+    expect(feed[0].vendor).toMatchObject({ slug: "test-diagnostics-demo", heroPhoto: { url: "/p/1.webp", alt: "Hero" } });
+    expect(feed[1].vendor).toBeNull();
   });
 
   it("picks the requested trip only if it is the client's, else the next unfinished one", async () => {

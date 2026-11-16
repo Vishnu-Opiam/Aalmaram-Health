@@ -1,0 +1,69 @@
+{
+  "slug": "hortus-malabaricus",
+  "name": "Hortus Malabaricus",
+  "type": "Conservatory",
+  "category": "Culture",
+  "city": "Cheruthuruthy (Nedumpura), Thrissur district",
+  "locations": [
+    "Nedumpura, Cheruthuruthy, Thrissur district (about 5-6 km from Shoranur Junction)"
+  ],
+  "website": "https://www.hortusmalabaricus.org",
+  "summary": "Hortus Malabaricus Botanical Garden and Research Institute is a roughly 27-acre garden at Nedumpura near Cheruthuruthy, inspired by the 17th-century botanical work Hortus Malabaricus compiled under Dutch governor Hendrik van Rheede. Visitors walk brick-paved paths through themed plant collections and a seasonal-plants conservatory, with cultural programmes such as Kutiyattam held in the grounds.",
+  "highlights": [
+    "Garden inspired by the 17th-century Hortus Malabaricus, which documents Malabar plants",
+    "Themed plant collections and a conservatory of seasonal plants referenced in the book",
+    "Garden paths, pavilions and water features across about 27 acres (per press and site)",
+    "Opened in 2025 near Cheruthuruthy, close to Shoranur",
+    "Hosts workshops and performances such as the Kutiyattam festival programme, plus on-site stay"
+  ],
+  "photos": [
+    {
+      "url": "/partners/hortus-malabaricus/01.webp",
+      "alt": "Tiled pavilion beside stepped waterfall pool",
+      "width": 2000,
+      "height": 1125,
+      "isHero": true,
+      "sourceUrl": "https://www.hortusmalabaricus.org/wp-content/uploads/2025/01/land-scaled.jpg"
+    },
+    {
+      "url": "/partners/hortus-malabaricus/02.webp",
+      "alt": "Avenue of trees and pillars on paved garden path",
+      "width": 2000,
+      "height": 1160,
+      "isHero": false,
+      "sourceUrl": "https://www.hortusmalabaricus.org/wp-content/uploads/2025/01/landing-page-2.jpg"
+    },
+    {
+      "url": "/partners/hortus-malabaricus/03.webp",
+      "alt": "Curving brick path around a planted island",
+      "width": 2000,
+      "height": 1243,
+      "isHero": false,
+      "sourceUrl": "https://www.hortusmalabaricus.org/wp-content/uploads/2025/01/h5.jpg"
+    },
+    {
+      "url": "/partners/hortus-malabaricus/04.webp",
+      "alt": "White garden building framed by trees",
+      "width": 1920,
+      "height": 913,
+      "isHero": false,
+      "sourceUrl": "https://www.hortusmalabaricus.org/wp-content/uploads/2025/01/h-3.jpg"
+    },
+    {
+      "url": "/partners/hortus-malabaricus/05.webp",
+      "alt": "Flowering branch, plant detail",
+      "width": 2000,
+      "height": 1335,
+      "isHero": false,
+      "sourceUrl": "https://www.hortusmalabaricus.org/wp-content/uploads/2025/01/h4-scaled.jpg"
+    },
+    {
+      "url": "/partners/hortus-malabaricus/06.webp",
+      "alt": "Yellow flower with visiting bee, plant detail",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://www.hortusmalabaricus.org/wp-content/uploads/2024/12/plant-theme-seasonal-1.jpg"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { CALL_TIMES } from "@/domain/site/talk";
+import { safePortalReturn } from "@/domain/trips/return-to";
 
 /**
  * Server-boundary validation.
@@ -317,12 +318,31 @@ const blockTime = z
   .trim()
   .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Choose a start time.");
 
+/** Optional portal page to come back to; anything outside the allowlist is refused, not ignored. */
+const portalReturnTo = z
+  .string()
+  .trim()
+  .optional()
+  .transform((v) => (v ? v : null))
+  .refine((v) => v === null || safePortalReturn(v) !== null, "That page is not part of your trip portal.");
+
 export const blockAddSchema = z.object({
   tripId: requiredText("Trip"),
   componentId: requiredText("Component"),
   branchId: optionalText(60),
   day: requiredDate("day"),
   time: blockTime,
+  returnTo: portalReturnTo,
+});
+
+/** "Ask <coordinator> about this": ids only, each re-checked against the client's trip. */
+export const personRequestSchema = z.object({
+  tripId: requiredText("Trip"),
+  componentId: optionalText(60),
+  vendorSlug: optionalText(120),
+  blockId: optionalText(60),
+  dayKey: optionalDate,
+  returnTo: portalReturnTo,
 });
 
 export const blockMoveSchema = z.object({

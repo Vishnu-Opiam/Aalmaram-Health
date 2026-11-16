@@ -49,6 +49,16 @@ export function blockDay(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
+/**
+ * Days a block covers, for a banner across a residential programme: whole
+ * 24-hour runs, so a 7-day Panchakarma starting Day 4 covers Days 4–10, while
+ * an evening that runs past midnight still counts as one day.
+ */
+export function blockSpan(startsAt: Date, durationMinutes: number): { endDay: string; spanDays: number } {
+  const spanDays = Math.max(1, Math.ceil(durationMinutes / 1440));
+  return { endDay: blockDay(addDays(startsAt, spanDays - 1)), spanDays };
+}
+
 export type PlacementInput = {
   startsAt: Date;
   durationMinutes: number;

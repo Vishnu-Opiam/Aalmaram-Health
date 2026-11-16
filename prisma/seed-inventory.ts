@@ -10,6 +10,8 @@
  */
 import type { PriceUnit, PrismaClient } from "@prisma/client";
 import { Prisma } from "@prisma/client";
+import { PHOTOS, type Photo } from "../src/app/(site)/content";
+import { slugify } from "../src/domain/vendors/slug";
 
 type VendorSpec = {
   name: string;
@@ -498,6 +500,68 @@ export const COMPONENTS: ComponentSpec[] = [
   },
 ];
 
+/**
+ * Unsplash photos not on the public site, checked by eye; alt says what is in
+ * the frame, not where. Photographer names were not verifiable from the image
+ * URL alone, so these are credited to Unsplash only.
+ */
+const unsplash = (id: string, alt: string, w: number, h: number): Photo => ({
+  src: `https://images.unsplash.com/photo-${id}`,
+  alt,
+  credit: "",
+  href: "",
+  w,
+  h,
+});
+const MORE_PHOTOS = {
+  lab: unsplash("1582719471384-894fbb16e074", "A laboratory scientist at a microscope", 3456, 5184),
+  reception: unsplash("1519494026892-80bbd2d6fd0d", "A bright, quiet clinic reception desk", 3428, 2333),
+  consult: unsplash("1576091160550-2173dba999ef", "A stethoscope beside a laptop on a desk", 5184, 3456),
+  massage: unsplash("1544161515-4ab6ce6db874", "An oil massage in a calm treatment room", 6000, 4000),
+  yoga: unsplash("1506126613408-eca07ce68773", "A person in a seated yoga pose at sunrise, palms behind", 2202, 2560),
+  thali: unsplash("1567337710282-00832b415979", "A thali of curries, breads and pappadam on a steel plate", 5184, 2920),
+  curries: unsplash("1585937421612-70a008356fbe", "Bowls of curry and rice on a wooden table", 2597, 3462),
+};
+
+/**
+ * Explore data for the demo places: a type label and stock photos (Unsplash
+ * licence, credited) in gallery order, the first being the hero. These show
+ * what a kind of place looks like; they are not photos of these fictional
+ * vendors. Thekkady Trail Guides stays without photos, so the demo also shows
+ * the typographic card a place gets before it has any.
+ */
+export const DEMO_PLACES: Record<string, { placeType: string; photos: Photo[] }> = {
+  "Backwater Diagnostics Centre (demo)": {
+    placeType: "Diagnostics laboratory",
+    photos: [PHOTOS.check, MORE_PHOTOS.lab, PHOTOS.heart, PHOTOS.kochi],
+  },
+  "Nila Speciality Clinic (demo)": {
+    placeType: "Speciality clinic",
+    photos: [MORE_PHOTOS.reception, MORE_PHOTOS.consult, PHOTOS.joints],
+  },
+  "Kaumudi Ayurveda Retreat (demo)": {
+    placeType: "Ayurveda retreat",
+    photos: [PHOTOS.coast, PHOTOS.dhara, PHOTOS.treatmentRoom, MORE_PHOTOS.massage, MORE_PHOTOS.yoga],
+  },
+  "Periyar Wellness House (demo)": {
+    placeType: "Wellness house",
+    photos: [PHOTOS.hills, PHOTOS.tea, PHOTOS.mortar, PHOTOS.palms],
+  },
+  "Kalari Heritage Collective (demo)": {
+    placeType: "Performing arts collective",
+    photos: [PHOTOS.kathakaliStage, PHOTOS.kathakali, PHOTOS.nets],
+  },
+  "Vembanad Boat Company (demo)": {
+    placeType: "Backwater boats",
+    photos: [PHOTOS.houseboat, PHOTOS.lake, PHOTOS.prow, PHOTOS.canal, PHOTOS.river],
+  },
+  "Malabar Spice Table (demo)": {
+    placeType: "Restaurant",
+    photos: [MORE_PHOTOS.thali, PHOTOS.sadya, MORE_PHOTOS.curries],
+  },
+  "Thekkady Trail Guides (demo)": { placeType: "Trail guides", photos: [] },
+};
+
 export const EXTRA_CATALOGUES = [
   { module: "Heritage & Culture", name: "Walking Tours", sortOrder: 3, description: "Guided walks through towns and villages." },
   { module: "Heritage & Culture", name: "Restaurants", sortOrder: 4, description: "Places to eat, priced from the average for two." },
@@ -513,12 +577,27 @@ export async function seedInventory(
   const practitioners: Record<string, string> = {};
 
   for (const { branches = [], practitioners: people = [], ...spec } of VENDORS) {
+    const place = DEMO_PLACES[spec.name];
     const vendor = await prisma.vendor.upsert({
       where: { name: spec.name },
-      update: spec,
-      create: spec,
+      update: { ...spec, placeType: place?.placeType ?? null },
+      create: { ...spec, slug: slugify(spec.name), placeType: place?.placeType ?? null },
     });
     vendors[spec.name] = vendor.id;
+
+    await prisma.vendorPhoto.deleteMany({ where: { vendorId: vendor.id } });
+    await prisma.vendorPhoto.createMany({
+      data: (place?.photos ?? []).map((photo, i) => ({
+        vendorId: vendor.id,
+        url: photo.src,
+        alt: photo.alt,
+        width: photo.w,
+        height: photo.h,
+        sortOrder: i,
+        isHero: i === 0,
+        credit: photo.credit ? `${photo.credit} / Unsplash` : "Unsplash",
+      })),
+    });
 
     for (const branch of branches) {
       await prisma.branch.upsert({

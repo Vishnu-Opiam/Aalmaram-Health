@@ -14,13 +14,13 @@ import {
   blockPlaceSchema,
   blockRemoveSchema,
   loginSchema,
+  personRequestSchema,
 } from "@/lib/validation/schemas";
 import { parseForm, runAction, successState, type FormState } from "@/lib/validation/form";
 import { ACTIVITY_ACTIONS, logActivity } from "@/lib/services/activity-log";
 import {
   addBlock,
   confirmItinerary,
-  loadTripForMutation,
   moveBlock,
   removeBlock,
 } from "@/lib/services/itinerary-blocks";
@@ -39,6 +39,8 @@ import { toUserMessage } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { OPS_INBOX, sendStaffTripNotice } from "@/lib/services/notifications";
 import { refreshUrl } from "@/lib/refresh-url";
+import { safePortalReturn } from "@/domain/trips/return-to";
+import { describePersonRequest, resolvePersonRequest } from "@/lib/services/person-request";
 
 /**
  * Client portal writes. The client comes from the session; every trip and
@@ -53,7 +55,7 @@ const itineraryUrl = (tripId: string, hash = "", just?: string, moved = false) =
 export async function addClientBlockAction(_prev: FormState, formData: FormData): Promise<FormState> {
   return runAction("portal.block.add", formData, async () => {
     const client = await requireClient();
-    const input = parseForm(blockAddSchema, formData);
+    const { returnTo, ...input } = parseForm(blockAddSchema, formData);
     const block = await addBlock({ ...input, scope: { kind: "client", clientId: client.id }, addedBy: "CLIENT" });
     await logActivity({
       action: ACTIVITY_ACTIONS.BLOCK_ADDED,
@@ -62,7 +64,9 @@ export async function addClientBlockAction(_prev: FormState, formData: FormData)
       actorLabel: client.name,
       metadata: { blockId: block.id, componentId: input.componentId, addedBy: "CLIENT" },
     });
-    return successState("Added to your trip.", itineraryUrl(input.tripId, `#day-${input.day}`, block.id));
+    // From Explore or a place page: back where the client was, with `added=<blockId>` for the toast.
+    const back = returnTo ? safePortalReturn(returnTo, { added: block.id }) : null;
+    return successState("Added to your trip.", back ? refreshUrl(back) : itineraryUrl(input.tripId, `#day-${input.day}`, block.id));
   });
 }
 
@@ -220,20 +224,40 @@ export async function buildMyItineraryAction(_prev: FormState, formData: FormDat
   });
 }
 
+/**
+ * "Ask <coordinator> to get in touch", optionally about one experience, place,
+ * activity or day (ids only; logged as ids, never free text). With `returnTo`
+ * the client stays where they asked, with `asked=1` for the toast.
+ */
 export async function talkToPersonAction(_prev: FormState, formData: FormData): Promise<FormState> {
   return runAction("portal.ai.person", formData, async () => {
     const client = await requireClient();
-    const trip = await loadTripForMutation(String(formData.get("tripId") ?? ""), { kind: "client", clientId: client.id });
+    const { returnTo, ...input } = parseForm(personRequestSchema, formData);
+    const { trip, context } = await resolvePersonRequest(client.id, input);
     await logActivity({
       action: ACTIVITY_ACTIONS.CLIENT_ASKED_FOR_PERSON,
       entityType: "Trip",
       entityId: trip.id,
       actorLabel: client.name,
+      metadata: {
+        componentId: context.componentId,
+        vendorId: context.vendorId,
+        blockId: context.blockId,
+        day: context.dayKey,
+        dayNumber: context.dayNumber,
+      },
     });
-    await notifyManager(client.id, trip, "Client asked for a person", `${client.name} would like to talk to a person. Please get in touch.`);
+    const about = describePersonRequest(context);
+    await notifyManager(
+      client.id,
+      trip,
+      "Client asked for a person",
+      `${client.name} would like to talk to a person${about ? ` about: ${about}` : ""}. Please get in touch.`,
+    );
+    const back = returnTo ? safePortalReturn(returnTo, { asked: "1" }) : null;
     return successState(
       "We've let your relationship manager know — they will be in touch shortly.",
-      refreshUrl(`/trip/chat?trip=${encodeURIComponent(trip.id)}&asked=1`),
+      refreshUrl(back ?? `/trip/chat?trip=${encodeURIComponent(trip.id)}&asked=1`),
     );
   });
 }

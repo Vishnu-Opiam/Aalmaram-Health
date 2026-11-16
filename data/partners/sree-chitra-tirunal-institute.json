@@ -1,0 +1,29 @@
+{
+  "slug": "sree-chitra-tirunal-institute",
+  "name": "Sree Chitra Tirunal Institute for Medical Sciences and Technology",
+  "type": "Cardiovascular and Neurological Care",
+  "category": "Health",
+  "city": "Thiruvananthapuram",
+  "locations": [
+    "Thiruvananthapuram (Hospital Wing)",
+    "Thiruvananthapuram (Biomedical Technology Wing, Poojapura)"
+  ],
+  "website": "https://www.sctimst.ac.in/",
+  "summary": "SCTIMST is an Institute of National Importance under the Department of Science and Technology, Government of India, combining a hospital wing with biomedical technology and public health research. Its hospital offers cardiovascular and neurological care services.",
+  "highlights": [
+    "Origin traced to a 1973 gift of a building by the Travancore royal family",
+    "Sree Chitra Tirunal Medical Centre inaugurated in 1976",
+    "Declared an Institute of National Importance by an Act of Parliament in 1980",
+    "Hospital Wing, Biomedical Technology Wing and Achutha Menon Centre for Health Science Studies"
+  ],
+  "photos": [
+    {
+      "url": "/partners/sree-chitra-tirunal-institute/01.webp",
+      "alt": "Panoramic view of a library and reception hall",
+      "width": 1000,
+      "height": 333,
+      "isHero": false,
+      "sourceUrl": "https://www.sctimst.ac.in/images/slide_images/Library.jpg"
+    }
+  ]
+}

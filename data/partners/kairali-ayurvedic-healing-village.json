@@ -1,0 +1,85 @@
+{
+  "slug": "kairali-ayurvedic-healing-village",
+  "name": "Kairali - Ayurvedic Healing Village",
+  "type": "Ayurveda",
+  "category": "Wellness",
+  "city": "Palakkad (Kodumbu)",
+  "locations": [
+    "Palayamkadu, Olassery, Kodumbu, Palakkad 678551"
+  ],
+  "website": "https://ayurvedichealingvillage.com",
+  "summary": "Kairali - The Ayurvedic Healing Village is an Ayurvedic retreat and hospital spread over 65 acres of coconut groves and gardens at Kodumbu in Palakkad district. Guests stay in individual cottage-style villas, with physician-planned Ayurvedic programmes, yoga and Ayurvedic cuisine on site.",
+  "highlights": [
+    "65-acre village of gardens, ponds and coconut groves in Palakkad",
+    "Individual villas in several categories, in brick and tile-roofed styles",
+    "Ayurvedic treatment rooms, yoga hall and poolside spaces",
+    "Ayurvedic restaurant and cooking",
+    "Site cites a family Ayurveda tradition since 1908 across four generations"
+  ],
+  "photos": [
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/01.webp",
+      "alt": "Landscaped pond and lawns among coconut palms",
+      "width": 1200,
+      "height": 800,
+      "isHero": true,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/wx-grounds.webp"
+    },
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/02.webp",
+      "alt": "Garden pathway leading to tiled-roof cottage",
+      "width": 1200,
+      "height": 800,
+      "isHero": false,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/wx-pathway.webp"
+    },
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/03.webp",
+      "alt": "Brick cottage villa among palms and gardens",
+      "width": 1200,
+      "height": 800,
+      "isHero": false,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/kt-314.webp"
+    },
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/04.webp",
+      "alt": "Garden swimming pool surrounded by palms",
+      "width": 1200,
+      "height": 800,
+      "isHero": false,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/gal-yoga-poolside-palakkad-2026.webp"
+    },
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/05.webp",
+      "alt": "Carved wooden bridge in tropical garden",
+      "width": 1200,
+      "height": 800,
+      "isHero": false,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/kt-164.webp"
+    },
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/06.webp",
+      "alt": "Villa bedroom with vaulted tiled ceiling",
+      "width": 1200,
+      "height": 800,
+      "isHero": false,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/kt-116.webp"
+    },
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/07.webp",
+      "alt": "Brass vessel pouring oil, treatment detail",
+      "width": 1200,
+      "height": 800,
+      "isHero": false,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/kt-202.webp"
+    },
+    {
+      "url": "/partners/kairali-ayurvedic-healing-village/08.webp",
+      "alt": "Rainy garden path through an umbrella, portrait",
+      "width": 900,
+      "height": 1350,
+      "isHero": false,
+      "sourceUrl": "https://ayurvedichealingvillage.com/ahv/assets/img/wx-monsoon.webp"
+    }
+  ]
+}

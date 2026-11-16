@@ -1,5 +1,5 @@
 import type { TripStatus } from "@prisma/client";
-import { daysBetweenInclusive, toUtcDay } from "@/domain/shared/dates";
+import { daysBetweenInclusive, keralaDay, toUtcDay } from "@/domain/shared/dates";
 
 /**
  * The client's "what happens next": the five steps of a trip in plain words,
@@ -14,8 +14,9 @@ export type TripMoment =
   | { kind: "during"; day: number; of: number }
   | { kind: "after" };
 
+/** Where `today` (an instant) falls against the trip, counted in Kerala calendar days. */
 export function tripMoment(start: Date, end: Date, today: Date): TripMoment {
-  const now = toUtcDay(today);
+  const now = keralaDay(today);
   if (now < toUtcDay(start)) return { kind: "before", days: daysBetweenInclusive(now, start) - 1 };
   if (now > toUtcDay(end)) return { kind: "after" };
   return { kind: "during", day: daysBetweenInclusive(start, now), of: daysBetweenInclusive(start, end) };

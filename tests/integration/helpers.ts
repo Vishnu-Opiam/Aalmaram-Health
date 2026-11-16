@@ -55,7 +55,7 @@ export async function createInventory() {
     data: { moduleId: module.id, name: "Diagnostics", sortOrder: 0 },
   });
   const vendor = await prisma.vendor.create({
-    data: { name: "Test Diagnostics (demo)", hqCity: "Kochi", phone: "+91 000" },
+    data: { name: "Test Diagnostics (demo)", slug: "test-diagnostics-demo", hqCity: "Kochi", phone: "+91 000" },
   });
 
   const component = async (name: string, price: string) =>

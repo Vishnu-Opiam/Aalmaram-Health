@@ -1,0 +1,87 @@
+{
+  "slug": "arya-vaidya-sala",
+  "name": "Arya Vaidya Sala",
+  "type": "Ayurveda Hospital (Kottakkal)",
+  "category": "Health",
+  "city": "Kottakkal",
+  "locations": [
+    "Kottakkal (Malappuram)",
+    "Kochi",
+    "27 branch clinics across India per the official site"
+  ],
+  "website": "https://www.aryavaidyasala.com/",
+  "summary": "Arya Vaidya Sala, Kottakkal is an Ayurveda institution founded by Vaidyaratnam P. S. Varier, running Ayurvedic hospitals and research centres, a charitable hospital, medicine manufacturing units and an Ayurveda college. It offers consultations, in-patient and walk-in Ayurvedic treatments from its Kottakkal campus.",
+  "highlights": [
+    "Founded in 1902 in Kottakkal by Vaidyaratnam P. S. Varier",
+    "Ayurvedic Hospital and Research Centres at Kottakkal, Kochi and Delhi, plus a Charitable Hospital at Kottakkal",
+    "Kottakkal Ayurvedic Hospital and Research Centre holds NABH accreditation (2016, per the official site)",
+    "Vaidyaratnam P.S. Varier Ayurveda College and Centre for Medicinal Plants Research",
+    "Three medicine manufacturing units producing over 550 formulations"
+  ],
+  "photos": [
+    {
+      "url": "/partners/arya-vaidya-sala/01.webp",
+      "alt": "Aerial view of the Kottakkal campus, tiled roofs and gardens",
+      "width": 2000,
+      "height": 1328,
+      "isHero": true,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2024/01/DSC_0371-scaled.jpg"
+    },
+    {
+      "url": "/partners/arya-vaidya-sala/02.webp",
+      "alt": "Hospital block courtyard and corridor at dusk",
+      "width": 1555,
+      "height": 1036,
+      "isHero": false,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2023/10/AHRC-Golden-Jubilee-Block-Night-View-2.jpg"
+    },
+    {
+      "url": "/partners/arya-vaidya-sala/03.webp",
+      "alt": "Hospital complex and driveway at twilight",
+      "width": 2000,
+      "height": 1334,
+      "isHero": false,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2023/10/DPP174-2-scaled.jpg"
+    },
+    {
+      "url": "/partners/arya-vaidya-sala/04.webp",
+      "alt": "Tiled-roof building with lawn and plants",
+      "width": 2000,
+      "height": 1271,
+      "isHero": false,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2024/01/1.Image-1-Cmpr.jpg"
+    },
+    {
+      "url": "/partners/arya-vaidya-sala/05.webp",
+      "alt": "Landscaped hospital garden with palms",
+      "width": 2000,
+      "height": 1334,
+      "isHero": false,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2024/01/AHRC-Kottakkal-Garden-scaled.jpg"
+    },
+    {
+      "url": "/partners/arya-vaidya-sala/06.webp",
+      "alt": "Heritage building and white pavilion in gardens",
+      "width": 1603,
+      "height": 1202,
+      "isHero": false,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2024/01/MUSEUM-BUILDING.jpg"
+    },
+    {
+      "url": "/partners/arya-vaidya-sala/07.webp",
+      "alt": "Herbal estate with medicinal plants under tree cover",
+      "width": 2000,
+      "height": 1334,
+      "isHero": false,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2024/01/DPP_186-scaled.jpg"
+    },
+    {
+      "url": "/partners/arya-vaidya-sala/08.webp",
+      "alt": "Ornate campus entrance arch lit at night",
+      "width": 2000,
+      "height": 1334,
+      "isHero": false,
+      "sourceUrl": "https://www.aryavaidyasala.com/wp-content/uploads/2024/01/DPP_303-3-scaled.jpg"
+    }
+  ]
+}

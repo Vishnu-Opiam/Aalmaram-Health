@@ -155,9 +155,17 @@ model User {
 
 // contactName, email, phone and notes are INTERNAL: we coordinate every booking,
 // so the client never needs them. Everything else is client-visible profile.
+// A vendor is also a "place" in the portal's Explore (`/trip/explore/<slug>`).
+// `slug` is set once from the name and never follows renames, so links stay put.
+// `moduleId` is the place's primary module: real partners are listed before
+// they have any components to derive it from.
 model Vendor {
   id              String       @id @default(cuid())
   name            String       @unique
+  slug            String       @unique
+  moduleId        String?
+  placeType       String?
+  highlights      String[]     @default([])
   description     String?
   contactName     String?
   email           String?
@@ -179,12 +187,38 @@ model Vendor {
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
+  module        Module?        @relation(fields: [moduleId], references: [id], onDelete: Restrict)
   components    Component[]
   branches      Branch[]
   practitioners Practitioner[]
   feedPosts     FeedPost[]
+  photos        VendorPhoto[]
 
   @@index([status])
+  @@index([moduleId])
+}
+
+/// The place's gallery, shown to clients. `url` is a site path (`/partners/<slug>/01.webp`,
+/// files in public/) or an https URL. At most one `isHero`: a photo wide enough to lead
+/// a page. `sourceUrl` (where we got it) is INTERNAL provenance. Components have no
+/// photos of their own; they borrow their vendor's. A photo is part of the vendor's
+/// profile rather than inventory, so it cascades with the vendor.
+model VendorPhoto {
+  id        String   @id @default(cuid())
+  vendorId  String
+  url       String
+  alt       String
+  width     Int
+  height    Int
+  sortOrder Int      @default(0)
+  isHero    Boolean  @default(false)
+  credit    String?
+  sourceUrl String?
+  createdAt DateTime @default(now())
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId, sortOrder])
 }
 
 /// A vendor's location; the client picks one per block (a lab chain may have ~100).
@@ -250,6 +284,7 @@ model Module {
 
   catalogues Catalogue[]
   tripShares TripModuleShare[]
+  vendors    Vendor[]
 
   @@index([sortOrder])
 }

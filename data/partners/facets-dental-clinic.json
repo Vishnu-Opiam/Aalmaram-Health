@@ -1,0 +1,24 @@
+{
+  "slug": "facets-dental-clinic",
+  "name": "Facets Dental Clinic",
+  "type": "Dental Clinic",
+  "category": "Health",
+  "city": "Kochi",
+  "locations": [
+    "Kadavanthra",
+    "Fort Kochi",
+    "Aluva",
+    "Kaloor",
+    "Edappally",
+    "Chottanikkara",
+    "Thripunithura"
+  ],
+  "website": "https://thefacets.com",
+  "summary": "Facets is a cosmetic and restorative dental practice in Kochi, Kerala with several branches. Its site lists services such as aligners, braces, implants, veneers, root canal treatment and smile design, and an international dental-tourism programme.",
+  "highlights": [
+    "Multiple branches in Kochi incl. Fort Kochi, Aluva and Kadavanthra (per site)",
+    "Lists cosmetic dentistry, orthodontics, implants and family dentistry",
+    "Has a dental-tourism page and an in-house dental lab page"
+  ],
+  "photos": []
+}

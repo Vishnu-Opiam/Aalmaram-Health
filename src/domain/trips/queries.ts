@@ -6,6 +6,7 @@ import { toDateInputValue } from "@/domain/shared/dates";
 import {
   blockDay,
   blockEndsAt,
+  blockSpan,
   findOverlaps,
   formatTime,
   groupBlocksByDay,
@@ -14,7 +15,7 @@ import {
 import { actualMix } from "./module-mix";
 import { isItineraryEditable } from "./status";
 import { blockProgress } from "@/domain/bookings/status";
-import type { BranchOption, BuilderTrip, Library } from "./builder-view";
+import type { BranchOption, BuilderTrip, Library, LibraryComponent, Place, PlacePhoto, PlaceRef } from "./builder-view";
 
 const branchLabel = (b: { name: string; city: string }) =>
   b.name === b.city || b.name.includes(b.city) ? b.name : `${b.name}, ${b.city}`;
@@ -24,6 +25,48 @@ const activeBranches = {
   orderBy: [{ city: "asc" }, { name: "asc" }],
   select: { id: true, name: true, city: true },
 } satisfies Prisma.Vendor$branchesArgs;
+
+// Hero first, then the gallery order.
+const placePhotos = {
+  orderBy: [{ isHero: "desc" }, { sortOrder: "asc" }],
+  select: { url: true, alt: true, width: true, height: true, isHero: true, credit: true },
+} satisfies Prisma.Vendor$photosArgs;
+
+// Client-safe vendor fields only: never contact, phone, email, notes, website or photo sources.
+const placeVendor = {
+  select: {
+    name: true,
+    slug: true,
+    hqCity: true,
+    description: true,
+    accreditations: true,
+    languages: true,
+    yearEstablished: true,
+    branches: activeBranches,
+    photos: placePhotos,
+  },
+} satisfies Prisma.VendorDefaultArgs;
+
+type PlaceVendor = Prisma.VendorGetPayload<typeof placeVendor>;
+
+const photoView = (p: PlacePhoto): PlacePhoto => ({
+  url: p.url,
+  alt: p.alt,
+  width: p.width,
+  height: p.height,
+  isHero: p.isHero,
+  credit: p.credit,
+});
+
+const placeRef = (v: PlaceVendor): PlaceRef => ({ slug: v.slug, name: v.name, city: v.hqCity, photos: v.photos.map(photoView) });
+
+const providerInfo = (v: PlaceVendor) => ({
+  name: v.name,
+  description: v.description,
+  accreditations: v.accreditations,
+  languages: v.languages,
+  yearEstablished: v.yearEstablished,
+});
 
 const builderInclude = {
   requirements: { include: { moduleMix: { include: { module: { select: { name: true } } } } } },
@@ -51,17 +94,7 @@ const builderInclude = {
                   },
                 },
               },
-              // Client-safe vendor fields only: never contact, phone, email or notes.
-              vendor: {
-                select: {
-                  name: true,
-                  description: true,
-                  accreditations: true,
-                  languages: true,
-                  yearEstablished: true,
-                  branches: activeBranches,
-                },
-              },
+              vendor: placeVendor,
             },
           },
         },
@@ -104,6 +137,7 @@ export async function loadBuilderTrip(
       time: formatTime(item.startsAt),
       endTime: formatTime(blockEndsAt(item.startsAt, c.durationMinutes)),
       durationMinutes: c.durationMinutes,
+      ...blockSpan(item.startsAt, c.durationMinutes),
       addedBy: item.addedBy,
       canEdit: editable && (viewer.kind === "staff" || item.addedBy !== "TEAM"),
       price: item.price.toString(),
@@ -119,13 +153,8 @@ export async function loadBuilderTrip(
       branchId: item.branchId,
       branchLabel: item.branch ? branchLabel(item.branch) : null,
       branches: c.vendor.branches.map((b) => ({ id: b.id, label: branchLabel(b) })),
-      provider: {
-        name: c.vendor.name,
-        description: c.vendor.description,
-        accreditations: c.vendor.accreditations,
-        languages: c.vendor.languages,
-        yearEstablished: c.vendor.yearEstablished,
-      },
+      provider: providerInfo(c.vendor),
+      place: placeRef(c.vendor),
       practitioners: c.practitioners.map((p) => p.practitioner),
       note: item.clientFacingNotes,
       overlaps: overlapping.has(item.id),
@@ -168,6 +197,46 @@ export async function loadBuilderTrip(
   };
 }
 
+const libraryComponentSelect = {
+  id: true,
+  name: true,
+  clientFacingDescription: true,
+  whatsIncluded: true,
+  tags: true,
+  clientDeliverable: true,
+  price: true,
+  currency: true,
+  priceUnit: true,
+  durationMinutes: true,
+  catalogue: { select: { module: { select: { name: true } } } },
+  vendor: placeVendor,
+} satisfies Prisma.ComponentSelect;
+
+const activeComponent = {
+  status: "ACTIVE",
+  vendor: { status: "ACTIVE" },
+} satisfies Prisma.ComponentWhereInput;
+
+function toLibraryComponent(comp: Prisma.ComponentGetPayload<{ select: typeof libraryComponentSelect }>): LibraryComponent {
+  return {
+    id: comp.id,
+    name: comp.name,
+    description: comp.clientFacingDescription,
+    whatsIncluded: comp.whatsIncluded,
+    tags: comp.tags,
+    deliverable: comp.clientDeliverable,
+    price: comp.price.toString(),
+    currency: comp.currency,
+    priceUnitLabel: PRICE_UNIT_LABELS[comp.priceUnit],
+    durationMinutes: comp.durationMinutes,
+    moduleName: comp.catalogue.module.name,
+    vendorName: comp.vendor.name,
+    provider: providerInfo(comp.vendor),
+    place: placeRef(comp.vendor),
+    branches: comp.vendor.branches.map((b): BranchOption => ({ id: b.id, label: branchLabel(b) })),
+  };
+}
+
 /** Everything bookable: active components of active vendors, by module → catalogue. */
 export async function loadLibrary(): Promise<Library> {
   const modules = await prisma.module.findMany({
@@ -182,33 +251,7 @@ export async function loadLibrary(): Promise<Library> {
         select: {
           id: true,
           name: true,
-          components: {
-            where: { status: "ACTIVE", vendor: { status: "ACTIVE" } },
-            orderBy: { name: "asc" },
-            select: {
-              id: true,
-              name: true,
-              clientFacingDescription: true,
-              whatsIncluded: true,
-              tags: true,
-              clientDeliverable: true,
-              price: true,
-              currency: true,
-              priceUnit: true,
-              durationMinutes: true,
-              // Client-safe vendor fields only: never contact, phone, email or notes.
-              vendor: {
-                select: {
-                  name: true,
-                  description: true,
-                  accreditations: true,
-                  languages: true,
-                  yearEstablished: true,
-                  branches: activeBranches,
-                },
-              },
-            },
-          },
+          components: { where: activeComponent, orderBy: { name: "asc" }, select: libraryComponentSelect },
         },
       },
     },
@@ -220,31 +263,68 @@ export async function loadLibrary(): Promise<Library> {
       name: m.name,
       catalogues: m.catalogues
         .filter((c) => c.components.length > 0)
-        .map((c) => ({
-          id: c.id,
-          name: c.name,
-          components: c.components.map((comp) => ({
-            id: comp.id,
-            name: comp.name,
-            description: comp.clientFacingDescription,
-            whatsIncluded: comp.whatsIncluded,
-            tags: comp.tags,
-            deliverable: comp.clientDeliverable,
-            price: comp.price.toString(),
-            currency: comp.currency,
-            priceUnitLabel: PRICE_UNIT_LABELS[comp.priceUnit],
-            durationMinutes: comp.durationMinutes,
-            vendorName: comp.vendor.name,
-            provider: {
-              name: comp.vendor.name,
-              description: comp.vendor.description,
-              accreditations: comp.vendor.accreditations,
-              languages: comp.vendor.languages,
-              yearEstablished: comp.vendor.yearEstablished,
-            },
-            branches: comp.vendor.branches.map((b): BranchOption => ({ id: b.id, label: branchLabel(b) })),
-          })),
-        })),
+        .map((c) => ({ id: c.id, name: c.name, components: c.components.map(toLibraryComponent) })),
     })),
   };
+}
+
+const placeSelect = {
+  ...placeVendor.select,
+  placeType: true,
+  highlights: true,
+  module: { select: { name: true } },
+  // Same rule as the library: what a client can add from the place page.
+  components: {
+    where: { status: "ACTIVE", catalogue: { status: "ACTIVE", module: { status: "ACTIVE" } } },
+    orderBy: { name: "asc" },
+    select: libraryComponentSelect,
+  },
+} satisfies Prisma.VendorSelect;
+
+function toPlace(v: Prisma.VendorGetPayload<{ select: typeof placeSelect }>): Place {
+  const experiences = v.components.map(toLibraryComponent);
+  const modules = [...new Set([v.module?.name, ...experiences.map((e) => e.moduleName)])].filter(
+    (m): m is string => Boolean(m),
+  );
+  const oneCurrency = new Set(experiences.map((e) => e.currency)).size === 1;
+  const cheapest = experiences.reduce<LibraryComponent | null>(
+    (min, e) => (!min || Number(e.price) < Number(min.price) ? e : min),
+    null,
+  );
+  return {
+    slug: v.slug,
+    name: v.name,
+    module: modules[0] ?? null,
+    modules,
+    typeLabel: v.placeType,
+    city: v.hqCity,
+    description: v.description,
+    highlights: v.highlights,
+    accreditations: v.accreditations,
+    languages: v.languages,
+    yearEstablished: v.yearEstablished,
+    locations: v.branches.map(branchLabel),
+    photos: v.photos.map(photoView),
+    experiences,
+    fromPrice:
+      cheapest && oneCurrency
+        ? { amount: cheapest.price, currency: cheapest.currency, unitLabel: cheapest.priceUnitLabel }
+        : null,
+  };
+}
+
+/** Every active partner place, by name. Places without experiences are included. */
+export async function loadPlaces(): Promise<Place[]> {
+  const vendors = await prisma.vendor.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: { name: "asc" },
+    select: placeSelect,
+  });
+  return vendors.map(toPlace);
+}
+
+/** One active place by slug; null when unknown or inactive. */
+export async function loadPlace(slug: string): Promise<Place | null> {
+  const vendor = await prisma.vendor.findFirst({ where: { slug, status: "ACTIVE" }, select: placeSelect });
+  return vendor ? toPlace(vendor) : null;
 }

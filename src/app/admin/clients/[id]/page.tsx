@@ -28,6 +28,7 @@ import {
 import { requireUserPage } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { activityLabel } from "@/lib/services/activity-log";
+import { personRequestLabels } from "@/lib/services/person-request";
 import { pluralise } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Client" };
@@ -72,6 +73,7 @@ export default async function ClientDetailPage({
     orderBy: { createdAt: "desc" },
     take: 20,
   });
+  const askedAbout = await personRequestLabels(activity);
 
   const suggestedStart = addDays(new Date(), 30);
   const address = [client.addressLine, client.city, client.postcode, client.country].filter(Boolean).join(", ");
@@ -245,6 +247,7 @@ export default async function ClientDetailPage({
                   <li key={entry.id} className="px-5 py-3">
                     <p className="text-[13px] text-ink-800">
                       {activityLabel(entry.action)}
+                      {askedAbout.has(entry.id) && <span className="text-ink-600"> · about {askedAbout.get(entry.id)}</span>}
                     </p>
                     <p className="text-xs text-ink-400">
                       {entry.actorLabel} · {formatRelative(entry.createdAt)}

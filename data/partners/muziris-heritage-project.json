@@ -1,0 +1,55 @@
+{
+  "slug": "muziris-heritage-project",
+  "name": "Muziris Heritage Project",
+  "type": "Cultural Tour",
+  "category": "Culture",
+  "city": "Kodungallur / North Paravur",
+  "locations": [
+    "Kodungallur (Thrissur district)",
+    "North Paravur (Ernakulam district)",
+    "Pattanam"
+  ],
+  "website": "https://muzirisheritage.org",
+  "summary": "The Muziris Heritage Project is a Kerala Tourism conservation and tourism initiative across the stretch between North Paravur and Kodungallur, the area of the ancient port of Muziris. Visitors move between restored heritage houses, museums, forts, temples, churches, a synagogue and backwater routes by land and boat.",
+  "highlights": [
+    "Covers the area between North Paravur and Kodungallur on the Periyar river delta",
+    "Museums and restored heritage buildings tracing the ancient spice-trade port",
+    "Historic sites such as Kottappuram Fort ruins and religious sites of several faiths",
+    "Archaeological research at Pattanam in collaboration with the Kerala Council for Historical Research",
+    "Backwater boat journeys and beaches within the project area"
+  ],
+  "photos": [
+    {
+      "url": "/partners/muziris-heritage-project/01.webp",
+      "alt": "Whitewashed heritage museum building with wooden verandas",
+      "width": 1920,
+      "height": 650,
+      "isHero": true,
+      "sourceUrl": "https://www.keralatourism.org/images/muziris/muziris-banner.jpg"
+    },
+    {
+      "url": "/partners/muziris-heritage-project/02.webp",
+      "alt": "Laterite fort ruin beside the backwaters",
+      "width": 1920,
+      "height": 650,
+      "isHero": false,
+      "sourceUrl": "https://www.keralatourism.org/images/muziris/muziris-banner-4.jpg"
+    },
+    {
+      "url": "/partners/muziris-heritage-project/03.webp",
+      "alt": "Colourful boat gliding through palm-lined backwaters",
+      "width": 1920,
+      "height": 650,
+      "isHero": false,
+      "sourceUrl": "https://www.keralatourism.org/images/muziris/muziris-banner-5.jpg"
+    },
+    {
+      "url": "/partners/muziris-heritage-project/04.webp",
+      "alt": "Museum interior with carved wood and chandeliers",
+      "width": 1920,
+      "height": 650,
+      "isHero": false,
+      "sourceUrl": "https://www.keralatourism.org/images/muziris/muziris-banner-3.jpg"
+    }
+  ]
+}

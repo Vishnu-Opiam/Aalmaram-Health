@@ -1,0 +1,26 @@
+{
+  "slug": "skinessence",
+  "name": "Skinessence",
+  "type": "Dermatology",
+  "category": "Health",
+  "city": "Kochi",
+  "locations": [
+    "Kadavanthra, Kochi (2nd Floor, JN Corner, Jawahar Nagar)"
+  ],
+  "website": "https://skinessence.co.in",
+  "summary": "Skinessence is a skin, hair and laser clinic in Kadavanthra, Kochi. Its site lists skin, hair and laser treatments offered after a dermatologist assessment.",
+  "highlights": [
+    "Located in Kadavanthra, Kochi",
+    "Lists laser, skin and hair treatment categories (e.g. laser hair removal, PRP, peels, fillers)"
+  ],
+  "photos": [
+    {
+      "url": "/partners/skinessence/01.webp",
+      "alt": "Clinic entrance corridor with Skinessence wall signage",
+      "width": 960,
+      "height": 960,
+      "isHero": false,
+      "sourceUrl": "https://skinessence.co.in/wp-content/uploads/2026/09/skinessence-kadavanthra-clinic-reception.webp"
+    }
+  ]
+}

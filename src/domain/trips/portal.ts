@@ -2,7 +2,7 @@ import "server-only";
 import type { TripStatus } from "@prisma/client";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
-import { toUtcDay } from "@/domain/shared/dates";
+import { keralaDay } from "@/domain/shared/dates";
 
 export type PortalTrip = { id: string; name: string; startDate: Date; endDate: Date; status: TripStatus };
 
@@ -23,6 +23,6 @@ export function pickTrip(trips: PortalTrip[], requested: string | undefined, tod
   if (trips.length === 0) return null;
   const asked = requested ? trips.find((t) => t.id === requested) : undefined;
   if (asked) return asked;
-  const now = toUtcDay(today).getTime();
+  const now = keralaDay(today).getTime();
   return trips.find((t) => t.endDate.getTime() >= now) ?? trips[trips.length - 1];
 }

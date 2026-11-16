@@ -1,0 +1,74 @@
+{
+  "slug": "ahalia-foundation-eye-hospital",
+  "name": "Ahalia Foundation Eye Hospital",
+  "type": "Eye Hospital",
+  "category": "Health",
+  "city": "Palakkad",
+  "locations": [
+    "Palakkad (main campus, Kanal Pirivu)",
+    "Ernakulam",
+    "Muvattupuzha",
+    "Kottayam",
+    "Kollam",
+    "Kannur",
+    "other regional centres across Kerala"
+  ],
+  "website": "https://afeh.org/",
+  "summary": "Ahalia Foundation Eye Hospital is a super-speciality eye hospital on a green campus at Palakkad, with regional centres across Kerala. It lists services including cataract, glaucoma, retina, cornea and contact lens clinics.",
+  "highlights": [
+    "100-bed eye hospital at Palakkad with 18 regional centres, per its About page",
+    "Describes its Palakkad facility as JCI accredited",
+    "Ahalia eye care dates to a clinic established in Abu Dhabi in 1984",
+    "Eye bank, low vision clinic and fellowship programmes listed on the site"
+  ],
+  "photos": [
+    {
+      "url": "/partners/ahalia-foundation-eye-hospital/01.webp",
+      "alt": "Aerial view of the hospital campus in monochrome",
+      "width": 1600,
+      "height": 856,
+      "isHero": true,
+      "sourceUrl": "https://afeh.org/wp-content/uploads/2020/12/Ahalia-Foundation-Eye-Hospital-3.jpg"
+    },
+    {
+      "url": "/partners/ahalia-foundation-eye-hospital/02.webp",
+      "alt": "Multi-level atrium with spiral ramp",
+      "width": 1024,
+      "height": 768,
+      "isHero": false,
+      "sourceUrl": "https://afeh.org/wp-content/uploads/2020/12/Hospital-Facilities-3.jpg"
+    },
+    {
+      "url": "/partners/ahalia-foundation-eye-hospital/03.webp",
+      "alt": "Library shelves in a bright hall",
+      "width": 1024,
+      "height": 768,
+      "isHero": false,
+      "sourceUrl": "https://afeh.org/wp-content/uploads/2020/12/Hospital-Facilities-6.jpg"
+    },
+    {
+      "url": "/partners/ahalia-foundation-eye-hospital/04.webp",
+      "alt": "Cafeteria with checked tablecloths",
+      "width": 1024,
+      "height": 768,
+      "isHero": false,
+      "sourceUrl": "https://afeh.org/wp-content/uploads/2020/12/Hospital-Facilities-12.jpg"
+    },
+    {
+      "url": "/partners/ahalia-foundation-eye-hospital/05.webp",
+      "alt": "Auditorium with wooden seating",
+      "width": 1024,
+      "height": 768,
+      "isHero": false,
+      "sourceUrl": "https://afeh.org/wp-content/uploads/2020/12/Hospital-Facilities-2.jpg"
+    },
+    {
+      "url": "/partners/ahalia-foundation-eye-hospital/06.webp",
+      "alt": "Patient room with bed and red curtains",
+      "width": 1024,
+      "height": 768,
+      "isHero": false,
+      "sourceUrl": "https://afeh.org/wp-content/uploads/2020/12/Hospital-Facilities-5.jpg"
+    }
+  ]
+}

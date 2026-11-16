@@ -11,6 +11,8 @@
     "db:reset": "prisma migrate reset --force",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:content": "tsx prisma/seed.ts --content-only",
+    "partners:photos": "node scripts/partners-photos.mjs",
+    "partners:import": "tsx prisma/import-partners.ts",
     "db:studio": "prisma studio",
     "admin:create": "tsx prisma/create-admin.ts",
     "dev": "next dev -p 3000",

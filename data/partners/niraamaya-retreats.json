@@ -1,0 +1,72 @@
+{
+  "slug": "niraamaya-retreats",
+  "name": "Niraamaya Retreats",
+  "type": "Hotels & Spa",
+  "category": "Wellness",
+  "city": "Kovalam (Thiruvananthapuram)",
+  "locations": [
+    "Surya Samudra, Pulinkudi, Kovalam",
+    "Backwaters & Beyond, Kumarakom",
+    "Cardamom Club, Thekkady",
+    "Vayal, Athirappilly (listed on site)"
+  ],
+  "website": "https://niraamaya.com",
+  "summary": "Niraamaya Retreats is an Ayurveda-led collection of retreats across Kerala, set on a cliff above the Arabian Sea at Kovalam, beside Vembanad Lake at Kumarakom and in a spice estate near Periyar at Thekkady. Its Kovalam property grew out of the 1982 Octagon House heritage-architecture initiative and was re-envisioned as Niraamaya in 2012.",
+  "highlights": [
+    "Surya Samudra, Kovalam: restored traditional Kerala homes and cottages on a cliff over the Arabian Sea",
+    "Backwaters & Beyond, Kumarakom: lakeside villas with pool and 160 m of Vembanad shoreline",
+    "Cardamom Club, Thekkady: stilted cottages in a spice estate next to Periyar reserve, 13 cottages",
+    "Yoga, meditation and Ayurveda programmes offered at the retreats",
+    "Brand history traces to the 1982 Octagon House at Kovalam"
+  ],
+  "photos": [
+    {
+      "url": "/partners/niraamaya-retreats/01.webp",
+      "alt": "Kumarakom villa and curved pool at dusk",
+      "width": 1920,
+      "height": 960,
+      "isHero": true,
+      "sourceUrl": "https://niraamaya.com/wp-content/uploads/2025/02/01_Kumarakom_Banner-min.jpg"
+    },
+    {
+      "url": "/partners/niraamaya-retreats/02.webp",
+      "alt": "Thekkady pool and lodge among forested hills",
+      "width": 1650,
+      "height": 928,
+      "isHero": false,
+      "sourceUrl": "https://niraamaya.com/wp-content/uploads/2025/02/Niraamaya_Retreats_thekkady.jpeg"
+    },
+    {
+      "url": "/partners/niraamaya-retreats/03.webp",
+      "alt": "Kovalam lily pond, pavilion and tiled-roof cottages",
+      "width": 1920,
+      "height": 960,
+      "isHero": false,
+      "sourceUrl": "https://niraamaya.com/wp-content/uploads/2025/02/01a_Surya_Samudra_Kovalam_Banner-min.jpg"
+    },
+    {
+      "url": "/partners/niraamaya-retreats/04.webp",
+      "alt": "Thekkady pool with loungers and forest hills",
+      "width": 900,
+      "height": 506,
+      "isHero": false,
+      "sourceUrl": "https://niraamaya.com/wp-content/uploads/2025/02/pool_001_m5mrpg.jpeg"
+    },
+    {
+      "url": "/partners/niraamaya-retreats/05.webp",
+      "alt": "Kovalam treatment space with brass lamp and oil vessel",
+      "width": 900,
+      "height": 506,
+      "isHero": false,
+      "sourceUrl": "https://niraamaya.com/wp-content/uploads/2025/02/Spa_3_Niraamaya_Surya_Samudra_Resorts_in_Kovalam_bjyk7x.jpeg"
+    },
+    {
+      "url": "/partners/niraamaya-retreats/06.webp",
+      "alt": "Resort restaurant with carved ceiling and garden view",
+      "width": 1170,
+      "height": 642,
+      "isHero": false,
+      "sourceUrl": "https://niraamaya.com/wp-content/uploads/2025/02/Restuarant-1.jpg"
+    }
+  ]
+}

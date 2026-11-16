@@ -21,6 +21,18 @@ export function toUtcDay(value: Date | string): Date {
   );
 }
 
+/** Asia/Kolkata is UTC+05:30 all year (India has no daylight saving). */
+export const KERALA_OFFSET_MS = 330 * 60_000;
+
+/**
+ * The calendar day it is in Kerala at `now`, as a UTC-midnight date like every
+ * other trip date. Between 00:00 and 05:30 Kerala time UTC is still on the
+ * previous day, so "today" for a trip must come from here, never `toUtcDay(now)`.
+ */
+export function keralaDay(now: Date): Date {
+  return toUtcDay(new Date(now.getTime() + KERALA_OFFSET_MS));
+}
+
 /** Parses `YYYY-MM-DD` (the HTML date input format) as a UTC calendar day. */
 export function parseDateInput(value: string): Date {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());

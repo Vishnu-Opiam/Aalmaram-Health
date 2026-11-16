@@ -13,7 +13,7 @@ import { JOURNEY_STEPS, capitalise, journeyStage, momentLabel, tripMoment } from
 import { loadBuilderTrip } from "@/domain/trips/queries";
 import { loadPortalTrips, pickTrip } from "@/domain/trips/portal";
 import type { BuilderBlock, BuilderTrip } from "@/domain/trips/builder-view";
-import { formatDateRange, parseDateInput, toDateInputValue, toUtcDay } from "@/domain/shared/dates";
+import { formatDateRange, parseDateInput, toDateInputValue, keralaDay } from "@/domain/shared/dates";
 import { prisma } from "@/lib/db";
 import { renderMarkdown } from "@/lib/markdown";
 import { cn, param, pluralise } from "@/lib/utils";
@@ -255,7 +255,7 @@ function NextStep({ trip, contact }: { trip: BuilderTrip; contact: string }) {
 /** While planning: what the team arranged. Afterwards: what's coming up, with its booking status. */
 function Appointments({ trip, contact }: { trip: BuilderTrip; contact: string }) {
   const blocks = trip.days.flatMap((d) => d.blocks);
-  const today = toDateInputValue(toUtcDay(new Date()));
+  const today = toDateInputValue(keralaDay(new Date()));
   const shown: BuilderBlock[] = trip.editable
     ? blocks.filter((b) => b.addedBy === "TEAM")
     : blocks.filter((b) => b.day >= today).slice(0, 5);

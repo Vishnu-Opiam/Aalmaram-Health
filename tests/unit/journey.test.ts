@@ -10,7 +10,11 @@ describe("trip moment", () => {
   it("counts the days to go, then the day of the trip, then home", () => {
     expect(tripMoment(start, end, day("2026-10-23"))).toEqual({ kind: "before", days: 45 });
     expect(momentLabel(tripMoment(start, end, day("2026-12-06")))).toBe("Tomorrow");
-    expect(tripMoment(start, end, new Date("2026-12-07T23:30:00.000Z"))).toEqual({ kind: "during", day: 1, of: 10 });
+    expect(tripMoment(start, end, new Date("2026-12-07T12:00:00.000Z"))).toEqual({ kind: "during", day: 1, of: 10 });
+    // 23:30 UTC on the 7th is 05:00 on the 8th in Kerala: already Day 2 there.
+    expect(tripMoment(start, end, new Date("2026-12-07T23:30:00.000Z"))).toEqual({ kind: "during", day: 2, of: 10 });
+    // 20:00 UTC on the 6th is 01:30 on the 7th in Kerala: arrival day, not "Tomorrow".
+    expect(tripMoment(start, end, new Date("2026-12-06T20:00:00.000Z"))).toEqual({ kind: "during", day: 1, of: 10 });
     expect(momentLabel(tripMoment(start, end, day("2026-12-16")))).toBe("Day 10 of 10");
     expect(momentLabel(tripMoment(start, end, day("2026-12-17")))).toBe("Welcome home");
   });

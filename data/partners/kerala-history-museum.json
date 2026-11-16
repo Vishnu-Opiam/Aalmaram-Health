@@ -1,0 +1,69 @@
+{
+  "slug": "kerala-history-museum",
+  "name": "Kerala History Museum",
+  "type": "Museum",
+  "category": "Culture",
+  "city": "Kochi (Edappally)",
+  "locations": [
+    "Kerala Museum, Pathadipalam / Edappally, Kochi"
+  ],
+  "website": "https://keralamuseum.org",
+  "summary": "The Museum of Kerala History is one of the galleries of the Kerala Museum, run by the Madhavan Nayar Foundation at Edappally in Kochi. It tells the region's story through life-size tableaux and dioramas of historical figures and scenes, alongside a contemporary art gallery and a dolls museum on the same campus.",
+  "highlights": [
+    "Life-size figure tableaux depicting episodes and personalities from Kerala's history",
+    "Part of the Kerala Museum complex run by the Madhavan Nayar Foundation",
+    "Same campus holds the Gallery of Contemporary Indian Art, The Dolls Museum and a visual art centre",
+    "Amphitheatre and events programme of talks, workshops and performances",
+    "Located at Edappally, Kochi"
+  ],
+  "photos": [
+    {
+      "url": "/partners/kerala-history-museum/01.webp",
+      "alt": "Curved white museum building and courtyard with visitors",
+      "width": 2000,
+      "height": 1126,
+      "isHero": true,
+      "sourceUrl": "https://keralamuseum.org/wp-content/uploads/2024/01/Banner_VISIT-scaled.jpg"
+    },
+    {
+      "url": "/partners/kerala-history-museum/02.webp",
+      "alt": "History tableau with life-size figures and a Kathakali character",
+      "width": 1920,
+      "height": 1080,
+      "isHero": false,
+      "sourceUrl": "https://keralamuseum.org/wp-content/uploads/2023/06/KHMBanner1.png"
+    },
+    {
+      "url": "/partners/kerala-history-museum/03.webp",
+      "alt": "Life-size diorama of a scholar at a writing desk",
+      "width": 2000,
+      "height": 1177,
+      "isHero": false,
+      "sourceUrl": "https://keralamuseum.org/wp-content/uploads/2023/06/P1030201-scaled-e1702533848100.jpg"
+    },
+    {
+      "url": "/partners/kerala-history-museum/04.webp",
+      "alt": "Diorama of a painter at an easel",
+      "width": 2000,
+      "height": 1126,
+      "isHero": false,
+      "sourceUrl": "https://keralamuseum.org/wp-content/uploads/2023/10/kerala-history-light-sound-show-scaled.jpg"
+    },
+    {
+      "url": "/partners/kerala-history-museum/05.webp",
+      "alt": "Gallery of Contemporary Indian Art interior",
+      "width": 2000,
+      "height": 1122,
+      "isHero": false,
+      "sourceUrl": "https://keralamuseum.org/wp-content/uploads/2023/06/jpeg-optimizer_Header_Galleryof-contempart-scaled.jpg"
+    },
+    {
+      "url": "/partners/kerala-history-museum/06.webp",
+      "alt": "Dolls Museum figure in classical dance pose",
+      "width": 2000,
+      "height": 1334,
+      "isHero": false,
+      "sourceUrl": "https://keralamuseum.org/wp-content/uploads/2023/06/DSC00622-1-scaled.jpg"
+    }
+  ]
+}

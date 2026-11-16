@@ -12,6 +12,7 @@ import {
 } from "@/lib/validation/form";
 import { ACTIVITY_ACTIONS, logActivity } from "@/lib/services/activity-log";
 import { refreshUrl } from "@/lib/refresh-url";
+import { uniqueSlug } from "@/domain/vendors/slug";
 
 export async function createVendorAction(
   _prev: FormState,
@@ -22,7 +23,8 @@ export async function createVendorAction(
     const input = parseForm(vendorSchema, formData);
 
     const vendor = await prisma.$transaction(async (tx) => {
-      const created = await tx.vendor.create({ data: input });
+      const slug = await uniqueSlug(input.name, async (s) => (await tx.vendor.count({ where: { slug: s } })) > 0);
+      const created = await tx.vendor.create({ data: { ...input, slug } });
       await logActivity(
         {
           action: ACTIVITY_ACTIONS.VENDOR_CREATED,

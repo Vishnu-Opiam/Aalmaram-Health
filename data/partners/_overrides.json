@@ -1,0 +1,32 @@
+{
+  "_about": "Editorial rulings applied by scripts/partners-photos.mjs on top of the researchers' manifest.json files (2026-11-16). Edit here, then re-run the script; never hand-edit the generated <slug>.json files.",
+  "skip": {
+    "elite-dental-clinic": "Identity ambiguous; owner to clarify which clinic is meant.",
+    "dr-elizabeth-complexion-clinic-laser-centre": "Identity ambiguous; owner to clarify which clinic is meant."
+  },
+  "partners": {
+    "facets-dental-clinic": {
+      "dropImages": ["01.jpg", "02.jpg"],
+      "_why": "Not verifiably the clinic's own premises; listed without photos."
+    },
+    "nailashes": {
+      "notHero": ["01.jpg", "02.jpg"],
+      "altPrefix": { "01.jpg": "Studio design render: ", "02.jpg": "Studio design render: " },
+      "_why": "The two interiors are design renders of the studio concept, not photographs of the Kochi studio."
+    },
+    "kerala-history-museum": { "name": "Kerala History Museum" },
+    "kochi-heritage-project": {
+      "dropHighlights": ["Led by historian"],
+      "summary": "The Kochi Heritage Project is a small-group heritage walk and event organiser in Kochi. Its walks cover Fort Kochi and Mattancherry, tracing the city's story as an Indian Ocean port.",
+      "_why": "The manifest names the guide; we never publish practitioner names."
+    },
+    "kerala-folklore-museum": {
+      "dropHighlights": ["Founded by"],
+      "_why": "Names private individuals."
+    },
+    "skinessence": {
+      "summary": "Skinessence is a skin, hair and laser clinic in Kadavanthra, Kochi. Its site lists skin, hair and laser treatments offered after a dermatologist assessment.",
+      "_why": "The manifest summary names a practitioner; we never publish practitioner names."
+    }
+  }
+}

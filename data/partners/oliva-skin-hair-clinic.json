@@ -1,0 +1,27 @@
+{
+  "slug": "oliva-skin-hair-clinic",
+  "name": "Oliva Skin & Hair Clinic",
+  "type": "Dermatology & Aesthetic Medicine",
+  "category": "Health",
+  "city": "Kochi",
+  "locations": [
+    "Kadavanthra, Kochi (First Floor, Zodiac Square, Sahodaran Ayyappan Road)"
+  ],
+  "website": "https://www.olivaclinic.com/kochi/",
+  "summary": "Oliva is a national chain of dermatology clinics, with a Kochi clinic in Kadavanthra. Its Kochi page lists consultations and treatments for skin, hair and body concerns led by dermatologists.",
+  "highlights": [
+    "Kochi clinic in Kadavanthra, Ernakulam",
+    "Site states every treatment is led by MD dermatologists",
+    "Offers skin, hair, laser hair removal and body treatments"
+  ],
+  "photos": [
+    {
+      "url": "/partners/oliva-skin-hair-clinic/01.webp",
+      "alt": "Corner building exterior with Oliva signage, Kochi clinic",
+      "width": 1024,
+      "height": 582,
+      "isHero": false,
+      "sourceUrl": "https://media.olivaclinic.com/website-media/2024/07/Oliva-Skin-Care-Clinic-Kochi.jpg"
+    }
+  ]
+}

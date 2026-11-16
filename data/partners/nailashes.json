@@ -1,0 +1,45 @@
+{
+  "slug": "nailashes",
+  "name": "Nailashes",
+  "type": "Beauty",
+  "category": "Wellness",
+  "city": "Kochi",
+  "locations": [
+    "Kochi: PJ Tower, Ambelipadam Road, Subhash Chandra Bose Road, Kochi 682019 (per site salon finder and press)"
+  ],
+  "website": "https://www.nailashes.in",
+  "summary": "Nailashes is an Indian nail and lash studio chain, started in 2019, with a Kochi studio opened in 2026. Studios offer nail extensions, gel and acrylic nails, manicures and pedicures, and lash services in pastel, salon-style interiors.",
+  "highlights": [
+    "Nail extensions, gel and acrylic nails, manicures and pedicures",
+    "Lash extensions and eyelash lifting; eyebrow services",
+    "Kochi studio at PJ Tower, Ambelipadam Road",
+    "National chain of 90+ studios in 35+ cities (per its site)",
+    "Founded 2019"
+  ],
+  "photos": [
+    {
+      "url": "/partners/nailashes/01.webp",
+      "alt": "Studio design render: Pink salon interior with pedicure chairs and floral panels",
+      "width": 2000,
+      "height": 1334,
+      "isHero": false,
+      "sourceUrl": "https://www.nailashes.in/wp-content/uploads/2022/07/VIEW-1.jpg"
+    },
+    {
+      "url": "/partners/nailashes/02.webp",
+      "alt": "Studio design render: Studio pedicure row and mirrored pink walls",
+      "width": 2000,
+      "height": 1334,
+      "isHero": false,
+      "sourceUrl": "https://www.nailashes.in/wp-content/uploads/2022/07/VIEW-2.jpg"
+    },
+    {
+      "url": "/partners/nailashes/03.webp",
+      "alt": "Manicured hands with pink nails and polish",
+      "width": 1536,
+      "height": 1024,
+      "isHero": false,
+      "sourceUrl": "https://www.nailashes.in/wp-content/uploads/2026/09/nail_after.webp"
+    }
+  ]
+}

@@ -94,7 +94,7 @@ describe("trip workflow (integration)", () => {
     const { componentA, componentB } = await createInventory();
     const client = await createClientRecord();
     const trip = await createTrip(client.id);
-    const otherVendor = await prisma.vendor.create({ data: { name: "Other (demo)", phone: "+91 1" } });
+    const otherVendor = await prisma.vendor.create({ data: { name: "Other (demo)", slug: "other-demo", phone: "+91 1" } });
     const foreignBranch = await prisma.branch.create({ data: { vendorId: otherVendor.id, name: "Elsewhere", city: "Kochi" } });
 
     await expect(
