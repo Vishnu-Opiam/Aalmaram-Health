@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CalendarDays, Compass, House, MessageCircle, Palmtree } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -12,51 +13,85 @@ const SECTIONS = [
   { href: "/trip/kerala", label: "Kerala", icon: Palmtree },
 ];
 
-/**
- * Five labelled places, always visible: a pill bar beside the logo on wide
- * screens, a bottom tab bar on phones (where older clients know it from their
- * messaging apps). No menu to open. Plain links (full page loads): a tab
- * must never sit on a tap that didn't take, which Next's client router
- * occasionally does here just after a page has loaded.
- */
-export function PortalNav({ variant }: { variant: "top" | "bottom" }) {
+/** The five sections with the current one marked, each keeping the chosen `?trip=`. */
+function useSections() {
   const pathname = usePathname();
-  // Keep the chosen trip when moving between sections.
   const trip = useSearchParams().get("trip");
-  const items = SECTIONS.map((section) => ({
-    ...section,
-    active: section.exact ? pathname === section.href : pathname.startsWith(section.href),
-    url: trip ? `${section.href}?trip=${encodeURIComponent(trip)}` : section.href,
-  }));
+  const withTrip = (href: string) => (trip ? `${href}?trip=${encodeURIComponent(trip)}` : href);
+  return {
+    home: withTrip("/trip"),
+    items: SECTIONS.map((section) => ({
+      ...section,
+      active: section.exact ? pathname === section.href : pathname.startsWith(section.href),
+      url: withTrip(section.href),
+    })),
+  };
+}
 
-  if (variant === "top") {
-    return (
-      <nav aria-label="Your trip" className="hidden md:block">
-        <ul className="flex gap-1 rounded-full border border-sand-200 bg-white p-1.5 shadow-[0_8px_24px_-18px_rgb(18_48_42/0.4)]">
-          {items.map(({ href, label, icon: Icon, active, url }) => (
-            <li key={href}>
-              <a
-                href={url}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex min-h-12 items-center gap-2 rounded-full px-5 text-[17px] font-semibold transition-colors",
-                  active ? "bg-forest-900 text-white" : "text-ink-700 hover:bg-sand-100 hover:text-ink-900",
-                )}
-              >
-                <Icon className="h-5 w-5" aria-hidden="true" />
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    );
-  }
+/**
+ * The night header. On wide screens: wordmark, the five sections as text links
+ * (brass underline on the current one, as on the public site) and Sign out; it
+ * stays put while scrolling. On phones it is a slim strip with the wordmark and
+ * Sign out; the sections are in the bottom tab bar. A page that opens with a
+ * full-bleed photo marks it `data-portal-hero`, and the header then sits on the
+ * photo, turning solid after 24 px of scroll.
+ *
+ * Plain links (full page loads): a tab must never sit on a tap that didn't
+ * take, which Next's client router occasionally does just after a page load.
+ */
+export function PortalHeader({ signOut }: { signOut: React.ReactNode }) {
+  const { home, items } = useSections();
+  const [solid, setSolid] = useState(false);
 
+  useEffect(() => {
+    const onScroll = () => setSolid(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <header data-solid={solid || undefined} className="portal-header pk-night">
+      <div className="pk-frame flex h-14 items-center gap-8 md:h-18 lg:gap-12">
+        <a href={home} className="pk-wordmark inline-flex min-h-12 shrink-0 items-center" aria-label="Aalmaram Health — my trip">
+          Aalmaram
+        </a>
+        <nav aria-label="Your trip" className="hidden md:block">
+          <ul className="flex items-center gap-1 lg:gap-3">
+            {items.map(({ href, label, active, url }) => (
+              <li key={href}>
+                <a
+                  href={url}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "inline-flex min-h-12 items-center whitespace-nowrap px-2.5 text-[17px] font-medium decoration-2 underline-offset-[6px] transition-[text-decoration-color] duration-200",
+                    active ? "underline decoration-brass" : "decoration-transparent hover:underline hover:decoration-night-muted",
+                  )}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="ml-auto">{signOut}</div>
+      </div>
+    </header>
+  );
+}
+
+/**
+ * Phones: five labelled tabs on night, always visible, where older clients
+ * know them from their messaging apps. 64 px plus the safe area; the current
+ * tab is brass with a bar on its top edge (no pill). Wide screens use the
+ * header links instead.
+ */
+export function PortalTabBar() {
+  const { items } = useSections();
   return (
     <nav
       aria-label="Your trip"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-sand-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="portal-tabbar pk-night fixed inset-x-0 bottom-0 z-40 pb-[env(safe-area-inset-bottom)] shadow-float md:hidden"
     >
       <ul className="grid grid-cols-5">
         {items.map(({ href, label, icon: Icon, active, url }) => (
@@ -65,15 +100,13 @@ export function PortalNav({ variant }: { variant: "top" | "bottom" }) {
               href={url}
               aria-current={active ? "page" : undefined}
               className={cn(
-                // Five tabs share a 375 px phone: 14 px keeps "Day by day" on one line.
-                "flex min-h-17 flex-col items-center justify-center gap-1 text-center text-[14px] font-semibold leading-tight",
-                active ? "text-forest-900" : "text-ink-600",
+                "relative flex min-h-16 flex-col items-center justify-center gap-1 px-0.5 text-center text-[15px] font-medium leading-none",
+                active ? "text-brass" : "text-night-muted",
               )}
             >
-              <span className={cn("flex h-8 w-14 items-center justify-center rounded-full", active && "bg-forest-900 text-white")}>
-                <Icon className="h-5 w-5" aria-hidden="true" />
-              </span>
-              {label}
+              {active && <span className="absolute inset-x-3 top-0 h-[3px] bg-brass" aria-hidden="true" />}
+              <Icon className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
+              <span className="whitespace-nowrap">{label}</span>
             </a>
           </li>
         ))}

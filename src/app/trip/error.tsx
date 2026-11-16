@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { PortalBrand, pill } from "@/components/portal/ui";
+import { Button } from "@/components/portal/kit/button";
+import { PortalBrand } from "@/components/portal/ui";
 
 export default function TripError({
   error,
@@ -15,25 +16,22 @@ export default function TripError({
   }, [error]);
 
   return (
-    <div className="mx-auto max-w-xl px-5 py-12 text-center sm:py-16">
-      <PortalBrand />
-      <h1 className="mt-10 font-display text-[32px] font-semibold text-ink-900">
-        We could not load your trip
-      </h1>
-      <p className="mt-3 text-[18px] leading-relaxed text-ink-700">
-        Something went wrong on our side. Please try again, and contact your
-        Aalmaram coordinator if it keeps happening.
-      </p>
-      {error.digest && (
-        <p className="mt-3 text-[16px] text-ink-600">Reference: {error.digest}</p>
-      )}
-      <button
-        type="button"
-        onClick={reset}
-        className={pill("primary", "mt-6")}
-      >
-        Try again
-      </button>
-    </div>
+    <main id="trip-content" className="pk-night flex flex-1 flex-col">
+      <div className="pk-frame flex flex-1 flex-col py-6 md:py-8">
+        <a href="/trip" className="inline-flex min-h-12 items-center self-start">
+          <PortalBrand />
+        </a>
+        <div className="my-auto max-w-xl py-16">
+          <h1 className="pk-h1">We could not load your trip</h1>
+          <p className="pk-body mt-5 text-night-muted">
+            Something went wrong on our side. Please try again, and tell your Aalmaram coordinator if it keeps happening.
+          </p>
+          {error.digest && <p className="mt-3 text-[16px] text-night-muted">Reference: {error.digest}</p>}
+          <Button onClick={reset} className="mt-8">
+            Try again
+          </Button>
+        </div>
+      </div>
+    </main>
   );
 }

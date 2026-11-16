@@ -104,13 +104,25 @@
   --color-mist-muted: #4e5a57;
   --color-brass: #cfab70;
   --color-brass-bright: #e2c38f;
+
+  /* Client portal ("Lamplight and Kasavu Paper"): your own travel papers laid
+     out on the site's night ground. Paper carries what you read and act on;
+     night carries anticipation (hero, numerals, nav, sign-in). Ink on paper
+     16:1, muted on paper 6.6:1, gold-700 on paper 5.9:1. */
+  --color-kasavu-0: #fffdf8;
+  --color-paper: #f7f3ea;
+  --color-paper-raised: #fffdf8;
+  --color-paper-line: #e2d8c2;
+  --color-paper-perf: #c9b991;
+  /* The one cast shadow, for floating things only (tab bar, sheets, sticky bars). */
+  --shadow-float: 0 -8px 32px rgb(14 21 24 / 0.18);
 }
 
-/* Portal fonts are loaded by next/font on the /trip layout; `inline` makes
-   the utilities read those variables where they are set, not on :root. */
+/* The portal shares the public site's self-hosted faces (src/app/fonts.ts);
+   `inline` makes the utilities read those variables where they are set. */
 @theme inline {
-  --font-display: var(--font-portal-display), "Iowan Old Style", Georgia, serif;
-  --font-body: var(--font-portal-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-site-serif), Georgia, serif;
+  --font-body: var(--font-site-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -219,73 +231,520 @@
   }
 }
 
-/* Client portal motion: things settle into place, panels slide in. Kept short
-   and subtle; the reduced-motion rule above switches all of it off. */
-@keyframes portal-rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
+/* ==========================================================================
+   Client portal (/trip): "Lamplight and Kasavu Paper".
+   Kit components live in src/components/portal/kit; the rules for using them
+   are in the design-kit notes. Square photographs, round buttons, one shadow
+   (for floating things), the kasavu band as the only ornament, and notches
+   only on things that are booked.
+   ========================================================================== */
+
+/* Leave room for the sticky night header (desktop) and the tab bar (phones),
+   so a focused or jumped-to element is never hidden (WCAG 2.4.11). */
+html:has(.portal-shell) {
+  scroll-padding-top: 96px;
+}
+@media (max-width: 767px) {
+  html:has(.portal-shell) {
+    scroll-padding-top: 16px;
+    scroll-padding-bottom: calc(88px + env(safe-area-inset-bottom));
   }
 }
+body:has(.portal-shell) {
+  background: var(--color-paper);
+}
+
+/* Grounds. Kit components read these variables, so the same button or label
+   is right on paper and on night without a prop. In the components layer so
+   a utility on the same element (bg-*, text-*) still wins. */
+@layer components {
+  .portal-shell,
+  .pk-paper,
+  .pk-on-paper {
+    --pk-fg: var(--color-mist-ink);
+    --pk-muted: var(--color-mist-muted);
+    --pk-line: var(--color-paper-line);
+    --pk-primary-bg: var(--color-night);
+    --pk-primary-fg: var(--color-paper);
+    --pk-primary-hover: #26343a;
+    --pk-focus: var(--color-mist-ink);
+  }
+  .pk-paper {
+    background-color: var(--color-paper);
+    color: var(--pk-fg);
+  }
+  .pk-night,
+  .pk-on-photo {
+    --pk-fg: var(--color-night-ink);
+    --pk-muted: var(--color-night-muted);
+    --pk-line: rgb(237 238 234 / 0.18);
+    --pk-primary-bg: var(--color-brass);
+    --pk-primary-fg: var(--color-night);
+    --pk-primary-hover: var(--color-brass-bright);
+    --pk-focus: var(--color-brass);
+    color: var(--pk-fg);
+  }
+  .pk-night {
+    background-color: var(--color-night);
+  }
+}
+
+.portal-shell {
+  /* @theme inline doesn't emit --font-display/--font-body, so the kit names the faces itself. */
+  --pk-serif: var(--font-site-serif), Georgia, serif;
+  --pk-sans: var(--font-site-sans), ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--pk-fg);
+  font-family: var(--pk-sans);
+  font-size: 18px;
+  line-height: 1.6;
+  /* Gambarino has one weight: never let the browser fake a bold. */
+  font-synthesis-weight: none;
+}
+@media (min-width: 768px) {
+  .portal-shell {
+    font-size: 19px;
+  }
+}
+.portal-shell ::selection {
+  background: var(--color-brass);
+  color: var(--color-night);
+}
+/* 3px, offset, in the ground's own focus colour: ink on paper, brass on night. */
+/* No border-radius here: the outline follows the element's own shape (round buttons stay round). */
+.portal-shell :focus-visible {
+  outline: 3px solid var(--pk-focus);
+  outline-offset: 3px;
+}
+
+/* Header: a sticky night bar on desktop that never hides; a slim strip on
+   phones. Over a page's full-bleed hero ([data-portal-hero]) it sits on the
+   photo with a functional top scrim and turns solid after 24px of scroll. */
+.portal-header {
+  position: relative;
+  z-index: 40;
+  transition: background-color 300ms ease;
+}
+@media (min-width: 768px) {
+  .portal-header {
+    position: sticky;
+    top: 0;
+  }
+}
+.portal-shell:has([data-portal-hero]) .portal-header {
+  position: absolute;
+  inset: 0 0 auto;
+}
+@media (min-width: 768px) {
+  .portal-shell:has([data-portal-hero]) .portal-header {
+    position: fixed;
+  }
+}
+.portal-shell:has([data-portal-hero]) .portal-header:not([data-solid]) {
+  background-color: transparent;
+  background-image: linear-gradient(rgb(14 21 24 / 0.6), rgb(14 21 24 / 0));
+}
+@media (max-width: 767px) {
+  .portal-shell:has([data-portal-hero]) .portal-header {
+    background-color: transparent;
+    background-image: linear-gradient(rgb(14 21 24 / 0.6), rgb(14 21 24 / 0));
+  }
+}
+
+/* Type scale. Display faces never take a weight: Gambarino is 400 only. */
+@utility pk-wordmark {
+  font-family: var(--pk-serif);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+@utility pk-h1 {
+  font-family: var(--pk-serif);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  @media (width >= 48rem) {
+    font-size: clamp(56px, 4.5vw, 72px);
+  }
+}
+@utility pk-h2 {
+  font-family: var(--pk-serif);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  @media (width >= 48rem) {
+    font-size: 44px;
+  }
+}
+@utility pk-h3 {
+  font-family: var(--pk-sans);
+  font-weight: 500;
+  font-size: 21px;
+  line-height: 1.3;
+  @media (width >= 48rem) {
+    font-size: 22px;
+  }
+}
+@utility pk-body {
+  font-size: 18px;
+  line-height: 1.6;
+  text-wrap: pretty;
+  @media (width >= 48rem) {
+    font-size: 19px;
+  }
+}
+@utility pk-label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--pk-muted);
+}
+@utility pk-time {
+  font-family: var(--pk-sans);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+@utility pk-numeral {
+  font-family: var(--pk-serif);
+  font-weight: 400;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  font-variant-numeric: lining-nums;
+  font-feature-settings: "lnum";
+}
+@utility pk-numeral-hero {
+  font-size: clamp(120px, 18vw, 220px);
+}
+@utility pk-numeral-day {
+  font-size: 88px;
+  @media (width >= 48rem) {
+    font-size: 120px;
+  }
+}
+@utility pk-numeral-stat {
+  font-size: 44px;
+  @media (width >= 48rem) {
+    font-size: 72px;
+  }
+}
+@utility pk-numeral-sm {
+  font-size: 32px;
+}
+
+/* Layout. Content max 1200px, 16px gutter (20px from 390px up), reading
+   column 680px, section gaps 64px on phones and 112px on desktop. */
+@utility pk-frame {
+  width: min(100% - 32px, 1200px);
+  margin-inline: auto;
+  @media (width >= 390px) {
+    width: min(100% - 40px, 1200px);
+  }
+  @media (width >= 48rem) {
+    width: min(100% - 64px, 1200px);
+  }
+}
+@utility pk-read {
+  max-width: 680px;
+}
+@utility pk-section {
+  margin-top: 64px;
+  @media (width >= 48rem) {
+    margin-top: 112px;
+  }
+}
+/* The kasavu border: a 3px gold band with a 1px band 3px inside it. Top edge
+   of passes only. */
+@utility pk-kasavu {
+  background-image:
+    linear-gradient(var(--color-gold-500) 0 0), linear-gradient(var(--color-gold-500) 0 0);
+  background-size:
+    100% 3px,
+    100% 1px;
+  background-position:
+    0 0,
+    0 6px;
+  background-repeat: no-repeat;
+}
+
+/* Pass notches: 12px semicircles cut where a perforation meets the edge.
+   Each part of a pass cuts its own corners (quarter circles), so two parts
+   side by side make one semicircle. notch-r = cut both right corners, etc. */
+@utility pk-notched {
+  mask:
+    radial-gradient(circle var(--pk-tl, 0px) at 0 0, #0000 98%, #000) top left / 51% 51% no-repeat,
+    radial-gradient(circle var(--pk-tr, 0px) at 100% 0, #0000 98%, #000) top right / 51% 51% no-repeat,
+    radial-gradient(circle var(--pk-bl, 0px) at 0 100%, #0000 98%, #000) bottom left / 51% 51% no-repeat,
+    radial-gradient(circle var(--pk-br, 0px) at 100% 100%, #0000 98%, #000) bottom right / 51% 51% no-repeat;
+}
+/* Each sets all four corners, so responsive pairs (notch-b md:notch-r) never mix. */
+@utility notch-r {
+  --pk-tl: 0px;
+  --pk-tr: 12px;
+  --pk-bl: 0px;
+  --pk-br: 12px;
+}
+@utility notch-l {
+  --pk-tl: 12px;
+  --pk-tr: 0px;
+  --pk-bl: 12px;
+  --pk-br: 0px;
+}
+@utility notch-t {
+  --pk-tl: 12px;
+  --pk-tr: 12px;
+  --pk-bl: 0px;
+  --pk-br: 0px;
+}
+@utility notch-b {
+  --pk-tl: 0px;
+  --pk-tr: 0px;
+  --pk-bl: 12px;
+  --pk-br: 12px;
+}
+@utility notch-x {
+  --pk-tl: 12px;
+  --pk-tr: 12px;
+  --pk-bl: 12px;
+  --pk-br: 12px;
+}
+/* A 1px paper-line edge that follows the notches (drop-shadows on a wrapper
+   are drawn after the child's mask, so they trace the cut shape). */
+@utility pk-pass-edge {
+  filter: drop-shadow(0 1px 0 var(--color-paper-line)) drop-shadow(0 -1px 0 var(--color-paper-line))
+    drop-shadow(1px 0 0 var(--color-paper-line)) drop-shadow(-1px 0 0 var(--color-paper-line));
+}
+/* Perforations: dashed when booked, dotted while being booked. */
+@utility pk-perf-y {
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--color-paper-perf) 0 7px, transparent 7px 13px);
+}
+@utility pk-perf-x {
+  height: 2px;
+  background: repeating-linear-gradient(to right, var(--color-paper-perf) 0 7px, transparent 7px 13px);
+}
+@utility pk-dots-y {
+  width: 2px;
+  background: radial-gradient(circle, var(--color-gold-500) 1px, transparent 1.5px) 0 0 / 2px 7px repeat-y;
+}
+@utility pk-dots-x {
+  height: 2px;
+  background: radial-gradient(circle, var(--color-gold-500) 1px, transparent 1.5px) 0 0 / 7px 2px repeat-x;
+}
+
+/* Existing portal classes, restyled to the new language until each page is
+   rebuilt. New code should use the kit instead. */
+@layer components {
+  .portal-card {
+    background: var(--color-paper-raised);
+    border: 1px solid var(--color-paper-line);
+    border-radius: 6px;
+  }
+  .portal-prose {
+    font-size: 19px;
+  }
+  .portal-prose h1,
+  .portal-prose h2,
+  .portal-prose h4 {
+    font-family: var(--pk-serif);
+    font-weight: 400;
+  }
+}
+/* Older pages still ask for sand and forest; on paper those read as the new
+   ground and ink. Removed once every page uses the kit. */
+.portal-shell .bg-sand-50 {
+  background-color: var(--color-paper);
+}
+.portal-shell .bg-forest-900 {
+  background-color: var(--color-night);
+}
+.portal-shell .text-forest-900,
+.portal-shell .text-forest-800 {
+  color: var(--color-mist-ink);
+}
+
+/* --------------------------------------------------------------------------
+   Motion. CSS only, all of it inside no-preference: under reduced motion
+   nothing here exists, and the server-rendered page is the finished state.
+   -------------------------------------------------------------------------- */
 @keyframes portal-panel-in {
   from {
     opacity: 0;
     transform: translateX(32px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
 @keyframes portal-fade-in {
   from {
     opacity: 0;
   }
+}
+@keyframes pk-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes pk-shutter {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
   to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes pk-settle-img {
+  from {
+    transform: scale(1.08);
+  }
+}
+@keyframes pk-line-rise {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes pk-tick {
+  from {
+    opacity: 0;
+    transform: translateY(45%);
+  }
+}
+@keyframes pk-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes pk-draw-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes pk-draw-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes pk-press {
+  0% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+  100% {
     opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes pk-thread {
+  50% {
+    background-color: var(--color-gold-300);
   }
 }
 @keyframes portal-just-added {
   0% {
-    box-shadow: 0 0 0 0 rgb(214 143 31 / 0.55);
+    box-shadow: 0 0 0 0 rgb(176 138 62 / 0.5);
   }
   100% {
-    box-shadow: 0 0 0 16px rgb(214 143 31 / 0);
+    box-shadow: 0 0 0 14px rgb(176 138 62 / 0);
   }
 }
 
-@layer components {
+@media (prefers-reduced-motion: no-preference) {
+  /* Kept for pages not yet rebuilt. */
   .portal-rise {
-    animation: portal-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: pk-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
   .portal-panel {
-    animation: portal-panel-in 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: portal-panel-in 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
   .portal-fade {
-    animation: portal-fade-in 0.25s ease-out both;
+    animation: portal-fade-in 0.2s ease-out both;
   }
   .portal-just-added {
-    animation: portal-just-added 1.4s ease-out 0.4s 2;
+    animation: portal-just-added 0.9s ease-out 0.3s 2;
   }
-  .portal-card {
-    background: white;
-    border: 1px solid var(--color-sand-200);
-    border-radius: 1.75rem;
-    box-shadow:
-      0 1px 2px rgb(23 21 18 / 0.04),
-      0 18px 40px -28px rgb(18 48 42 / 0.35);
+
+  /* Page-section rise on first paint; stagger with style={{"--pk-delay": "80ms"}}. */
+  .pk-rise {
+    animation: pk-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) var(--pk-delay, 0ms) both;
   }
-  /* The report reads larger in the portal. */
-  .portal-prose {
-    font-size: 18px;
+  /* Hero shutter: the photo opens bottom-up while the image settles. */
+  /* Only the image moves: the night ground and any type on it are there at once. */
+  .pk-shutter img {
+    animation:
+      pk-shutter 0.9s cubic-bezier(0.76, 0, 0.24, 1) both,
+      pk-settle-img 1.6s cubic-bezier(0.215, 0.61, 0.355, 1) both;
   }
-  .portal-prose h1,
-  .portal-prose h2,
-  .portal-prose h4 {
-    font-family: var(--font-portal-display), var(--font-serif);
+  /* Numeral settle: rises out of a line mask, 250ms into the shutter. */
+  .pk-settle {
+    display: inline-block;
+    clip-path: inset(-0.6em -0.3em -0.12em -0.3em);
+  }
+  .pk-settle > * {
+    display: inline-block;
+    animation: pk-line-rise 0.7s cubic-bezier(0.165, 0.84, 0.44, 1) var(--pk-delay, 250ms) both;
+  }
+  /* The minute that just changed rises in (Countdown re-keys it). */
+  .pk-tick {
+    display: inline-block;
+    animation: pk-tick 0.4s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+  }
+  /* The intro (shutter + numeral settle) plays once per page per browser
+     session: trip/layout's inline script switches it off on a repeat visit. */
+
+  /* Reveal on scroll: RevealObserver marks below-the-fold [data-reveal]
+     elements "pending" after hydration and "in" as they enter. Nothing is
+     hidden before JavaScript runs or above the fold. */
+  [data-reveal="wipe"][data-reveal-state="pending"] {
+    clip-path: inset(0 100% 0 0);
+  }
+  [data-reveal="rise"][data-reveal-state="pending"] {
+    opacity: 0;
+  }
+  [data-reveal="wipe"][data-reveal-state="in"] {
+    animation: pk-wipe 0.7s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+  }
+  [data-reveal="rise"][data-reveal-state="in"] {
+    animation: pk-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) var(--pk-delay, 0ms) both;
+  }
+
+  /* Booked stamp, once (the page decides when it is new): the perforation
+     draws, then the stamp presses in. */
+  .pk-stamp .pk-perf-anim {
+    animation: pk-draw-y 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+    transform-origin: top;
+  }
+  .pk-stamp .pk-perf-anim-x {
+    animation: pk-draw-x 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+    transform-origin: left;
+  }
+  .pk-stamp .pk-stamp-mark {
+    animation: pk-press 0.25s cubic-bezier(0.34, 1.9, 0.64, 1) 0.5s both;
+  }
+  /* "Just added": the gold thread brightens once. */
+  .pk-thread-flash {
+    animation: pk-thread 0.9s ease-in-out 0.3s;
+  }
+
+  /* Photo hover/focus (pointer devices): a slow 4% push. */
+  @media (hover: hover) {
+    .pk-zoom img {
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s;
+    }
+    .pk-zoom:is(:hover, :focus-visible, :focus-within) img {
+      transform: scale(1.04);
+    }
+  }
+
+  /* Sheets on phones slide up; the lightbox fades. */
+  .pk-sheet-up {
+    animation: pk-rise 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 }

@@ -1,37 +1,49 @@
 import { Suspense } from "react";
 import { requireClientPage } from "@/lib/auth/guards";
-import { AppLink as Link } from "@/components/ui/primitives";
-import { PortalBrand } from "@/components/portal/ui";
+import { RevealObserver } from "@/components/portal/kit/reveal";
 import { signOutClientAction } from "../actions";
-import { PortalNav } from "./portal-nav";
+import { PortalHeader, PortalTabBar } from "./portal-nav";
 
 /**
- * The client's five places: My trip (home), Day by day, Explore, Ask us and Kerala.
- * Large targets and plain words — most clients are 50+ (docs/platform/portal-ux.md).
+ * The client's five places: My trip (home), Day by day, Explore, Ask us and
+ * Kerala. A night header on wide screens, a night tab bar on phones, paper in
+ * between. Large targets and plain words — most clients are 55+.
  */
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   await requireClientPage();
+  const signOut = (
+    <form action={signOutClientAction}>
+      <button
+        type="submit"
+        className="inline-flex min-h-12 items-center text-[16px] font-medium text-night-muted underline-offset-[6px] hover:text-night-ink hover:underline md:text-[17px]"
+      >
+        Sign out
+      </button>
+    </form>
+  );
+
   return (
     <>
-      <header>
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5">
-          <Link href="/trip" aria-label="Aalmaram Health — my trip">
-            <PortalBrand />
-          </Link>
-          <Suspense fallback={null}>
-            <PortalNav variant="top" />
-          </Suspense>
-        </div>
-      </header>
-      {children}
-      <form action={signOutClientAction} className="mx-auto max-w-6xl px-4 pb-6 sm:px-6">
-        <button type="submit" className="min-h-12 text-[16px] text-ink-600 underline underline-offset-4 hover:text-ink-900">
-          Sign out of this device
-        </button>
-      </form>
       <Suspense fallback={null}>
-        <PortalNav variant="bottom" />
+        <PortalHeader signOut={signOut} />
       </Suspense>
+      <main id="trip-content" className="flex-1">
+        {children}
+      </main>
+      {/* The standing disclaimer, quiet. Room below it on phones for the tab bar. */}
+      <footer className="mt-16 border-t border-paper-line pb-[calc(64px+env(safe-area-inset-bottom)+24px)] md:mt-28 md:pb-0">
+        <div className="pk-frame py-8">
+          <p className="max-w-[68ch] text-[16px] leading-relaxed text-mist-muted">
+            This page is personal to you. Aalmaram Health coordinates your trip with independent providers in Kerala;
+            it does not provide medical advice, diagnosis or treatment. Clinical decisions rest with the providers who
+            care for you.
+          </p>
+        </div>
+      </footer>
+      <Suspense fallback={null}>
+        <PortalTabBar />
+      </Suspense>
+      <RevealObserver />
     </>
   );
 }

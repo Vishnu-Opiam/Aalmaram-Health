@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree, Fraunces } from "next/font/google";
+import { gambarino, generalSans } from "../fonts";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -7,44 +7,28 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false, nocache: true },
 };
 
-// Figtree: open, large x-height body text that stays readable at a glance.
-// Fraunces: a warm display serif for headings, so the portal reads like a
-// well-made travel letter rather than software.
-const body = Figtree({ subsets: ["latin"], variable: "--font-portal-body", display: "swap" });
-const display = Fraunces({ subsets: ["latin"], variable: "--font-portal-display", display: "swap", axes: ["opsz"] });
+// Runs before the first paint: a page's intro motion (hero shutter, numeral
+// settle) plays once per browser session, so moving between tabs (full page
+// loads) never replays it.
+// (A <style> in <head>, not an attribute on <html>: React leaves extra head nodes alone when hydrating.)
+const INTRO_ONCE = `try{var s=sessionStorage,k="pk-intro:"+location.pathname;if(s.getItem(k)){var e=document.createElement("style");e.textContent=".pk-shutter img,.pk-settle>*{animation:none!important}";document.head.appendChild(e)}else s.setItem(k,"1")}catch(e){}`;
 
 /**
- * Client portal shell: fonts, base size and the standing disclaimer. 18 px
- * body text throughout — the clients are mostly 50+.
+ * Client portal ground: the public site's faces, paper, 18–19 px body text
+ * (most clients are 55+) and the skip link. The signed-in chrome (header, tab
+ * bar, disclaimer) is in (portal)/layout; sign-in draws its own.
  */
-export default function TripLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function TripLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={cn(body.variable, display.variable, "flex min-h-screen flex-col bg-sand-50 font-body text-[18px] text-ink-800")}>
+    <div className={cn(gambarino.variable, generalSans.variable, "portal-shell flex min-h-svh flex-col")}>
+      <script dangerouslySetInnerHTML={{ __html: INTRO_ONCE }} />
       <a
         href="#trip-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-white focus:px-5 focus:py-3 focus:text-[17px] focus:shadow"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-paper focus:px-5 focus:py-3 focus:text-[17px] focus:text-mist-ink"
       >
         Skip to content
       </a>
-
-      <main id="trip-content" className="flex-1">
-        {children}
-      </main>
-
-      {/* Bottom padding on phones leaves room for the portal's tab bar. */}
-      <footer className="border-t border-sand-200 pb-24 md:pb-0">
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <p className="max-w-3xl text-[16px] leading-relaxed text-ink-600">
-            This page is personal to you. Aalmaram Health coordinates your trip with independent providers in Kerala;
-            it does not provide medical advice, diagnosis or treatment. Clinical decisions rest with the providers who
-            care for you.
-          </p>
-        </div>
-      </footer>
+      {children}
     </div>
   );
 }

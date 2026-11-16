@@ -1,4 +1,3 @@
-import localFont from "next/font/local";
 import { AppLink as Link } from "@/components/ui/primitives";
 import { frame, Photo, telHref } from "@/components/site/blocks";
 import { SITE_MENU } from "@/components/site/nav";
@@ -6,20 +5,9 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteMotion } from "@/components/site/motion";
 import { contactEmail, contactPhone } from "@/lib/env";
 import { cn } from "@/lib/utils";
+import { gambarino, generalSans } from "../fonts";
 import { PHOTOS } from "./content";
 import "./site.css";
-
-// A narrow, sharp serif for the few big words and a plain sans for everything read.
-// Both from Fontshare (ITF Free Font License, free for commercial use), self-hosted.
-const gambarino = localFont({ src: "./fonts/gambarino-400.woff2", weight: "400", variable: "--font-site-serif", display: "swap" });
-const generalSans = localFont({
-  src: [
-    { path: "./fonts/general-sans-400.woff2", weight: "400" },
-    { path: "./fonts/general-sans-500.woff2", weight: "500" },
-  ],
-  variable: "--font-site-sans",
-  display: "swap",
-});
 
 /**
  * Public website shell. Visitors are mostly 50+: body text is 18–19 px, every
