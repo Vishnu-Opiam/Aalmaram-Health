@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 import { ButtonLink, ModuleDot, Photo, SectionHeading, kindOf, type PhotoSource } from "@/components/portal/kit";
 import { AppLink } from "@/components/ui/primitives";
 import { FEED_SOURCE_LABELS, type ClientFeedPost } from "@/domain/feed/queries";
-import { formatShortDate } from "@/domain/shared/dates";
+import { FEED_DATE } from "@/components/portal/feed-card";
 import { renderMarkdown } from "@/lib/markdown";
 import { cn } from "@/lib/utils";
 import { STEPS, toPhoto, type tripPlaces } from "./moment";
@@ -112,12 +112,13 @@ export function KeralaTeaser({ posts, href }: { posts: ClientFeedPost[]; href: s
             <li key={post.id} className={cn(i > 1 && "max-md:hidden")}>
               <AppLink href={href} className="group flex h-full flex-col">
                 {photo ? (
-                  <Photo photo={photo} ratio="3/2" sizes="(min-width: 768px) 33vw, 100vw" zoom reveal />
+                  // w-full: in a flex column an aspect-ratio box can take its width from the row's height instead.
+                  <Photo photo={photo} ratio="3/2" className="w-full" sizes="(min-width: 768px) 33vw, 100vw" zoom reveal />
                 ) : (
                   <span aria-hidden="true" className="block h-[3px] bg-gold-500" />
                 )}
                 <span className="mt-4 block text-[15px] font-medium text-mist-muted md:text-[16px]">
-                  {post.vendor?.name ?? FEED_SOURCE_LABELS[post.source]} · {formatShortDate(post.publishedAt)}
+                  {post.vendor?.name ?? FEED_SOURCE_LABELS[post.source]} · {FEED_DATE.format(post.publishedAt)}
                 </span>
                 <span className={cn("mt-2 block underline-offset-4 group-hover:underline", photo ? "line-clamp-3 text-[18px] leading-relaxed" : "line-clamp-6 font-display text-[26px] leading-[1.25]")}>
                   {post.caption}

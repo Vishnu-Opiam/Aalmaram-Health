@@ -17,7 +17,7 @@ import { ActionButton } from "./action-button";
 import {
   cardPhotos,
   coveringBlocks,
-  dayPhoto,
+  dayPhotos,
   dayRuns,
   dayState,
   dayTimeline,
@@ -26,7 +26,6 @@ import {
   euros,
   fits,
   forParty,
-  freeDayPhoto,
   libraryPriceLine,
   longDay,
   overlapPartner,
@@ -50,7 +49,7 @@ export function DayChapter({ ctx, day }: { ctx: DaysCtx; day: BuilderDay }) {
   const state = dayState(trip, day);
   const free = state === "free";
   const covering = coveringBlocks(trip, day.key);
-  const photo = dayPhoto(trip, day) ?? (free ? freeDayPhoto(day.dayNumber) : null);
+  const photo = dayPhotos(trip)[day.dayNumber - 1];
   const towns = dayTowns([...day.blocks, ...covering.map((c) => c.block)]);
   const run = free ? dayRuns(trip).find((r) => r.free && r.days.some((d) => d.key === day.key))!.days : [day];
   const timeline = dayTimeline(day.blocks);
@@ -63,8 +62,8 @@ export function DayChapter({ ctx, day }: { ctx: DaysCtx; day: BuilderDay }) {
         photo={photo}
         sizes="(min-width: 1024px) 820px, (min-width: 768px) 60vw, 100vw"
         priority
-        scrim={photo ? "bottom" : undefined}
-        className={cn("-mx-4 min-[390px]:-mx-5 md:mx-0", photo ? "aspect-[4/3] md:aspect-[16/9]" : "aspect-[2/1] md:aspect-[3/1]")}
+        scrim="bottom"
+        className="-mx-4 aspect-[4/3] min-[390px]:-mx-5 md:mx-0 md:aspect-[16/9]"
         overlayClassName="items-end p-5 md:p-8"
       >
         <h2 id={`day-${day.key}-title`} tabIndex={-1} className="flex items-end gap-4 outline-none md:gap-6">

@@ -98,8 +98,9 @@ export function Gallery({
                 <button
                   type="button"
                   onClick={() => setOpen("2")}
-                  className={buttonClass("primary", "pk-on-photo absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap")}
+                  className={buttonClass("primary", "pk-on-photo absolute inset-x-3 bottom-3 mx-auto w-fit px-5 text-center lg:bottom-4")}
                 >
+                  {/* Wraps in a narrow tile (a 680px drawer) instead of spilling out of it. */}
                   See all {photos.length} photos
                 </button>
               )}

@@ -11,7 +11,8 @@ import { firstName } from "@/components/portal/ui";
 import { AppLink } from "@/components/ui/primitives";
 import { loadBuilderTrip, loadLibrary } from "@/domain/trips/queries";
 import { loadPortalTrips, pickTrip } from "@/domain/trips/portal";
-import { formatDateRange, keralaDay, parseDateInput, toDateInputValue } from "@/domain/shared/dates";
+import { dateRange } from "@/components/portal/my-trip/moment";
+import { keralaDay, toDateInputValue } from "@/domain/shared/dates";
 import { prisma } from "@/lib/db";
 import { cn, param, pluralise } from "@/lib/utils";
 import {
@@ -214,7 +215,7 @@ export default async function ItineraryPage({
   return (
     <div className={styles.page}>
       <section className="pk-night">
-        <div className="pk-frame pb-7 pt-5 md:pb-10 md:pt-9">
+        <div className="pk-frame pb-8 pt-8 md:pb-12 md:pt-12">
           {trips.length > 1 && (
             <nav aria-label="Your trips" className="mb-6 flex flex-wrap gap-2">
               {trips.map((t) => (
@@ -235,7 +236,7 @@ export default async function ItineraryPage({
           <p className="pk-label">Day by day</p>
           <h1 className="pk-h2 mt-2 max-w-[30ch] text-[28px] md:text-[40px]">{trip.name}</h1>
           <p className="mt-3 text-[17px] text-night-muted md:text-[18px]">
-            {formatDateRange(parseDateInput(trip.startDate), parseDateInput(trip.endDate))} · {pluralise(trip.days.length, "day")} ·{" "}
+            {dateRange(trip.startDate, trip.endDate)} · {pluralise(trip.days.length, "day")} ·{" "}
             {pluralise(trip.travellers, "traveller")}
           </p>
         </div>

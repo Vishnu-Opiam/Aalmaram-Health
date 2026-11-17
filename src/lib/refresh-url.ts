@@ -16,6 +16,8 @@ import { randomUUID } from "node:crypto";
  * builder's filter state on every click.
  */
 export function refreshUrl(path: string): string {
-  const separator = path.includes("?") ? "&" : "?";
-  return `${path}${separator}u=${randomUUID().slice(0, 8)}`;
+  // The nonce goes before any #hash, so "/trip?x=1#day-4" keeps its anchor.
+  const at = path.indexOf("#");
+  const [base, hash] = at < 0 ? [path, ""] : [path.slice(0, at), path.slice(at)];
+  return `${base}${base.includes("?") ? "&" : "?"}u=${randomUUID().slice(0, 8)}${hash}`;
 }

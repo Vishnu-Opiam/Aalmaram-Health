@@ -14,6 +14,10 @@
       "altPrefix": { "01.jpg": "Studio design render: ", "02.jpg": "Studio design render: " },
       "_why": "The two interiors are design renders of the studio concept, not photographs of the Kochi studio."
     },
+    "oliva-skin-hair-clinic": {
+      "dropImages": ["01.jpg"],
+      "_why": "The only photo is a shared storefront with third-party ad panels and faces; listed without photos."
+    },
     "kerala-history-museum": { "name": "Kerala History Museum" },
     "kochi-heritage-project": {
       "dropHighlights": ["Led by historian"],

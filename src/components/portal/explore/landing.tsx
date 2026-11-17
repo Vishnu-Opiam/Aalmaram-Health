@@ -174,8 +174,9 @@ export function ExploreLanding({ places, context }: { places: Place[]; context: 
                 >
                   {t.photo && (
                     <>
-                      <span className="font-display text-[24px] leading-none min-[390px]:text-[26px] md:text-[48px]">{WORD[t.kind]}</span>
-                      <span className="mt-2 hidden text-[16px] text-night-ink/85 md:block">{LINE[t.kind]}</span>
+                      {/* Gambarino's descenders hang below a 1.0 line box, so the title keeps real leading above the line under it. */}
+                      <span className="font-display text-[24px] leading-[1.15] min-[390px]:text-[26px] md:text-[40px] lg:text-[48px]">{WORD[t.kind]}</span>
+                      <span className="mt-2 hidden text-[16px] leading-snug text-night-ink/85 md:line-clamp-2">{LINE[t.kind]}</span>
                     </>
                   )}
                 </Photo>

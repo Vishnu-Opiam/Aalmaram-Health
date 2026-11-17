@@ -17,7 +17,7 @@ import { firstName } from "@/components/portal/ui";
 import { AppLink as Link } from "@/components/ui/primitives";
 import { loadBuilderTrip } from "@/domain/trips/queries";
 import { loadPortalTrips, pickTrip } from "@/domain/trips/portal";
-import { formatDateRange, parseDateInput } from "@/domain/shared/dates";
+import { dateRange } from "@/components/portal/my-trip/moment";
 import { prisma } from "@/lib/db";
 import { param } from "@/lib/utils";
 import { confirmItineraryAction } from "../../../actions";
@@ -85,7 +85,7 @@ export default async function ConfirmPage({
   return (
     <>
       <section className="pk-night">
-        <div className="pk-frame pb-9 pt-4 md:pb-12 md:pt-8">
+        <div className="pk-frame pb-8 pt-4 md:pb-12 md:pt-8">
           <Link
             href={`/trip/itinerary?trip=${trip.id}`}
             className={buttonClass(
@@ -101,15 +101,12 @@ export default async function ConfirmPage({
             Back to my days
           </Link>
           <p className="pk-label mt-4">Review and confirm</p>
-          <h1 className="pk-h2 mt-2 md:text-[48px]">
+          <h1 className="pk-h2 mt-2">
             Your {inWords(trip.days.length)} days, in full
           </h1>
           <p className="mt-3 max-w-[60ch] text-[17px] text-night-muted md:text-[18px]">
             {trip.name} ·{" "}
-            {formatDateRange(
-              parseDateInput(trip.startDate),
-              parseDateInput(trip.endDate),
-            )}
+            {dateRange(trip.startDate, trip.endDate)}
           </p>
         </div>
       </section>

@@ -1,7 +1,8 @@
 import { ArrowRight } from "lucide-react";
-import { ButtonLink, DayThumb, ModuleDot, Photo, SectionHeading, StatusMark, Stepper, Tabular, kindOf, type PhotoSource } from "@/components/portal/kit";
+import { ButtonLink, DayThumb, ModuleDot, Photo, SectionHeading, StatusMark, Stepper, Tabular, type PhotoSource } from "@/components/portal/kit";
+import { dayPhotos } from "@/components/portal/days/plan";
 import type { BuilderDay, BuilderTrip } from "@/domain/trips/builder-view";
-import { dayDate, dayState, heroCapable, toPhoto } from "./moment";
+import { dayDate, dayState } from "./moment";
 
 /**
  * "Your days": one day in focus (photo, "Day 3 of 10", up to three items),
@@ -12,13 +13,10 @@ import { dayDate, dayState, heroCapable, toPhoto } from "./moment";
 export function DayStepper({
   trip,
   focusKey,
-  freePhotos,
   contact,
 }: {
   trip: BuilderTrip;
   focusKey: string;
-  /** Kerala photos for free days, honest as "a free day", never as a place. */
-  freePhotos: PhotoSource[];
   contact: string;
 }) {
   const days = trip.days;
@@ -29,9 +27,9 @@ export function DayStepper({
   const full = (key: string, extra = "") => `/trip/itinerary?${q}&day=${key}${extra}#day-${key}`;
   const weekday = dayDate(day.key).split(" ")[0];
   const shown = day.blocks.slice(0, 3);
-  const lead = day.blocks.find((b) => heroCapable(b.place.photos[0]));
   const free = day.blocks.length === 0;
-  const photo = lead ? toPhoto(lead.place.photos[0]) : free ? freePhotos[(day.dayNumber - 1) % freePhotos.length] : null;
+  const photos = dayPhotos(trip);
+  const photo = photos[index];
 
   return (
     <section id="your-days" aria-labelledby="days-heading" className="pk-frame pk-section scroll-mt-24">
@@ -51,11 +49,10 @@ export function DayStepper({
           ratio="4/3"
           className="md:aspect-auto md:min-h-[440px]"
           sizes="(min-width: 768px) 58vw, 100vw"
-          scrim={free && photo ? "bottom" : undefined}
+          scrim={free ? "bottom" : undefined}
           overlayClassName="items-end p-5 md:p-7"
-          fallback={day.blocks[0] ? { title: day.blocks[0].place.name, kind: kindOf(day.blocks[0].moduleName), line: day.blocks[0].place.city ?? undefined } : undefined}
         >
-          {free && photo ? <span className="font-display text-[28px] leading-none md:text-[36px]">A free day</span> : undefined}
+          {free ? <span className="font-display text-[28px] leading-none md:text-[36px]">A free day</span> : undefined}
         </Photo>
 
         <div className="flex min-w-0 flex-col">
@@ -113,23 +110,23 @@ export function DayStepper({
         </div>
       </div>
 
-      <DayRail days={days} current={day.key} href={here} />
+      <DayRail days={days} photos={photos} current={day.key} href={here} />
     </section>
   );
 }
 
-function DayRail({ days, current, href }: { days: BuilderDay[]; current: string; href: (key: string) => string }) {
+function DayRail({ days, photos, current, href }: { days: BuilderDay[]; photos: PhotoSource[]; current: string; href: (key: string) => string }) {
   return (
     <ol aria-label="Every day of your trip" className="-mx-4 mt-8 flex snap-x gap-3 overflow-x-auto px-4 py-3 min-[390px]:-mx-5 min-[390px]:px-5 md:mx-0 md:mt-10 md:flex-wrap md:px-2">
-      {days.map((d) => {
-        const withPhoto = d.blocks.find((b) => b.place.photos[0]);
+      {days.map((d, i) => {
+        const state = dayState(d.blocks);
         return (
           <li key={d.key} className="snap-start">
             <DayThumb
               day={d.dayNumber}
               dateLabel={dayDate(d.key)}
-              photo={withPhoto ? toPhoto(withPhoto.place.photos[0]) : null}
-              state={dayState(d.blocks)}
+              photo={state === "free" ? null : photos[i]}
+              state={state}
               current={d.key === current}
               href={href(d.key)}
             />

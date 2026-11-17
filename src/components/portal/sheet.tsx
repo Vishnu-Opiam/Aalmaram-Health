@@ -67,7 +67,7 @@ export function Sheet({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end md:items-stretch" role="dialog" aria-modal="true" aria-label={label}>
+    <div className="fixed inset-0 z-50 flex items-end md:items-stretch" role="dialog" aria-modal="true" aria-label={label}>
       <button type="button" className="portal-fade absolute inset-0 bg-night/50" aria-hidden="true" tabIndex={-1} onClick={onClose} />
       <div
         ref={panelRef}

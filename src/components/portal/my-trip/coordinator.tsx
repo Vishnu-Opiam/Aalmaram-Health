@@ -52,7 +52,7 @@ export function Coordinator({
               {shown ? initials(shown) : "A"}
             </span>
             <div className="min-w-0">
-              <p className="font-display text-[30px] leading-[1.05] md:text-[36px]">{name ?? "The Aalmaram team"}</p>
+              <p className="font-display text-[30px] leading-[1.05] md:text-[36px]">{shown ?? "The Aalmaram team"}</p>
               <p className="mt-2 text-[17px] text-mist-muted">{name ? `${first} plans your trip with you.` : "Here for anything about your trip."}</p>
             </div>
           </div>

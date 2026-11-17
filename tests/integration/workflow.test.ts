@@ -20,6 +20,8 @@ describe("trip workflow (integration)", () => {
   });
 
   afterAll(async () => {
+    // Leave the dev database empty for `npm run db:seed`, not holding the last test's rows.
+    await resetDatabase();
     await prisma.$disconnect();
   });
 

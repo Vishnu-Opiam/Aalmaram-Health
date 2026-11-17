@@ -12,6 +12,9 @@ import { cn } from "@/lib/utils";
  * and fades after `duration`, pausing while hovered or focused. `undo` holds an
  * Undo button or form per marker. Sits above the tab bar on phones, and
  * above a StickyBar too with `aboveBar`.
+ *
+ * Layers, low to high: sticky bars z-30, header and tab bar z-40, sheets
+ * z-50, this toast z-60 (it can confirm what a sheet just did), lightbox z-70.
  */
 export function Toast({
   param = "done",
@@ -54,7 +57,7 @@ export function Toast({
       role="status"
       aria-live="polite"
       className={cn(
-        "pointer-events-none fixed inset-x-0 z-50 flex justify-center px-4 md:bottom-8",
+        "pointer-events-none fixed inset-x-0 z-[60] flex justify-center px-4 md:bottom-8",
         aboveBar ? "bottom-[calc(64px+env(safe-area-inset-bottom)+96px)]" : "bottom-[calc(64px+env(safe-area-inset-bottom)+16px)]",
       )}
     >

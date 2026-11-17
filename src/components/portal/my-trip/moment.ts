@@ -210,14 +210,14 @@ export const dayIndexOf = (day: Date) => Math.floor(day.getTime() / 86_400_000);
 
 const fmt = (d: Date, opts: Intl.DateTimeFormatOptions) => d.toLocaleDateString("en-GB", { ...opts, timeZone: "UTC" });
 
-/** "18 – 27 December 2026" (or "18–27 Dec 2026" short), sharing month and year when they match. */
+/** The house date range, "18 – 27 December 2026" (or "18 – 27 Dec 2026" short), sharing month and year when they match. */
 export function dateRange(startKey: string, endKey: string, short = false): string {
   const s = parseDateInput(startKey);
   const e = parseDateInput(endKey);
   const month = short ? "short" : "long";
-  const sep = short ? "–" : " – ";
+  const sep = " – ";
   const full = fmt(e, { day: "numeric", month, year: "numeric" });
-  // Short (phones) drops the first year: "31 Dec–9 Jan 2027" fits one line beside the numeral.
+  // Short (phones) drops the first year: "31 Dec – 9 Jan 2027" fits one line beside the numeral.
   if (s.getUTCFullYear() !== e.getUTCFullYear() && !short) return `${fmt(s, { day: "numeric", month, year: "numeric" })}${sep}${full}`;
   if (s.getUTCMonth() !== e.getUTCMonth()) return `${fmt(s, { day: "numeric", month })}${sep}${full}`;
   return `${s.getUTCDate()}${sep}${full}`;

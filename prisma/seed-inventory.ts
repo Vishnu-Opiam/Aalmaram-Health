@@ -514,7 +514,9 @@ const unsplash = (id: string, alt: string, w: number, h: number): Photo => ({
   h,
 });
 const MORE_PHOTOS = {
-  lab: unsplash("1582719471384-894fbb16e074", "A laboratory scientist at a microscope", 3456, 5184),
+  labHall: unsplash("1579154204601-01588f351e67", "A long, bright laboratory lined with analysers", 5184, 3456),
+  labBench: unsplash("1583912086096-8c60d75a53f9", "Microscopes and screens on a laboratory bench", 9032, 6000),
+  lounge: unsplash("1524758631624-e2822e304c36", "A light-filled waiting lounge with armchairs", 3762, 2508),
   reception: unsplash("1519494026892-80bbd2d6fd0d", "A bright, quiet clinic reception desk", 3428, 2333),
   consult: unsplash("1576091160550-2173dba999ef", "A stethoscope beside a laptop on a desk", 5184, 3456),
   massage: unsplash("1544161515-4ab6ce6db874", "An oil massage in a calm treatment room", 6000, 4000),
@@ -529,37 +531,48 @@ const MORE_PHOTOS = {
  * what a kind of place looks like; they are not photos of these fictional
  * vendors. Thekkady Trail Guides stays without photos, so the demo also shows
  * the typographic card a place gets before it has any.
+ *
+ * Experience cards take their place's photos in turn, experiences sorted by
+ * name, so each gallery is ordered to land on the fitting picture (Kaumudi:
+ * Abhyanga, Private Yoga, Panchakarma, Swedish Massage).
  */
-export const DEMO_PLACES: Record<string, { placeType: string; photos: Photo[] }> = {
+export const DEMO_PLACES: Record<string, { module: string; placeType: string; photos: Photo[] }> = {
   "Backwater Diagnostics Centre (demo)": {
+    module: "Health & Medical",
     placeType: "Diagnostics laboratory",
-    photos: [PHOTOS.check, MORE_PHOTOS.lab, PHOTOS.heart, PHOTOS.kochi],
+    photos: [MORE_PHOTOS.labHall, MORE_PHOTOS.labBench, MORE_PHOTOS.lounge, PHOTOS.heart],
   },
   "Nila Speciality Clinic (demo)": {
+    module: "Health & Medical",
     placeType: "Speciality clinic",
     photos: [MORE_PHOTOS.reception, MORE_PHOTOS.consult, PHOTOS.joints],
   },
   "Kaumudi Ayurveda Retreat (demo)": {
+    module: "Wellness & Spa",
     placeType: "Ayurveda retreat",
-    photos: [PHOTOS.coast, PHOTOS.dhara, PHOTOS.treatmentRoom, MORE_PHOTOS.massage, MORE_PHOTOS.yoga],
+    photos: [PHOTOS.coast, MORE_PHOTOS.yoga, PHOTOS.dhara, MORE_PHOTOS.massage, PHOTOS.treatmentRoom],
   },
   "Periyar Wellness House (demo)": {
+    module: "Wellness & Spa",
     placeType: "Wellness house",
     photos: [PHOTOS.hills, PHOTOS.tea, PHOTOS.mortar, PHOTOS.palms],
   },
   "Kalari Heritage Collective (demo)": {
+    module: "Heritage & Culture",
     placeType: "Performing arts collective",
-    photos: [PHOTOS.kathakaliStage, PHOTOS.kathakali, PHOTOS.nets],
+    photos: [PHOTOS.nets, PHOTOS.kathakaliStage, MORE_PHOTOS.curries, PHOTOS.kathakali],
   },
   "Vembanad Boat Company (demo)": {
+    module: "Heritage & Culture",
     placeType: "Backwater boats",
-    photos: [PHOTOS.houseboat, PHOTOS.lake, PHOTOS.prow, PHOTOS.canal, PHOTOS.river],
+    photos: [PHOTOS.houseboat, PHOTOS.canal, PHOTOS.lake, PHOTOS.prow, PHOTOS.river],
   },
   "Malabar Spice Table (demo)": {
+    module: "Heritage & Culture",
     placeType: "Restaurant",
-    photos: [MORE_PHOTOS.thali, PHOTOS.sadya, MORE_PHOTOS.curries],
+    photos: [MORE_PHOTOS.thali, PHOTOS.sadya],
   },
-  "Thekkady Trail Guides (demo)": { placeType: "Trail guides", photos: [] },
+  "Thekkady Trail Guides (demo)": { module: "Heritage & Culture", placeType: "Trail guides", photos: [] },
 };
 
 export const EXTRA_CATALOGUES = [
@@ -578,10 +591,12 @@ export async function seedInventory(
 
   for (const { branches = [], practitioners: people = [], ...spec } of VENDORS) {
     const place = DEMO_PLACES[spec.name];
+    // The primary module, so Explore files every place, even one without experiences yet.
+    const module = place ? { connect: { name: place.module } } : undefined;
     const vendor = await prisma.vendor.upsert({
       where: { name: spec.name },
-      update: { ...spec, placeType: place?.placeType ?? null },
-      create: { ...spec, slug: slugify(spec.name), placeType: place?.placeType ?? null },
+      update: { ...spec, placeType: place?.placeType ?? null, module },
+      create: { ...spec, slug: slugify(spec.name), placeType: place?.placeType ?? null, module },
     });
     vendors[spec.name] = vendor.id;
 

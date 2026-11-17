@@ -31,10 +31,9 @@ import { talkToPersonAction } from "../actions";
 
 export const metadata: Metadata = { title: "My trip" };
 
-// Kerala moments for the hero (when no place on the trip has a hero photo) and for free days.
+// Kerala moments for the hero, when no place on the trip has a hero photo.
 // Brand photos, never presented as a partner's place.
 const KERALA: PhotoSource[] = [PHOTOS.lake, PHOTOS.prow, PHOTOS.nets, PHOTOS.palms, PHOTOS.houseboat, PHOTOS.canal, PHOTOS.tea, PHOTOS.kochi];
-const FREE_DAYS: PhotoSource[] = [PHOTOS.palms, PHOTOS.prow, PHOTOS.canal, PHOTOS.hills, PHOTOS.coast, PHOTOS.lake, PHOTOS.tea];
 
 const heroItem = (b: BuilderBlock): HeroItem => ({ time: b.time, title: b.title, where: b.branchLabel ?? b.place.city });
 
@@ -135,7 +134,7 @@ export default async function MyTripPage({
       {where && <WhereWeAre {...where} />}
 
       {trip && trip.days.length > 0 && (
-        <DayStepper trip={trip} focusKey={focusKey} freePhotos={FREE_DAYS} contact={first ?? "us"} />
+        <DayStepper trip={trip} focusKey={focusKey} contact={first ?? "us"} />
       )}
 
       <Coordinator

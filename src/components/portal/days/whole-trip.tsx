@@ -9,7 +9,7 @@ import { Tabular } from "@/components/portal/kit/tabular";
 import { PROGRESS_LABELS } from "@/components/portal/progress-tick";
 import type { BuilderBlock } from "@/domain/trips/builder-view";
 import { ActionButton } from "./action-button";
-import { coveringBlocks, dayPhoto, dayRuns, dayState, dayTowns, daysLabel, euros, firstFreeSlot, longDay, shortDay } from "./plan";
+import { coveringBlocks, dayPhotos, dayRuns, dayState, dayTowns, daysLabel, euros, firstFreeSlot, longDay, shortDay } from "./plan";
 import type { DaysCtx } from "./types";
 
 const origin = (b: BuilderBlock) => (b.addedBy === "TEAM" ? ", arranged for you" : b.addedBy === "AI" ? ", a suggestion" : "");
@@ -21,6 +21,7 @@ const origin = (b: BuilderBlock) => (b.addedBy === "TEAM" ? ", arranged for you"
  */
 export function WholeTrip({ ctx, onDay }: { ctx: DaysCtx; onDay: (key: string) => void }) {
   const { trip } = ctx;
+  const photos = dayPhotos(trip);
   return (
     <section aria-labelledby="whole-trip-title">
       <h2 id="whole-trip-title" tabIndex={-1} className="pk-h2 outline-none">
@@ -78,7 +79,7 @@ export function WholeTrip({ ctx, onDay }: { ctx: DaysCtx; onDay: (key: string) =
               <DayThumb
                 day={first.dayNumber}
                 dateLabel={shortDay(first.key)}
-                photo={dayPhoto(trip, first)}
+                photo={photos[first.dayNumber - 1]}
                 state={dayState(trip, first)}
                 href={`?trip=${trip.id}&day=${first.key}`}
                 className="mt-1"

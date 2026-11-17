@@ -72,17 +72,21 @@ export function DateStrip({
               : { label: "The whole trip", onClick: () => onSelect(ALL) }
         }
       >
-        <ul ref={rail} className="relative flex gap-1.5 md:gap-2 overflow-x-auto px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* Phones: exactly four chips between the buttons, snapping chip by chip, so none rests cut in half. */}
+        <ul
+          ref={rail}
+          className="relative grid snap-x snap-mandatory scroll-px-1 auto-cols-[calc((100%-3*0.375rem)/4)] grid-flow-col gap-1.5 overflow-x-auto px-1 py-1 [scrollbar-width:none] md:flex md:gap-2 [&::-webkit-scrollbar]:hidden"
+        >
           {days.map((d) => {
             const current = d.key === selected;
             const today = d.key === todayKey;
             return (
-              <li key={d.key} className="flex">
+              <li key={d.key} className="flex snap-start">
                 <a
                   href={href(d.key)}
                   onClick={follow(d.key)}
                   aria-current={current ? "date" : undefined}
-                  className={cn(chip, "w-14 md:w-16", current ? on : off)}
+                  className={cn(chip, "w-full md:w-16", current ? on : off)}
                 >
                   <span aria-hidden="true" className={cn("text-[15px] leading-none", current ? "text-paper/80" : today ? "font-medium text-gold-700" : "text-mist-muted")}>
                     {today ? "Today" : short(d.key, { weekday: "short" })}
@@ -99,13 +103,13 @@ export function DateStrip({
               </li>
             );
           })}
-          <li aria-hidden="true" className="mx-1 w-px shrink-0 self-stretch bg-paper-line" />
-          <li className="flex">
+          <li aria-hidden="true" className="mx-1 w-px shrink-0 self-stretch bg-paper-line max-md:hidden" />
+          <li className="flex snap-start">
             <a
               href={href(ALL)}
               onClick={follow(ALL)}
               aria-current={selected === ALL ? "page" : undefined}
-              className={cn(chip, "w-[4.5rem] text-[15px] font-medium leading-tight", selected === ALL ? on : off)}
+              className={cn(chip, "w-full text-[15px] font-medium leading-tight md:w-[4.5rem]", selected === ALL ? on : off)}
             >
               Whole
               <br />

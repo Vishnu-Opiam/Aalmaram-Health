@@ -24,7 +24,7 @@ export default function TripLayout({ children }: { children: React.ReactNode }) 
       <script dangerouslySetInnerHTML={{ __html: INTRO_ONCE }} />
       <a
         href="#trip-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-paper focus:px-5 focus:py-3 focus:text-[17px] focus:text-mist-ink"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[80] focus:rounded-full focus:bg-paper focus:px-5 focus:py-3 focus:text-[17px] focus:text-mist-ink"
       >
         Skip to content
       </a>

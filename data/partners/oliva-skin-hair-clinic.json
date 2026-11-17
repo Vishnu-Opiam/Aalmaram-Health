@@ -14,14 +14,5 @@
     "Site states every treatment is led by MD dermatologists",
     "Offers skin, hair, laser hair removal and body treatments"
   ],
-  "photos": [
-    {
-      "url": "/partners/oliva-skin-hair-clinic/01.webp",
-      "alt": "Corner building exterior with Oliva signage, Kochi clinic",
-      "width": 1024,
-      "height": 582,
-      "isHero": false,
-      "sourceUrl": "https://media.olivaclinic.com/website-media/2024/07/Oliva-Skin-Care-Clinic-Kochi.jpg"
-    }
-  ]
+  "photos": []
 }

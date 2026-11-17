@@ -6,6 +6,8 @@ import { tripPresence } from "@/domain/trips/in-trip";
 import { safePortalReturn } from "@/domain/trips/return-to";
 import type { BuilderTrip } from "@/domain/trips/builder-view";
 import { slugify, uniqueSlug } from "@/domain/vendors/slug";
+import { dayPhotos, freeDayPhoto } from "@/components/portal/days/plan";
+import { refreshUrl } from "@/lib/refresh-url";
 import { cleanLines, cleanSummary, heroIndex, planPhotos } from "../../scripts/partners-photos.mjs";
 
 /** An instant given as Kerala wall-clock time (IST = UTC+05:30). */
@@ -94,6 +96,32 @@ describe("trip presence", () => {
       byPlace: { lab: [1, 3], boats: [3] },
     });
     expect(tripPresence(null)).toEqual({ byComponent: {}, byPlace: {} });
+  });
+});
+
+describe("day lead photos", () => {
+  const hero = (url: string) => ({ url, alt: url, width: 2000, height: 1300, isHero: true, credit: null });
+  const block = (moduleName: string, slug: string) =>
+    ({ moduleName, spanDays: 1, day: "", endDay: "", place: { slug, name: slug, city: null, photos: [hero(`/${slug}.webp`)] } }) as unknown as BuilderTrip["days"][number]["blocks"][number];
+  const trip = {
+    days: [
+      { key: "2026-12-18", dayNumber: 1, blocks: [block("Health & Medical", "lab"), block("Heritage & Culture", "theatre")] },
+      { key: "2026-12-19", dayNumber: 2, blocks: [block("Health & Medical", "lab")] },
+      { key: "2026-12-20", dayNumber: 3, blocks: [block("Health & Medical", "lab")] },
+      { key: "2026-12-21", dayNumber: 4, blocks: [] },
+    ],
+  } as unknown as BuilderTrip;
+
+  it("prefers wellness or culture, then health, then Kerala, never repeating the day before", () => {
+    expect(dayPhotos(trip).map((p) => p.src)).toEqual(["/theatre.webp", "/lab.webp", freeDayPhoto(3).src, freeDayPhoto(4).src]);
+  });
+});
+
+describe("refresh nonce", () => {
+  it("goes before the hash so anchors survive", () => {
+    expect(refreshUrl("/trip/itinerary?trip=t1#day-2026-12-18")).toMatch(/^\/trip\/itinerary\?trip=t1&u=[0-9a-f]{8}#day-2026-12-18$/);
+    expect(refreshUrl("/trip#where")).toMatch(/^\/trip\?u=[0-9a-f]{8}#where$/);
+    expect(refreshUrl("/trip")).toMatch(/^\/trip\?u=[0-9a-f]{8}$/);
   });
 });
 

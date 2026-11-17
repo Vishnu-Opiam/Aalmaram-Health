@@ -199,19 +199,34 @@ export function kindOrder(at: string): string[] {
   return m < 12 * 60 ? ["health", "wellness", "culture"] : m < 17 * 60 ? ["wellness", "culture", "health"] : ["culture", "wellness", "health"];
 }
 
-/** A day's chapter photo: the first of its places with a photo fit to lead a page. */
-export function dayPhoto(trip: BuilderTrip, day: BuilderDay): PhotoSource | null {
-  const blocks = [...day.blocks, ...coveringBlocks(trip, day.key).map((c) => c.block)];
-  const lead = blocks.find((b) => b.place.photos[0]?.isHero);
-  return lead ? toSource(lead.place.photos[0]) : null;
-}
-
-/** Kerala, not a partner: for free days only, and credited as the site credits it. */
+/** Kerala, not a partner: for days without a place photo, and credited as the site credits it. */
 const KERALA = [PHOTOS.lake, PHOTOS.palms, PHOTOS.canal, PHOTOS.tea, PHOTOS.nets, PHOTOS.houseboat, PHOTOS.coast, PHOTOS.river, PHOTOS.hills, PHOTOS.prow, PHOTOS.kochi];
 export const freeDayPhoto = (dayNumber: number): PhotoSource => {
   const p = KERALA[(dayNumber - 1) % KERALA.length];
   return { src: p.src, alt: p.alt, focus: p.focus, credit: `${p.credit} / Unsplash`, w: p.w, h: p.h };
 };
+
+/** A photo that can lead a full-bleed slot: marked hero and at least 1200px wide. */
+const leads = (p: PlacePhoto | undefined): p is PlacePhoto => Boolean(p?.isHero && p.width >= 1200);
+
+/**
+ * Each day's lead photo (My trip's stepper and rail, Day by day's chapters),
+ * in order of preference: a wellness or culture place on the day, a health
+ * place (clinic photos make poor openers), then a Kerala scene. Two days in a
+ * row never share a photo while the day has another to offer.
+ */
+export function dayPhotos(trip: BuilderTrip): PhotoSource[] {
+  let previous: string | null = null;
+  return trip.days.map((day) => {
+    const blocks = [...day.blocks, ...coveringBlocks(trip, day.key).map((c) => c.block)];
+    const heroes = (health: boolean) =>
+      blocks.filter((b) => /health|medical/i.test(b.moduleName) === health && leads(b.place.photos[0])).map((b) => toSource(b.place.photos[0]));
+    const options = [...heroes(false), ...heroes(true), freeDayPhoto(day.dayNumber), freeDayPhoto(day.dayNumber + 1)];
+    const photo = options.find((p) => p.src !== previous)!;
+    previous = photo.src;
+    return photo;
+  });
+}
 
 /** The towns of a day's places, in order: the chapter's title ("Fort Kochi · Alappuzha"). */
 export function dayTowns(blocks: BuilderBlock[]): string[] {
@@ -249,7 +264,7 @@ export function tripPrice(item: Pick<LibraryComponent, "price" | "priceUnitLabel
 /** "€590 for 2 travellers (€295 per person)", "€185". */
 export function libraryPriceLine(item: LibraryComponent, travellers: number): string {
   const total = euros(tripPrice(item, travellers), item.currency);
-  if (travellers <= 1) return item.priceUnitLabel === "per person" ? total : `${total} ${item.priceUnitLabel}`;
+  if (travellers <= 1) return `${total} ${item.priceUnitLabel}`;
   const unit = euros(item.price, item.currency);
   return item.priceUnitLabel === "per group" ? `${total} ${forParty(travellers)}` : `${total} ${forParty(travellers)} (${unit} ${item.priceUnitLabel})`;
 }

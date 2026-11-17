@@ -4,7 +4,7 @@ import { FEED_SOURCE_LABELS, type ClientFeedPost } from "@/domain/feed/queries";
 import { Photo, type PhotoSource } from "./kit";
 import { cn } from "@/lib/utils";
 
-const DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+export const FEED_DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
 
 /** The post's own picture, else its place's lead photo; null makes a typographic postcard. */
 export function feedPhoto(post: ClientFeedPost): PhotoSource | null {
@@ -45,7 +45,7 @@ export function FeedCard({
       {source}
       <span className="whitespace-nowrap font-normal text-mist-muted">
         <span aria-hidden="true">· </span>
-        <time dateTime={post.publishedAt.toISOString()}>{DATE.format(post.publishedAt)}</time>
+        <time dateTime={post.publishedAt.toISOString()}>{FEED_DATE.format(post.publishedAt)}</time>
       </span>
     </p>
   );
