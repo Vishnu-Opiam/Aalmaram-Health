@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ArrowUpRight, ChevronLeft } from "lucide-react";
 import { requireClientPage } from "@/lib/auth/guards";
 import { AppLink } from "@/components/ui/primitives";
 import { ModuleDot, Photo, buttonClass } from "@/components/portal/kit";
 import { AskForm } from "@/components/portal/explore/ask";
-import { InTrip, typeLine } from "@/components/portal/explore/cards";
+import { InTrip, PlaceCard, typeLine } from "@/components/portal/explore/cards";
 import { ChoosingBanner } from "@/components/portal/explore/choosing";
 import { carryQuery, heroOf, placeKind, toPhoto } from "@/components/portal/explore/model";
 import { PlaceExperiences } from "@/components/portal/explore/place-experiences";
 import { PlaceGallery } from "@/components/portal/explore/place-gallery";
 import { ExploreToasts } from "@/components/portal/explore/toasts";
-import { loadPlace } from "@/domain/trips/queries";
+import { loadPlace, loadPlaces } from "@/domain/trips/queries";
 import { cn, param, pluralise } from "@/lib/utils";
 import { loadExploreContext } from "../context";
 
@@ -35,8 +35,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PlacePage({ params, searchParams }: Props) {
   const client = await requireClientPage();
   const [{ place: slug }, search] = await Promise.all([params, searchParams]);
-  const [place, { context, added }] = await Promise.all([loadPlace(slug), loadExploreContext(client.id, search)]);
+  const [place, { context, added }, all] = await Promise.all([
+    loadPlace(slug),
+    loadExploreContext(client.id, search),
+    loadPlaces(),
+  ]);
   if (!place) notFound();
+  const nearby = all.filter((p) => p.slug !== place.slug && sameTown(p.city, place.city)).slice(0, 3);
 
   const hero = heroOf(place);
   const kind = placeKind(place);
@@ -123,6 +128,17 @@ export default async function PlacePage({ params, searchParams }: Props) {
                 ))}
               </dl>
             )}
+            {place.website && /^https?:\/\//i.test(place.website) && (
+              <a
+                href={place.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-8 inline-flex min-h-12 items-center gap-1.5 text-[18px] font-medium underline decoration-gold-500 underline-offset-4 hover:text-mist-muted"
+              >
+                Visit their website <ArrowUpRight className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
           </div>
 
           <aside className="md:col-span-5 md:col-start-8 md:row-span-2 md:row-start-1" aria-labelledby="here-title">
@@ -130,7 +146,7 @@ export default async function PlacePage({ params, searchParams }: Props) {
               {place.experiences.length > 0 ? (
                 <>
                   <h2 id="here-title" className="pk-h2">
-                    What you can do here
+                    Experiences at {place.name}
                   </h2>
                   <p className="mt-3 text-[17px] text-mist-muted">
                     {pluralise(place.experiences.length, "experience")}
@@ -191,12 +207,35 @@ export default async function PlacePage({ params, searchParams }: Props) {
         </div>
       </div>
 
+      {nearby.length > 0 && (
+        <section aria-labelledby="nearby-title" className="pk-frame mt-20 md:mt-28">
+          <h2 id="nearby-title" className="pk-h2">
+            Also near {townOf(place.city)}
+          </h2>
+          <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-8 md:mt-7 md:grid-cols-3 md:gap-x-6 md:gap-y-12">
+            {nearby.map((p, i) => (
+              <PlaceCard
+                key={p.slug}
+                place={p}
+                href={`/trip/explore/${p.slug}${carryQuery(flat)}`}
+                days={context.inTrip.byPlace[p.slug]}
+                tone={heroOf(p) ? undefined : i % 2 === 0 ? "night" : "paper"}
+              />
+            ))}
+          </ul>
+        </section>
+      )}
+
       <Suspense fallback={null}>
         <ExploreToasts added={added} coordinator={context.coordinator} />
       </Suspense>
     </>
   );
 }
+
+/** "Kochi (Fort Kochi, Mattancherry)" → "Kochi": cities on record carry neighbourhoods in brackets. */
+const townOf = (city: string | null) => city?.split(/[(,/]/)[0].trim() ?? "";
+const sameTown = (a: string | null, b: string | null) => Boolean(townOf(a)) && townOf(a).toLowerCase() === townOf(b).toLowerCase();
 
 function Facts({ title, items }: { title: string; items: string[] }) {
   return (

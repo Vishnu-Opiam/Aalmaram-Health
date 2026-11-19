@@ -66,12 +66,15 @@ export function Pass({
   const booked = state === "booked";
   const notched = booked && Boolean(stub);
   return (
-    <div className={cn("pk-pass-edge pk-on-paper text-mist-ink", stamp && "pk-stamp", className)}>
+    // Safari can leave a tall element under a stack of drop-shadow filters (and a mask) unpainted:
+    // the trip summary on Review and confirm came up blank on a Mac (18 Nov). Only a pass with a
+    // stub needs the traced edge; a plain one is a rounded box with a ring.
+    <div className={cn(stub && "pk-pass-edge", "pk-on-paper text-mist-ink", stamp && "pk-stamp", className)}>
       <div className={stub ? l.row : undefined}>
         <div
           className={cn(
-            "pk-notched relative min-w-0 flex-1 bg-paper-raised p-5 md:p-7",
-            stub ? l.main : "rounded-[6px]",
+            "relative min-w-0 flex-1 bg-paper-raised p-5 md:p-7",
+            stub ? cn("pk-notched", l.main) : "rounded-[6px] ring-1 ring-paper-line",
             notched && l.mainCut,
             kasavu && "pk-kasavu pt-7 md:pt-9",
             mainClassName,

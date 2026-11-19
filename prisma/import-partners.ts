@@ -8,6 +8,8 @@
  * Deliberately separate from the demo seed, which stays fictional. A partner
  * is matched to an existing vendor by name (case-insensitive), else created.
  * It never creates components, prices, practitioners or contact details.
+ * Verified facts (accreditations, founding year, languages) come from
+ * data/partners/_facts.json and, like highlights, follow the file when present.
  * Existing profile text written by staff is kept (only empty fields are
  * filled); the type label, highlights, module and photos follow the file.
  */
@@ -30,6 +32,9 @@ type PartnerFile = {
   highlights: string[];
   photos: { url: string; alt: string; width: number; height: number; isHero: boolean; sourceUrl: string | null }[];
 };
+
+/** Checked facts per slug; `sources` stays in the file as provenance. */
+type PartnerFacts = { accreditations?: string[]; yearEstablished?: number; languages?: string[] };
 
 const MODULE_FOR: Record<PartnerFile["category"], string> = {
   Health: "Health & Medical",
@@ -54,6 +59,7 @@ async function main() {
   const prisma = new PrismaClient();
   const dir = path.join(process.cwd(), "data", "partners");
   const files = readdirSync(dir).filter((f) => f.endsWith(".json") && !f.startsWith("_")).sort();
+  const facts = JSON.parse(readFileSync(path.join(dir, "_facts.json"), "utf8")) as Record<string, PartnerFacts>;
   console.log(`Importing ${files.length} partner(s) into ${host}…`);
 
   try {
@@ -70,7 +76,15 @@ async function main() {
         where: { name: { equals: p.name, mode: "insensitive" } },
         select: { id: true, description: true, hqCity: true, website: true },
       });
-      const placeFields = { placeType: p.type, highlights: p.highlights, moduleId };
+      const f = facts[p.slug] ?? {};
+      const placeFields = {
+        placeType: p.type,
+        highlights: p.highlights,
+        moduleId,
+        ...(f.accreditations && { accreditations: f.accreditations }),
+        ...(f.yearEstablished && { yearEstablished: f.yearEstablished }),
+        ...(f.languages && { languages: f.languages }),
+      };
 
       await prisma.$transaction(async (tx) => {
         const vendor = existing

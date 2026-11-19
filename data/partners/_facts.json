@@ -1,0 +1,155 @@
+{
+  "_about": "Verified profile facts (checked 2026-11-20), merged by prisma/import-partners.ts on top of <slug>.json. Values come from the place's own website, keralatourism.org, or (where the site blocks automated reads) at least two independent published sources. `sources` is internal provenance and is never imported. Partner files without photos were written by hand (no researcher manifest), so scripts/partners-photos.mjs leaves them alone.",
+  "aster-medcity": {
+    "yearEstablished": 2013,
+    "accreditations": [
+      "Joint Commission International (JCI), since 2015",
+      "NABH"
+    ],
+    "sources": [
+      "https://www.asterhospitals.in/hospitals/aster-medcity-kochi",
+      "https://www.asterhospitals.in/blogs-events-news/aster-medcity-kochi/aster-medcity-wins-jci-accreditation-world-class-healthcare"
+    ]
+  },
+  "rajagiri-hospital": {
+    "yearEstablished": 2014,
+    "accreditations": [
+      "Joint Commission International (JCI)",
+      "NABH",
+      "NABL (laboratory)"
+    ],
+    "sources": [
+      "https://www.rajagirihospital.com/Accreditations",
+      "https://www.rajagirihospital.com/About-Us",
+      "https://www.rajagirihospital.com/International-Patients"
+    ]
+  },
+  "sp-medifort": {
+    "accreditations": [
+      "Joint Commission International (JCI), 8th edition standards",
+      "NABH, 6th edition standards",
+      "NABL (laboratory)"
+    ],
+    "sources": [
+      "https://spmediforthospital.com/jci-accreditation-8th-edition/",
+      "https://spmediforthospital.com/nabh/",
+      "https://spmediforthospital.com/about-us/"
+    ]
+  },
+  "amrita-hospital-kochi": {
+    "yearEstablished": 1998,
+    "accreditations": [
+      "NABH",
+      "NABL (laboratory)",
+      "NABH and World Stroke Organisation: advanced stroke centre",
+      "National Neonatology Forum: Level III"
+    ],
+    "languages": [
+      "English",
+      "Malayalam",
+      "Hindi",
+      "Tamil",
+      "Arabic"
+    ],
+    "sources": [
+      "https://www.amritahospitals.org/kochi",
+      "https://www.amritahospitals.org/kochi/international-patients"
+    ]
+  },
+  "kimshealth-trivandrum": {
+    "accreditations": [
+      "Australian Council on Healthcare Standards International (ACHSI), since 2006",
+      "NABH, since 2006",
+      "NABL (laboratory)"
+    ],
+    "sources": [
+      "https://www.kimshealth.org/quality-focus",
+      "https://www.kimshealth.org/trivandrum/about-us"
+    ]
+  },
+  "somatheeram-ayurvedic-health-resort": {
+    "yearEstablished": 1990,
+    "sources": [
+      "https://www.somatheeram.org/",
+      "https://somatheeram.org/somatheeram/"
+    ]
+  },
+  "carnoustie-ayurveda-wellness": {
+    "accreditations": [
+      "Ayur Diamond classification, Department of Tourism, Government of Kerala"
+    ],
+    "sources": [
+      "https://www.carnoustieresorts.com/",
+      "https://www.carnoustieresorts.com/our-programmes"
+    ]
+  },
+  "kalari-kovilakom": {
+    "accreditations": [
+      "NABH"
+    ],
+    "sources": [
+      "https://www.cghearth.com/kalari-kovilakom (blocks automated reads; NABH and 14-day minimum seen in its search snippet)",
+      "https://www.outlooktraveller.com/stay/hotel-review-cgh-earth-wellness-healthcare",
+      "https://www.countryandtownhouse.com/travel/kalari-kovilakom-hote-review/",
+      "https://greavesindia.co.uk/hotel/kalari-kovilakom/"
+    ]
+  },
+  "brunton-boatyard": {
+    "sources": [
+      "https://www.cghearth.com/brunton-boatyard/factsheet",
+      "https://www.timeout.com/india/hotels/brunton-boatyard"
+    ]
+  },
+  "coconut-lagoon": {
+    "sources": [
+      "https://www.keralatourism.org/hotels/coconut-lagoon/2317",
+      "https://civilsocietyonline.com/travel/coconut-lagoon-brings-back-the-original-kerala-tharavad",
+      "https://yourstory.com/ys-life/kuttanad-way-of-life-coconut-lagoon-cgh-earth"
+    ]
+  },
+  "kerala-kalamandalam": {
+    "yearEstablished": 1930,
+    "accreditations": [
+      "Deemed to be University, recognised by the UGC"
+    ],
+    "sources": [
+      "https://www.kalamandalam.ac.in/",
+      "https://www.keralatourism.org/destination/kerala-kalamandalam-cheruthuruthy/77"
+    ]
+  },
+  "cvn-kalari-sangham": {
+    "yearEstablished": 1956,
+    "sources": [
+      "https://www.cvnkalari.in/",
+      "https://www.cvnkalari.in/training.html"
+    ]
+  },
+  "kochi-muziris-biennale": {
+    "yearEstablished": 2010,
+    "sources": [
+      "https://www.kochimuzirisbiennale.org/"
+    ]
+  },
+  "keralam-museum": {
+    "yearEstablished": 2011,
+    "sources": [
+      "https://www.museumkeralam.org/"
+    ]
+  },
+  "arya-vaidya-sala": {
+    "yearEstablished": 1902,
+    "accreditations": [
+      "NABH: Kottakkal Ayurvedic Hospital and Research Centre (2016)",
+      "NABH: Delhi Ayurvedic Hospital and Research Centre (2021)"
+    ],
+    "sources": [
+      "https://www.aryavaidyasala.com/about-us/"
+    ]
+  },
+  "kairali-ayurvedic-healing-village": {
+    "yearEstablished": 1999,
+    "sources": [
+      "https://www.kairali.com/ayurvedic-healing-village.aspx"
+    ]
+  }
+}

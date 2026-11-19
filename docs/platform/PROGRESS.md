@@ -25,7 +25,7 @@
 - [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
 - [x] P1.6 Client-facing provider info in portal + leak tests
 - [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
-- [!] P1.8 First real vendors entered by humans — needs Nivedith's curated list
+- [~] P1.8 First real vendors — 30 real partners imported from `data/partners/` (16 from the researchers, 14 verified on 20 Nov); Nivedith to review
 - [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
 
 ## Phase 2 — Clients & trips (MVP)
@@ -239,6 +239,19 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
+
+- **2026-11-20 (real vendors)** · `feat/real-vendors-11-18` (from `feat/portal-experience`) · Nivedith's 18 Nov
+  walkthrough: he wants real, internationally recognised partners to show people (accredited hospitals, CGH Earth,
+  Ayurveda, culture). (1) 14 new partners in `data/partners/` (5 hospitals with JCI / ACHSI / NABH, 5 Ayurveda and
+  CGH Earth stays, 4 culture institutions), every fact checked against the place's own site or keralatourism.org, or
+  two published sources where the site blocks automated reads; provenance in `data/partners/_facts.json`, which the
+  import now merges (accreditations, founding year, languages; also filled for Arya Vaidya Sala and Kairali). No
+  photos, prices or experiences were invented: the new places use the "ask to arrange a visit" path. (2) Place page:
+  "Visit their website" link (website is now in the client projection, by request), "What you can do here" renamed
+  "Experiences at …", and an "Also near <town>" row. (3) The trip summary on Review and confirm came up blank on his
+  Mac: plain passes no longer use the drop-shadow filter + mask (a known Safari painting failure); not re-tested in
+  Safari. Typecheck, 185 tests and build pass. Next: photos for the new partners (needs a go-ahead to download), a
+  kayaking operator (none found with recognition to check), and `partners:import -- --yes-remote` on production.
 
 - **2026-11-04 (polish)** · `feat/site-polish` · Vishnu's review of the live site. (1) The "concierge, not a clinic"
   statement had huge gaps between words: its first-line indent was inherited by every word the scroll animation

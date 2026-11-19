@@ -248,7 +248,6 @@ describe("client portal authorization (integration)", () => {
       email: "PRIVATE@vendor.example",
       phone: "PRIVATE-PHONE",
       notes: "PRIVATE-NOTES",
-      website: "https://PRIVATE-SITE.example",
       socialLinks: ["https://PRIVATE-SOCIAL.example"],
       owners: ["PRIVATE-OWNER"],
       equipment: ["PRIVATE-EQUIPMENT"],
@@ -256,7 +255,10 @@ describe("client portal authorization (integration)", () => {
       hqLine: "PRIVATE-STREET",
       hqPostcode: "PRIVATE-POSTCODE",
     };
-    await prisma.vendor.update({ where: { id: vendor.id }, data: { ...internal, highlights: ["Founded 1990"], placeType: "Laboratory" } });
+    await prisma.vendor.update({
+      where: { id: vendor.id },
+      data: { ...internal, highlights: ["Founded 1990"], placeType: "Laboratory", website: "https://lab.example" },
+    });
     await prisma.component.update({ where: { id: componentA.id }, data: { source: "PRIVATE-SOURCE", costStatus: "CONFIRMED" } });
     const partner = await prisma.vendor.create({
       data: { name: "Partner Without Experiences (demo)", slug: "partner-demo", moduleId: module.id, hqCity: "Kochi", ...internal },
@@ -276,6 +278,7 @@ describe("client portal authorization (integration)", () => {
     expect(empty.photos.map((p) => p.alt)).toEqual(["Gate", "Garden"]);
     expect(lab).toMatchObject({ typeLabel: "Laboratory", highlights: ["Founded 1990"], modules: ["Health & Medical"] });
     expect(lab.experiences.map((e) => e.name)).toEqual(["Blood Panel", "MRI Screening"]);
+    expect(lab.website).toBe("https://lab.example");
     expect(lab.fromPrice).toEqual({ amount: "185", currency: "EUR", unitLabel: expect.any(String) });
 
     const one = await loadPlace("partner-demo");
