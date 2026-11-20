@@ -13,5 +13,14 @@
     "900 beds across the flagship campus and KIMSHEALTH East",
     "Part of Aster DM Quality Care"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/kimshealth-trivandrum/5d2515b9fd.webp",
+      "alt": "The hospital campus at dusk",
+      "width": 2000,
+      "height": 1359,
+      "isHero": true,
+      "sourceUrl": "https://web-admin.kimshealth.org/uploads/KIMS_exterior_image_5fd36e5eeb.jpg"
+    }
+  ]
 }
