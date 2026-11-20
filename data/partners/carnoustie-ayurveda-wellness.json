@@ -1,0 +1,66 @@
+{
+  "slug": "carnoustie-ayurveda-wellness",
+  "name": "Carnoustie Ayurveda & Wellness Resort",
+  "type": "Ayurveda & Wellness Resort",
+  "category": "Wellness",
+  "city": "Mararikulam (Alappuzha)",
+  "locations": [],
+  "website": "https://www.carnoustieresorts.com/",
+  "summary": "Carnoustie is an Ayurveda and wellness resort on the Arabian Sea coast at Mararikulam, near Alappuzha. Its programmes include Panchakarma detox, rejuvenation, weight management and care for long-term conditions.",
+  "highlights": [
+    "Classified Ayur Diamond by the Department of Tourism, Government of Kerala",
+    "Best Wellness Resort, FICCI Travel & Tourism Excellence Awards 2026",
+    "Best Ayurvedic Wellness Spa, Global Spa Awards 2025",
+    "Programmes: Panchakarma detox, rejuvenation, weight loss, anti-ageing, diabetes management, pain and injury, women's health"
+  ],
+  "photos": [
+    {
+      "url": "/partners/carnoustie-ayurveda-wellness/fcd50f3e4d.webp",
+      "alt": "A private pool villa with a thatched roof among flowering plants",
+      "width": 1296,
+      "height": 576,
+      "isHero": true,
+      "sourceUrl": "https://www.carnoustieresorts.com/images/villas/semantha-pool-villa.jpg"
+    },
+    {
+      "url": "/partners/carnoustie-ayurveda-wellness/42cdbc1909.webp",
+      "alt": "A garden path lined with flowering shrubs and palms",
+      "width": 1600,
+      "height": 1200,
+      "isHero": false,
+      "sourceUrl": "https://www.carnoustieresorts.com/images/home-gallery/slider-2.jpg"
+    },
+    {
+      "url": "/partners/carnoustie-ayurveda-wellness/f543d64c29.webp",
+      "alt": "The lounge deck of a houseboat, open to the water",
+      "width": 1296,
+      "height": 576,
+      "isHero": false,
+      "sourceUrl": "https://www.carnoustieresorts.com/images/villas/house-boat.jpg"
+    },
+    {
+      "url": "/partners/carnoustie-ayurveda-wellness/491c75be90.webp",
+      "alt": "A villa pool deck with sun loungers",
+      "width": 1296,
+      "height": 576,
+      "isHero": false,
+      "sourceUrl": "https://www.carnoustieresorts.com/images/villas/punag-villa.jpg"
+    },
+    {
+      "url": "/partners/carnoustie-ayurveda-wellness/9f8ec28934.webp",
+      "alt": "A paved path through coconut palms and gardens",
+      "width": 1600,
+      "height": 1200,
+      "isHero": false,
+      "sourceUrl": "https://www.carnoustieresorts.com/images/home-gallery/slider-1.jpg"
+    },
+    {
+      "url": "/partners/carnoustie-ayurveda-wellness/8d4b8b9be2.webp",
+      "alt": "Bougainvillea framing the beach",
+      "width": 1280,
+      "height": 960,
+      "isHero": false,
+      "sourceUrl": "https://www.carnoustieresorts.com/images/home-gallery/slider-4.jpg"
+    }
+  ]
+}

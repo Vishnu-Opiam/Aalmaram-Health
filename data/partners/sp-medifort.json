@@ -1,0 +1,43 @@
+{
+  "slug": "sp-medifort",
+  "name": "SP Medifort Hospital",
+  "type": "Multispeciality Hospital",
+  "category": "Health",
+  "city": "Thiruvananthapuram (Eanchakkal)",
+  "locations": [],
+  "website": "https://spmediforthospital.com/",
+  "summary": "SP Medifort is a 475-bed multispecialty hospital on the International Airport Service Road in Thiruvananthapuram. It is accredited by Joint Commission International under its 8th edition standards and by NABH under its 6th edition, and has an international patients help desk.",
+  "highlights": [
+    "Accredited by Joint Commission International (JCI) under the 8th edition standards",
+    "NABH accreditation under the 6th edition standards; laboratory accredited by NABL",
+    "475 beds, including 170 ICU beds",
+    "Orthopaedics and spine, neurology and neurosurgery, cardiology and cardiothoracic surgery, robotic surgery, oncology",
+    "International patients help desk"
+  ],
+  "photos": [
+    {
+      "url": "/partners/sp-medifort/be8000fc82.webp",
+      "alt": "The hospital building by day, among palms",
+      "width": 2000,
+      "height": 1047,
+      "isHero": true,
+      "sourceUrl": "https://spmediforthospital.com/wp-content/uploads/2026/01/Skybklue-scaled-1.webp"
+    },
+    {
+      "url": "/partners/sp-medifort/40722247dd.webp",
+      "alt": "The emergency entrance lit up at dusk",
+      "width": 1536,
+      "height": 1024,
+      "isHero": false,
+      "sourceUrl": "https://spmediforthospital.com/wp-content/uploads/2026/01/spbuilding.webp"
+    },
+    {
+      "url": "/partners/sp-medifort/575ec46a29.webp",
+      "alt": "A robotic surgery system in an operating theatre",
+      "width": 2000,
+      "height": 1047,
+      "isHero": false,
+      "sourceUrl": "https://spmediforthospital.com/wp-content/uploads/2026/01/banner-01-1.webp"
+    }
+  ]
+}

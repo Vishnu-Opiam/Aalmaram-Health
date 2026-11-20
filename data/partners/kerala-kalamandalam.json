@@ -1,0 +1,67 @@
+{
+  "slug": "kerala-kalamandalam",
+  "name": "Kerala Kalamandalam",
+  "type": "Performing Arts University",
+  "category": "Culture",
+  "city": "Cheruthuruthy (Thrissur)",
+  "locations": [],
+  "website": "https://www.kalamandalam.ac.in/",
+  "summary": "Kerala Kalamandalam is a deemed university for art and culture at Cheruthuruthy, on the Bharatapuzha river in Thrissur district, established in 1930 by the poet Vallathol Narayana Menon. It teaches Kathakali, Kutiyattam, Mohiniyattam, Thullal and percussion, and welcomes visitors for guided tours and programmes.",
+  "highlights": [
+    "Founded in 1930 by the poet Vallathol Narayana Menon",
+    "Deemed to be University for Art & Culture, recognised by the UGC",
+    "Its Koothambalam is the first temple-style theatre built outside a temple complex, per Kerala Tourism",
+    "Guided tours, the Vallathol Museum, an art gallery and booked performances",
+    "Classes in Kathakali, Kutiyattam, Mohiniyattam, Thullal and percussion"
+  ],
+  "photos": [
+    {
+      "url": "/partners/kerala-kalamandalam/2d54dd9946.webp",
+      "alt": "Dancers performing on the lawn before the Koothambalam theatre",
+      "width": 1271,
+      "height": 827,
+      "isHero": true,
+      "sourceUrl": "https://kalamandalam.ac.in/wp-content/uploads/2024/09/klm3.png"
+    },
+    {
+      "url": "/partners/kerala-kalamandalam/9311d857fb.webp",
+      "alt": "A dance class rehearsing inside the Koothambalam",
+      "width": 2000,
+      "height": 890,
+      "isHero": false,
+      "sourceUrl": "https://kalamandalam.ac.in/wp-content/uploads/2026/01/youth.jpg"
+    },
+    {
+      "url": "/partners/kerala-kalamandalam/1104256779.webp",
+      "alt": "Students in classical dance costume on the Kalamandalam stage",
+      "width": 1340,
+      "height": 822,
+      "isHero": false,
+      "sourceUrl": "https://kalamandalam.ac.in/wp-content/uploads/2025/06/dance1.png"
+    },
+    {
+      "url": "/partners/kerala-kalamandalam/f4a4818158.webp",
+      "alt": "A stage performance with ceremonial umbrellas",
+      "width": 1173,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://kalamandalam.ac.in/wp-content/uploads/2026/07/vi12.png"
+    },
+    {
+      "url": "/partners/kerala-kalamandalam/d588ff951a.webp",
+      "alt": "A bronze statue on the campus, among trees",
+      "width": 1326,
+      "height": 779,
+      "isHero": false,
+      "sourceUrl": "https://kalamandalam.ac.in/wp-content/uploads/2024/09/6.png"
+    },
+    {
+      "url": "/partners/kerala-kalamandalam/fd5a551e54.webp",
+      "alt": "The Koothambalam theatre and its brass lamp post in the courtyard",
+      "width": 942,
+      "height": 631,
+      "isHero": false,
+      "sourceUrl": "https://kalamandalam.ac.in/wp-content/uploads/2026/05/klm1.png"
+    }
+  ]
+}

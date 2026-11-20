@@ -1,0 +1,34 @@
+{
+  "slug": "somatheeram-ayurvedic-health-resort",
+  "name": "Somatheeram Ayurvedic Health Resort",
+  "type": "Ayurveda Resort",
+  "category": "Wellness",
+  "city": "Kovalam (Thiruvananthapuram)",
+  "locations": [],
+  "website": "https://www.somatheeram.org/",
+  "summary": "Somatheeram is an Ayurveda health resort on the beach near Kovalam, south of Thiruvananthapuram, running since 1990. It offers Ayurveda packages built around doctor consultations, with interpreters available for consultations on request.",
+  "highlights": [
+    "Named Best Ayurvedic Centre ten times by the Government of Kerala since 1997, per the resort",
+    "On the beach near Kovalam",
+    "Packages for rejuvenation, body purification (Panchakarma), stress management, slimming and beauty care",
+    "Interpreters for doctor consultations on request"
+  ],
+  "photos": [
+    {
+      "url": "/partners/somatheeram-ayurvedic-health-resort/f3f6392801.webp",
+      "alt": "Thatched cottages on a lawn under coconut palms",
+      "width": 2000,
+      "height": 1339,
+      "isHero": true,
+      "sourceUrl": "https://somatheeram-c3c5.kxcdn.com/wp-content/uploads/2026/02/SAHR_Cottages-2.jpg"
+    },
+    {
+      "url": "/partners/somatheeram-ayurvedic-health-resort/58629e2da0.webp",
+      "alt": "A foot treatment with herbal powder",
+      "width": 1600,
+      "height": 900,
+      "isHero": false,
+      "sourceUrl": "https://somatheeram-c3c5.kxcdn.com/wp-content/uploads/2019/03/Somatheeram-treatment-slimming-p1-min.jpg"
+    }
+  ]
+}

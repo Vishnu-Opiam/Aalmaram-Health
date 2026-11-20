@@ -1,0 +1,26 @@
+{
+  "slug": "kimshealth-trivandrum",
+  "name": "KIMSHEALTH Trivandrum",
+  "type": "Multispeciality Hospital",
+  "category": "Health",
+  "city": "Thiruvananthapuram",
+  "locations": [],
+  "website": "https://www.kimshealth.org/trivandrum/",
+  "summary": "KIMSHEALTH Trivandrum is the flagship hospital of the KIMSHEALTH group in Thiruvananthapuram, with 900 beds. In 2006 it became the first hospital in India to hold both an international (ACHSI) and a national (NABH) accreditation, per the group.",
+  "highlights": [
+    "Accredited by the Australian Council on Healthcare Standards International (ACHSI) and by NABH since 2006",
+    "Eight accreditations in all, including NABL for the laboratory and NABH for nursing, imaging, blood bank and emergency",
+    "900 beds across the flagship campus and KIMSHEALTH East",
+    "Part of Aster DM Quality Care"
+  ],
+  "photos": [
+    {
+      "url": "/partners/kimshealth-trivandrum/5d2515b9fd.webp",
+      "alt": "The hospital campus at dusk",
+      "width": 2000,
+      "height": 1359,
+      "isHero": true,
+      "sourceUrl": "https://web-admin.kimshealth.org/uploads/KIMS_exterior_image_5fd36e5eeb.jpg"
+    }
+  ]
+}

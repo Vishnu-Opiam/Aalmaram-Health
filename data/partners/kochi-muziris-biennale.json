@@ -1,0 +1,50 @@
+{
+  "slug": "kochi-muziris-biennale",
+  "name": "Kochi-Muziris Biennale",
+  "type": "Contemporary Art Biennale",
+  "category": "Culture",
+  "city": "Kochi (Fort Kochi, Mattancherry)",
+  "locations": [],
+  "website": "https://www.kochimuzirisbiennale.org/",
+  "summary": "The Kochi-Muziris Biennale is an international exhibition of contemporary art held every two years across Fort Kochi and Mattancherry, founded in 2010 by the Kochi Biennale Foundation. Each edition brings talks, film programmes, workshops and residencies.",
+  "highlights": [
+    "Founded in 2010 by the Kochi Biennale Foundation, a collective of artists",
+    "Describes itself as India's first and largest international exhibition of contemporary art",
+    "Exhibition every two years across Fort Kochi and Mattancherry",
+    "The seventh edition, 2027-28, is curated by Kader Attia"
+  ],
+  "photos": [
+    {
+      "url": "/partners/kochi-muziris-biennale/f6ee21d2a5.webp",
+      "alt": "A film screening in a darkened heritage hall",
+      "width": 2000,
+      "height": 1333,
+      "isHero": true,
+      "sourceUrl": "https://admin.kochimuzirisbiennale.org/api/media/file/Shape%20of%20Momo%20-Tribeny%20Ray.jpg"
+    },
+    {
+      "url": "/partners/kochi-muziris-biennale/0f59852d31.webp",
+      "alt": "A long timber corridor in one of the old venue buildings",
+      "width": 1234,
+      "height": 822,
+      "isHero": false,
+      "sourceUrl": "https://admin.kochimuzirisbiennale.org/api/media/file/Edam.jpg"
+    },
+    {
+      "url": "/partners/kochi-muziris-biennale/785814472e.webp",
+      "alt": "An installation of hanging fibres inside a venue",
+      "width": 1500,
+      "height": 812,
+      "isHero": false,
+      "sourceUrl": "https://admin.kochimuzirisbiennale.org/api/media/file/KBF-StudentsBiennale-1.JPG"
+    },
+    {
+      "url": "/partners/kochi-muziris-biennale/968b91f1bd.webp",
+      "alt": "An audience gathered in a courtyard for a performance",
+      "width": 1100,
+      "height": 728,
+      "isHero": false,
+      "sourceUrl": "https://admin.kochimuzirisbiennale.org/api/media/file/chicagoboyscompressed.jpg"
+    }
+  ]
+}

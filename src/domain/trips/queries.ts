@@ -272,6 +272,8 @@ const placeSelect = {
   ...placeVendor.select,
   placeType: true,
   highlights: true,
+  // Public site only; asked for on 18 Nov so clients can read more before choosing.
+  website: true,
   module: { select: { name: true } },
   // Same rule as the library: what a client can add from the place page.
   components: {
@@ -303,6 +305,7 @@ function toPlace(v: Prisma.VendorGetPayload<{ select: typeof placeSelect }>): Pl
     accreditations: v.accreditations,
     languages: v.languages,
     yearEstablished: v.yearEstablished,
+    website: v.website,
     locations: v.branches.map(branchLabel),
     photos: v.photos.map(photoView),
     experiences,

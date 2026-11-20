@@ -159,6 +159,8 @@ export type Place = {
   accreditations: string[];
   languages: string[];
   yearEstablished: number | null;
+  /** The place's own public website. */
+  website: string | null;
   /** Branch labels ("Fort Kochi, Kochi"), when the place has branches on record. */
   locations: string[];
   photos: PlacePhoto[];
