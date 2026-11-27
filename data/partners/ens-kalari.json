@@ -14,5 +14,46 @@
     "Traditional kalari marma treatments and oil massage",
     "Authorised by the Ernakulam District Tourism Promotion Council"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/ens-kalari/520f5bb597.webp",
+      "alt": "Two students in a kalaripayattu sparring sequence on stage",
+      "width": 2000,
+      "height": 1333,
+      "isHero": true,
+      "sourceUrl": "https://enskalari.org.in/wp-content/uploads/2026/07/IMG_9228.jpg"
+    },
+    {
+      "url": "/partners/ens-kalari/bc662b7bac.webp",
+      "alt": "Students leaping in a kalaripayattu display",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://enskalari.org.in/wp-content/uploads/2026/07/IMG_9289.jpg"
+    },
+    {
+      "url": "/partners/ens-kalari/837e1cf2d4.webp",
+      "alt": "A high kick during a kalaripayattu performance",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://enskalari.org.in/wp-content/uploads/2026/07/IMG_9293.jpg"
+    },
+    {
+      "url": "/partners/ens-kalari/49bf0d75fd.webp",
+      "alt": "A kalaripayattu demonstration for an audience in a hall",
+      "width": 2000,
+      "height": 1500,
+      "isHero": false,
+      "sourceUrl": "https://enskalari.org.in/wp-content/uploads/2026/07/IMG_20260511_094735.jpg"
+    },
+    {
+      "url": "/partners/ens-kalari/4371ec7041.webp",
+      "alt": "Stick sparring inside the kalari, with weapons on the wall",
+      "width": 800,
+      "height": 681,
+      "isHero": false,
+      "sourceUrl": "http://www.enskalari.org.in/wp-content/uploads/2018/06/natgeo9.jpg"
+    }
+  ]
 }

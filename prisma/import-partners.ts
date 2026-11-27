@@ -34,7 +34,7 @@ type PartnerFile = {
   website: string | null;
   summary: string;
   highlights: string[];
-  photos: { url: string; alt: string; width: number; height: number; isHero: boolean; sourceUrl: string | null }[];
+  photos: { url: string; alt: string; width: number; height: number; isHero: boolean; sourceUrl: string | null; credit?: string }[];
 };
 
 /** Checked facts per slug; `sources` stays in the file as provenance. */
@@ -130,6 +130,7 @@ async function main() {
             sortOrder: i,
             isHero: ph.isHero,
             sourceUrl: ph.sourceUrl,
+            credit: ph.credit ?? null,
           })),
         });
       });

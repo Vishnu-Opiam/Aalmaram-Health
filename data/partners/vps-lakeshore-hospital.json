@@ -14,5 +14,30 @@
     "Neurosurgery, orthopaedics with joint replacement, and a stroke management service",
     "Ayurveda wing, VPS Lakeshore Ayurkshethra"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/vps-lakeshore-hospital/16376b3233.webp",
+      "alt": "A private patient room with a sitting area",
+      "width": 800,
+      "height": 533,
+      "isHero": false,
+      "sourceUrl": "https://www.vpslakeshorehospital.com/uploads/album/stay-Ks9btVJGgLTjYVF.jpg"
+    },
+    {
+      "url": "/partners/vps-lakeshore-hospital/d9401515b7.webp",
+      "alt": "A quiet lounge with reclining chairs",
+      "width": 800,
+      "height": 533,
+      "isHero": false,
+      "sourceUrl": "https://www.vpslakeshorehospital.com/uploads/album/vip_lounge-usnLUj8UUrUBx4e.jpg"
+    },
+    {
+      "url": "/partners/vps-lakeshore-hospital/75346fc9de.webp",
+      "alt": "The hospital's tiered auditorium",
+      "width": 800,
+      "height": 533,
+      "isHero": false,
+      "sourceUrl": "https://www.vpslakeshorehospital.com/uploads/album/conference-sVnyHYrnGEoCOuG.jpg"
+    }
+  ]
 }

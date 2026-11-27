@@ -256,6 +256,12 @@ Append one short entry per working session: date, branch, tasks touched, test st
   (only Kerala Tourism photos, which we don't copy), Kathakali Centre (403), ENS Kalari (no usable images) and
   Kalari Rasayana (images shared across CGH Earth's Ayurveda site) also have none. The Lisie photo is cropped from
   a banner to the building alone.
+  Then photos for four of the remaining six: VPS Lakeshore (3, its image gallery), ENS Kalari (5, its photo
+  gallery), Kalari Rasayana (7, its own gallery page on cghearthayurveda.com) and Mattancherry Palace (7, Wikimedia
+  Commons, CC BY-SA; the author and licence go in the new `credit` field, which the import now writes and the gallery
+  shows). Renai Medicity (only stock images on its site, nothing on Commons) and the Kerala Kathakali Centre (site
+  refuses downloads; the one Commons photo is from "Great K V Kathakali Centre", not confirmed to be the same venue)
+  stay without photos.
 
 - **2026-11-20 (real vendors)** · `feat/real-vendors-11-18` (from `feat/portal-experience`) · Nivedith's 18 Nov
   walkthrough: he wants real, internationally recognised partners to show people (accredited hospitals, CGH Earth,

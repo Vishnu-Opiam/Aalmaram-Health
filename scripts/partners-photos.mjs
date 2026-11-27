@@ -48,6 +48,8 @@ export function planPhotos(manifest, override = {}) {
       alt: `${override.altPrefix?.[img.file] ?? ""}${String(img.shows ?? "").trim()}`,
       heroCandidate: Boolean(img.hero) && !notHero.has(img.file),
       sourceUrl: img.sourceUrl ?? null,
+      // Required by free licences (e.g. Wikimedia Commons): "<author> / <licence>, <where>".
+      credit: img.credit ?? null,
     }));
 }
 
@@ -137,6 +139,7 @@ async function main() {
         height: p.height,
         isHero: hero >= 0 && i === 0,
         sourceUrl: p.sourceUrl,
+        ...(p.credit && { credit: p.credit }),
       })),
     };
     writeFileSync(path.join(DATA_DIR, `${slug}.json`), `${JSON.stringify(data, null, 2)}\n`);

@@ -197,4 +197,15 @@ describe("partner photo pipeline rules", () => {
     expect(heroIndex(plan.map((p: Planned) => ({ ...p, width: 2000 })))).toBe(1);
     expect(heroIndex(plan.map((p: Planned) => ({ ...p, width: 1000 })))).toBe(-1);
   });
+
+  it("keeps a licence credit, and none when the manifest has none", () => {
+    const [credited, plain] = planPhotos({
+      images: [
+        { file: "01.jpg", shows: "Palace", credit: "A. Person / CC BY-SA 4.0, Wikimedia Commons" },
+        { file: "02.jpg", shows: "Gate" },
+      ],
+    });
+    expect(credited.credit).toBe("A. Person / CC BY-SA 4.0, Wikimedia Commons");
+    expect(plain.credit).toBeNull();
+  });
 });

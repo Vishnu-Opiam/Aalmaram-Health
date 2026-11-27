@@ -14,5 +14,62 @@
     "Ayurveda with yoga, meditation and cultural evenings",
     "Meals prepared under the direction of its Ayurveda physicians"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/kalari-rasayana/image-2-min.webp",
+      "alt": "Tiled roofs and a lily pond beside the Paravur backwaters",
+      "width": 2000,
+      "height": 1333,
+      "isHero": true,
+      "sourceUrl": "https://www.cghearthayurveda.com/wp-content/uploads/2024/01/image-2-min.jpg"
+    },
+    {
+      "url": "/partners/kalari-rasayana/image-1-min.webp",
+      "alt": "A gazebo reflected in still water among coconut palms",
+      "width": 2000,
+      "height": 1165,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearthayurveda.com/wp-content/uploads/2024/01/image-1-min.jpg"
+    },
+    {
+      "url": "/partners/kalari-rasayana/17-scaled.webp",
+      "alt": "A kalaripayattu stick demonstration on the lawn by the water",
+      "width": 2000,
+      "height": 1335,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearthayurveda.com/wp-content/uploads/2024/01/17-scaled.jpg"
+    },
+    {
+      "url": "/partners/kalari-rasayana/image-10-min.webp",
+      "alt": "A room with a carved four-poster bed and a balcony",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearthayurveda.com/wp-content/uploads/2024/01/image-10-min.jpg"
+    },
+    {
+      "url": "/partners/kalari-rasayana/image-3-min-scaled.webp",
+      "alt": "Yoga on an open pavilion overlooking the backwaters",
+      "width": 2000,
+      "height": 1695,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearthayurveda.com/wp-content/uploads/2024/01/image-3-min-scaled.jpg"
+    },
+    {
+      "url": "/partners/kalari-rasayana/image-7-min-scaled.webp",
+      "alt": "Brass vessels in the kitchen",
+      "width": 2000,
+      "height": 1335,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearthayurveda.com/wp-content/uploads/2024/01/image-7-min-scaled.jpeg"
+    },
+    {
+      "url": "/partners/kalari-rasayana/image-8-min-scaled.webp",
+      "alt": "Herbal poultice bundles used in Ayurvedic treatments",
+      "width": 2000,
+      "height": 1500,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearthayurveda.com/wp-content/uploads/2024/01/image-8-min-scaled.jpg"
+    }
+  ]
 }

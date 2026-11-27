@@ -14,5 +14,69 @@
     "Portraits of the rulers of Kochi",
     "In Mattancherry, near the Paradesi Synagogue"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/mattancherry-palace/c12.webp",
+      "alt": "Mattancherry Palace, a long two-storey building with a tiled roof",
+      "width": 2000,
+      "height": 1333,
+      "isHero": true,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kochi_-_Dutch_Palace_2018-04-02a.jpg",
+      "credit": "Rabe! / CC BY-SA 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "/partners/mattancherry-palace/c4.webp",
+      "alt": "The palace's side wall and roofs",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dutch_Palace_sideview.jpg",
+      "credit": "KannanVM / CC BY-SA 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "/partners/mattancherry-palace/c18.webp",
+      "alt": "A room covered in Ramayana murals",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mattancherry_Palace-16-17th_Century_mural_paintings-Scenes_from_the_Ramayana-WUS09240.jpg",
+      "credit": "Rainer Halama / CC BY-SA 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "/partners/mattancherry-palace/c1.webp",
+      "alt": "A fresco of the attack on Lanka",
+      "width": 1198,
+      "height": 535,
+      "isHero": false,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Attack_on_Lanka_Fresco_,_Mattancherry_Palace_Kochi_Kerala.jpg",
+      "credit": "SpeakingArch / CC BY-SA 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "/partners/mattancherry-palace/c14.webp",
+      "alt": "A carved and coffered wooden ceiling",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kochi_-_Dutch_Palace_2018-04-02c.jpg",
+      "credit": "Rabe! / CC BY-SA 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "/partners/mattancherry-palace/c13.webp",
+      "alt": "A carved wooden gable above the entrance",
+      "width": 2000,
+      "height": 1333,
+      "isHero": false,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kochi_-_Dutch_Palace_2018-04-02b.jpg",
+      "credit": "Rabe! / CC BY-SA 4.0, Wikimedia Commons"
+    },
+    {
+      "url": "/partners/mattancherry-palace/c20.webp",
+      "alt": "Detail of a mural from the Ramayana",
+      "width": 2000,
+      "height": 3000,
+      "isHero": false,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mattancherry_Palace-16-17th_Century_mural_paintings-Scenes_from_the_Ramayana-WUS09245.jpg",
+      "credit": "Rainer Halama / CC BY-SA 4.0, Wikimedia Commons"
+    }
+  ]
 }
