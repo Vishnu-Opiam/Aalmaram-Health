@@ -14,5 +14,38 @@
     "The sword of Velu Thampi Dalawa, received in 2010",
     "Run by the Department of Museums and Zoos, Government of Kerala"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/napier-museum/0a0af57905.webp",
+      "alt": "A carved wooden temple model in the museum's collection",
+      "width": 1955,
+      "height": 2480,
+      "isHero": true,
+      "sourceUrl": "https://www.museumandzoo.kerala.gov.in/images/tvm-zoo/wood.jpg"
+    },
+    {
+      "url": "/partners/napier-museum/5a50c28733.webp",
+      "alt": "The museum's red-and-white Gothic-style building and gabled roofs",
+      "width": 1920,
+      "height": 400,
+      "isHero": false,
+      "sourceUrl": "https://www.museumandzoo.kerala.gov.in//images/page-banners/napier.jpg"
+    },
+    {
+      "url": "/partners/napier-museum/a539399834.webp",
+      "alt": "Bronze figures from the museum's collection",
+      "width": 2000,
+      "height": 2584,
+      "isHero": false,
+      "sourceUrl": "https://www.museumandzoo.kerala.gov.in/images/tvm-zoo/bronze.jpg"
+    },
+    {
+      "url": "/partners/napier-museum/092cef23f7.webp",
+      "alt": "Wooden display cases in the museum's main hall",
+      "width": 1920,
+      "height": 400,
+      "isHero": false,
+      "sourceUrl": "https://www.museumandzoo.kerala.gov.in//images/page-banners/napier_museum.jpg"
+    }
+  ]
 }

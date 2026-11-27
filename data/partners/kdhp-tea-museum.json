@@ -14,5 +14,14 @@
     "Tea tasting as part of the visit",
     "Run by Kanan Devan Hills Plantations"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/kdhp-tea-museum/2408685fd7.webp",
+      "alt": "The Tea Museum buildings at Nullatanni estate, with tea-covered hills behind",
+      "width": 1920,
+      "height": 1080,
+      "isHero": true,
+      "sourceUrl": "http://kdhptea.com/wp-content/uploads/2020/01/TMU.jpg"
+    }
+  ]
 }

@@ -14,5 +14,54 @@
     "Ettukettu restaurant in a traditional eight-sided building",
     "A short boat ride from Kumarakom Bird Sanctuary"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/kumarakom-lake-resort/1991bcbe33.webp",
+      "alt": "Villas with tiled roofs along the resort's meandering pool",
+      "width": 1200,
+      "height": 900,
+      "isHero": true,
+      "sourceUrl": "https://www.kumarakomlakeresort.in/assets/images/about-kumarakom-lake-resort/about/gallery/meandering-pool-duplex-villas.jpg"
+    },
+    {
+      "url": "/partners/kumarakom-lake-resort/30e9b319ab.webp",
+      "alt": "A waterside restaurant with a tiled roof, from above",
+      "width": 1200,
+      "height": 871,
+      "isHero": false,
+      "sourceUrl": "https://www.kumarakomlakeresort.in/assets/images/luxury-dining/vembanad-the-seafood-bar/vembanad-the-seafood-bar.jpg"
+    },
+    {
+      "url": "/partners/kumarakom-lake-resort/fa297c2473.webp",
+      "alt": "A heritage villa with carved wooden walls at dusk",
+      "width": 1200,
+      "height": 798,
+      "isHero": false,
+      "sourceUrl": "https://www.kumarakomlakeresort.in/assets/images/about-kumarakom-lake-resort/about/gallery/heritage-villas-zoom.jpg"
+    },
+    {
+      "url": "/partners/kumarakom-lake-resort/c8c830c9f7.webp",
+      "alt": "A suite with its own pool among coconut palms",
+      "width": 1021,
+      "height": 684,
+      "isHero": false,
+      "sourceUrl": "https://www.kumarakomlakeresort.in/assets/images/luxury-accommodation/presidential-suites/presidential-suites-2.jpg"
+    },
+    {
+      "url": "/partners/kumarakom-lake-resort/2c333a3839.webp",
+      "alt": "A room with a carved wooden ceiling and garden views",
+      "width": 1456,
+      "height": 836,
+      "isHero": false,
+      "sourceUrl": "https://www.kumarakomlakeresort.in/assets/images/about-kumarakom-lake-resort/about/gallery/luxury-pavilion-rooms-zoom.jpg"
+    },
+    {
+      "url": "/partners/kumarakom-lake-resort/71ab0005d4.webp",
+      "alt": "Dining deck of a houseboat on the backwaters",
+      "width": 1200,
+      "height": 900,
+      "isHero": false,
+      "sourceUrl": "https://www.kumarakomlakeresort.in/assets/images/about-kumarakom-lake-resort/about/gallery/houseboats.jpg"
+    }
+  ]
 }

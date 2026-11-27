@@ -14,5 +14,54 @@
     "Cottages re-thatched each year by women from the neighbouring fishing village",
     "Run by CGH Earth, a Kerala hotel group"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/marari-beach/ebf13f7761.webp",
+      "alt": "A natural pond and thatched cottage among the trees at Marari Beach",
+      "width": 1920,
+      "height": 758,
+      "isHero": true,
+      "sourceUrl": "https://www.cghearth.com/uploads/VideoImg/20170602075932AMmararibeachresort-naturalponds.jpg"
+    },
+    {
+      "url": "/partners/marari-beach/39b1ae9d21.webp",
+      "alt": "A thatched open-sided pavilion under coconut palms",
+      "width": 1516,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/215_aboutslider1.jpg"
+    },
+    {
+      "url": "/partners/marari-beach/5bc4c18981.webp",
+      "alt": "The pool and thatched cottages from above",
+      "width": 1518,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/20170602081829AMmararibeachresort-aerialpool.jpg"
+    },
+    {
+      "url": "/partners/marari-beach/81ed130d76.webp",
+      "alt": "A path across the lawns to the garden villas",
+      "width": 1518,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/20170602082751AMmararibeachresort-gardenvillas.jpg"
+    },
+    {
+      "url": "/partners/marari-beach/daca77ff98.webp",
+      "alt": "Painted fishing boats on the beach",
+      "width": 1516,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/218_aboutslider4.jpg"
+    },
+    {
+      "url": "/partners/marari-beach/17a83cb736.webp",
+      "alt": "The beach and surf beside the resort, from above",
+      "width": 1920,
+      "height": 1079,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/uploadimage/20190531115114ammararibeach-home.jpg"
+    }
+  ]
 }

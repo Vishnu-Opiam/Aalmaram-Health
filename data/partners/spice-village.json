@@ -14,5 +14,46 @@
     "Organic farm, yoga and naturalist-led walks",
     "Close to Periyar Tiger Reserve: ranger treks and bamboo rafting nearby"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/spice-village/a494435e8f.webp",
+      "alt": "Thatched cottages beneath a spreading tree at Spice Village",
+      "width": 1920,
+      "height": 1079,
+      "isHero": true,
+      "sourceUrl": "https://www.cghearth.com/uploads/uploadimage/20190531122143pmspicevillagehome.jpg"
+    },
+    {
+      "url": "/partners/spice-village/84b8a8f310.webp",
+      "alt": "Elephant-grass-thatched cottages among the gardens",
+      "width": 1518,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/20170629115517AMSpiceVillage-About-Slider-Cottages.jpg"
+    },
+    {
+      "url": "/partners/spice-village/b0c26e93d8.webp",
+      "alt": "A walkway through the trees to a thatched cottage",
+      "width": 1518,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/20170629115624AMSpiceVillage-About-Slider-Walkways.jpg"
+    },
+    {
+      "url": "/partners/spice-village/48ad37aed9.webp",
+      "alt": "Garden steps leading down to a thatched cottage",
+      "width": 1518,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/20170527182116PMSpicevillage-garden.jpg"
+    },
+    {
+      "url": "/partners/spice-village/74692874d7.webp",
+      "alt": "The swimming pool, with lilies in the foreground",
+      "width": 1518,
+      "height": 720,
+      "isHero": false,
+      "sourceUrl": "https://www.cghearth.com/uploads/TourismImg/20170629115548AMSpiceVillage-About-Slider-Pool.jpg"
+    }
+  ]
 }

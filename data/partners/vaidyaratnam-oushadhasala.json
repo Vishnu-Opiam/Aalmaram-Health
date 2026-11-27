@@ -14,5 +14,54 @@
     "Vaidyaratnam Ayurveda Museum, opened in 2013 in the family mana, per Kerala Tourism",
     "Online consultations available"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/vaidyaratnam-oushadhasala/47877b1456.webp",
+      "alt": "A traditional Kerala building with layered tiled roofs",
+      "width": 1280,
+      "height": 724,
+      "isHero": true,
+      "sourceUrl": "https://vaidyaratnammooss.com/storage/gallery/image/zHzZfqZyWhhvZ3JAKxUwDIr7AppekS3DQDpA7sj3.jpg"
+    },
+    {
+      "url": "/partners/vaidyaratnam-oushadhasala/cd8541044f.webp",
+      "alt": "A tiled-roof building with carved gables and a lawn",
+      "width": 800,
+      "height": 600,
+      "isHero": false,
+      "sourceUrl": "https://vaidyaratnammooss.com/storage/gallery/image/R5iDCRtzCtE7hJ5gAphyVjggoieHTKGDVT2QBv8F.jpg"
+    },
+    {
+      "url": "/partners/vaidyaratnam-oushadhasala/3f761cc071.webp",
+      "alt": "A low traditional building with a courtyard lamp",
+      "width": 800,
+      "height": 600,
+      "isHero": false,
+      "sourceUrl": "https://vaidyaratnammooss.com/storage/gallery/image/JGkXlKHwl29hVOKvq6qXwN00LxBmwFFhO2JCfhza.jpg"
+    },
+    {
+      "url": "/partners/vaidyaratnam-oushadhasala/022c885083.webp",
+      "alt": "Traditional buildings around a garden courtyard",
+      "width": 800,
+      "height": 600,
+      "isHero": false,
+      "sourceUrl": "https://vaidyaratnammooss.com/storage/gallery/image/5VKbCEUPX0ASGRa5K7xispiM7xw7H2iXYr6vhiHs.jpg"
+    },
+    {
+      "url": "/partners/vaidyaratnam-oushadhasala/4d77249c25.webp",
+      "alt": "A shaded path through the gardens to a tiled-roof building",
+      "width": 1024,
+      "height": 576,
+      "isHero": false,
+      "sourceUrl": "https://vaidyaratnammooss.com/storage/gallery/image/QzFWrQWo56J54qhVLFvYZi1QvENSOsqezBnaGUzH.jpg"
+    },
+    {
+      "url": "/partners/vaidyaratnam-oushadhasala/9a1ae081c0.webp",
+      "alt": "A treatment centre in Kerala style with a wide forecourt",
+      "width": 800,
+      "height": 453,
+      "isHero": false,
+      "sourceUrl": "https://vaidyaratnammooss.com/storage/gallery/image/tiRyGvPgdkP4vYv2OnZSlEv6H87ARFDJ0Da6QvD4.png"
+    }
+  ]
 }

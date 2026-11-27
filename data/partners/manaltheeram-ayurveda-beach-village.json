@@ -14,5 +14,38 @@
     "Ayurveda programmes with yoga and meditation",
     "About 21 km from Thiruvananthapuram airport"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/manaltheeram-ayurveda-beach-village/95405f2d52.webp",
+      "alt": "Round thatched cottages by the sea under coconut palms",
+      "width": 800,
+      "height": 500,
+      "isHero": false,
+      "sourceUrl": "https://www.manaltheeram.com/Content/Images/room/special-cottage.jpg"
+    },
+    {
+      "url": "/partners/manaltheeram-ayurveda-beach-village/0efe29f498.webp",
+      "alt": "A row of thatched cottages along a shaded path",
+      "width": 800,
+      "height": 500,
+      "isHero": false,
+      "sourceUrl": "https://www.manaltheeram.com/Content/Images/room/StandardRoom.jpg"
+    },
+    {
+      "url": "/partners/manaltheeram-ayurveda-beach-village/cadfeed161.webp",
+      "alt": "Garden steps between thatched cottages",
+      "width": 800,
+      "height": 500,
+      "isHero": false,
+      "sourceUrl": "https://www.manaltheeram.com/Content/Images/room/manaltheeram-room%20(3).jpg"
+    },
+    {
+      "url": "/partners/manaltheeram-ayurveda-beach-village/b0facb343e.webp",
+      "alt": "Kerala-style houses with tiled roofs among plants",
+      "width": 800,
+      "height": 500,
+      "isHero": false,
+      "sourceUrl": "https://www.manaltheeram.com/Content/Images/room/Kerala-House-Standard.jpeg"
+    }
+  ]
 }

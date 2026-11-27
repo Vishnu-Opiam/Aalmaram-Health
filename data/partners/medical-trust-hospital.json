@@ -14,5 +14,22 @@
     "24-hour trauma care",
     "Runs its own nursing, physiotherapy and paramedical colleges"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/medical-trust-hospital/c54c276e0d.webp",
+      "alt": "The Medical Trust Hospital tower above Kochi's city streets",
+      "width": 1017,
+      "height": 705,
+      "isHero": false,
+      "sourceUrl": "https://www.medicaltrusthospital.com/public/images/about-img.jpg"
+    },
+    {
+      "url": "/partners/medical-trust-hospital/ee3bbc1b6b.webp",
+      "alt": "The hospital tower lit up at night",
+      "width": 779,
+      "height": 606,
+      "isHero": false,
+      "sourceUrl": "https://www.medicaltrusthospital.com/public/images/bg2.jpg"
+    }
+  ]
 }

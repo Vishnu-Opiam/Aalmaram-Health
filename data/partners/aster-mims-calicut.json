@@ -14,5 +14,14 @@
     "Robotic surgery (da Vinci system)",
     "Part of the Aster hospitals network, like Aster Medcity in Kochi"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/aster-mims-calicut/c31476f2e6.webp",
+      "alt": "The main entrance and front lawn of Aster MIMS Calicut",
+      "width": 1500,
+      "height": 1050,
+      "isHero": true,
+      "sourceUrl": "https://www.asterhospitals.in/sites/default/files/2021-03/aster-mims-calicut_2.jpg"
+    }
+  ]
 }

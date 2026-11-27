@@ -14,5 +14,14 @@
     "Departments include cardiology, neurosurgery, nephrology and radiation oncology",
     "Emergency department open 24 hours"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/lisie-hospital/77d001fec2.webp",
+      "alt": "Lisie Hospital's buildings in Kochi, seen from above",
+      "width": 815,
+      "height": 385,
+      "isHero": false,
+      "sourceUrl": "https://lisiehospital.org/uploads/HomeBanner_images/dCmTsQoi9cw7W491YusnAtePpu17vLUJDn1sZBjh.jpeg"
+    }
+  ]
 }

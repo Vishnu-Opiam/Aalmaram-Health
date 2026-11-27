@@ -250,6 +250,12 @@ Append one short entry per working session: date, branch, tasks touched, test st
   production DATABASE_URL can't be pulled, `npm run build` now runs `partners:import --on-vercel-production`, which
   imports only when `VERCEL_ENV=production` and skips everywhere else. Typecheck, 185 tests and build pass.
   Not tried: Taj (site 403), Hill Palace, Periyar, Natanakairali, Agasthyam (sites unreachable or empty).
+  Later the same day (Vishnu's go-ahead to download): photographs for 14 of the 20, from each place's own site
+  (sourceUrl kept), picked by eye and converted with `scripts/partners-photos.mjs`. Left out: doctor portraits,
+  ad banners with text, stock images and an architectural render, so VPS Lakeshore and Renai have none; Mattancherry
+  (only Kerala Tourism photos, which we don't copy), Kathakali Centre (403), ENS Kalari (no usable images) and
+  Kalari Rasayana (images shared across CGH Earth's Ayurveda site) also have none. The Lisie photo is cropped from
+  a banner to the building alone.
 
 - **2026-11-20 (real vendors)** · `feat/real-vendors-11-18` (from `feat/portal-experience`) · Nivedith's 18 Nov
   walkthrough: he wants real, internationally recognised partners to show people (accredited hospitals, CGH Earth,

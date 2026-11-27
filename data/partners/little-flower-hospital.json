@@ -14,5 +14,22 @@
     "Approved centre of the Indian Council of Medical Research for ophthalmology research",
     "Research centre approved by the Kerala University of Health Sciences"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/little-flower-hospital/c5e993be07.webp",
+      "alt": "The hospital building at Angamaly",
+      "width": 600,
+      "height": 400,
+      "isHero": false,
+      "sourceUrl": "https://lfhospital.org/wp-content/uploads/2018/04/Little-Flower-Hospital-1-600x400.jpg"
+    },
+    {
+      "url": "/partners/little-flower-hospital/7ee193768d.webp",
+      "alt": "A bright, empty inpatient ward",
+      "width": 600,
+      "height": 600,
+      "isHero": false,
+      "sourceUrl": "https://lfhospital.org/wp-content/uploads/2017/11/general-medicine-600x600.jpg"
+    }
+  ]
 }

@@ -14,5 +14,46 @@
     "Centre of Excellence in Ayurvedic Ophthalmology, Ministry of AYUSH",
     "Separate Panchakarma wing, with accommodation on site"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/sreedhareeyam-ayurvedic-eye-hospital/9ca79deaf4.webp",
+      "alt": "The Sreedhareeyam campus at Koothattukulam under a blue sky",
+      "width": 1500,
+      "height": 1000,
+      "isHero": true,
+      "sourceUrl": "https://cdn.sreedhareeyam.com/assets/business/2/galleryimage/12/2_639116594965990908116782.jpg?rendered=true"
+    },
+    {
+      "url": "/partners/sreedhareeyam-ayurvedic-eye-hospital/7d9480f06c.webp",
+      "alt": "The hospital buildings and gardens at dusk",
+      "width": 1500,
+      "height": 1000,
+      "isHero": false,
+      "sourceUrl": "https://cdn.sreedhareeyam.com/assets/business/2/galleryimage/12/2_639116594864718232108653.jpg?rendered=true"
+    },
+    {
+      "url": "/partners/sreedhareeyam-ayurvedic-eye-hospital/0caa47acc5.webp",
+      "alt": "An older tiled-roof building on the campus, among trees",
+      "width": 1152,
+      "height": 768,
+      "isHero": false,
+      "sourceUrl": "https://cdn.sreedhareeyam.com/assets/business/2/galleryimage/12/2_638334417121400034133295.jpg?rendered=true"
+    },
+    {
+      "url": "/partners/sreedhareeyam-ayurvedic-eye-hospital/f7f655f8b4.webp",
+      "alt": "Large steam vessels in the hospital's medicine preparation hall",
+      "width": 1500,
+      "height": 1000,
+      "isHero": false,
+      "sourceUrl": "https://cdn.sreedhareeyam.com/assets/business/2/galleryimage/153/2_639116595164820175118115.jpg?rendered=true"
+    },
+    {
+      "url": "/partners/sreedhareeyam-ayurvedic-eye-hospital/ced865e138.webp",
+      "alt": "Tiled roofs and trees across the campus, from above",
+      "width": 800,
+      "height": 533,
+      "isHero": false,
+      "sourceUrl": "https://cdn.sreedhareeyam.com/assets/business/2/galleryimage/12/2_638334416929847508113285.jpg?rendered=true"
+    }
+  ]
 }

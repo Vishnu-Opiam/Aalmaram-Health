@@ -14,5 +14,14 @@
     "Balinese paintings and Tibetan thangkas",
     "Run by the Department of Museums and Zoos, Government of Kerala"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/sree-chithra-art-gallery/a5bae7b440.webp",
+      "alt": "A gallery hall hung with oil paintings",
+      "width": 1920,
+      "height": 400,
+      "isHero": false,
+      "sourceUrl": "https://www.museumandzoo.kerala.gov.in//images/page-banners/sree_chithra_page.jpg"
+    }
+  ]
 }

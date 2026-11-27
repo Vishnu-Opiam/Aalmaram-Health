@@ -14,5 +14,14 @@
     "Close to the art studios and Kochi-Muziris Biennale venues",
     "Run by CGH Earth, a Kerala hotel group"
   ],
-  "photos": []
+  "photos": [
+    {
+      "url": "/partners/eighth-bastion/f9df0b57a7.webp",
+      "alt": "A model sailing ship in the hotel's lobby",
+      "width": 1920,
+      "height": 1079,
+      "isHero": true,
+      "sourceUrl": "https://www.cghearth.com/uploads/banner/20171110071231AMEighthbastion.jpg"
+    }
+  ]
 }
