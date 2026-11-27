@@ -4,6 +4,10 @@
  *
  *   npm run partners:import                 local database only
  *   npm run partners:import -- --yes-remote  any other database (a human's call)
+ *   npm run build                            runs it with --on-vercel-production
+ *
+ * Production builds on Vercel therefore re-import the partners on every deploy
+ * (idempotent: matched by name). Previews and local builds skip it.
  *
  * Deliberately separate from the demo seed, which stays fictional. A partner
  * is matched to an existing vendor by name (case-insensitive), else created.
@@ -44,17 +48,25 @@ const MODULE_FOR: Record<PartnerFile["category"], string> = {
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
 
+// The build passes this flag: production builds on Vercel import into their own
+// database (whose URL can't be pulled locally); every other build skips the import.
+const ON_VERCEL_PRODUCTION = process.argv.includes("--on-vercel-production");
+
 function assertTarget() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set.");
   const host = new URL(url).hostname;
-  if (!LOCAL_HOSTS.has(host) && !process.argv.includes("--yes-remote")) {
+  if (!LOCAL_HOSTS.has(host) && !process.argv.includes("--yes-remote") && !ON_VERCEL_PRODUCTION) {
     throw new Error(`Refusing to import into ${host}: pass --yes-remote to write to a non-local database.`);
   }
   return host;
 }
 
 async function main() {
+  if (ON_VERCEL_PRODUCTION && process.env.VERCEL_ENV !== "production") {
+    console.log("Partner import skipped: not a Vercel production build.");
+    return;
+  }
   const host = assertTarget();
   const prisma = new PrismaClient();
   const dir = path.join(process.cwd(), "data", "partners");

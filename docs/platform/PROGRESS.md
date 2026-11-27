@@ -25,7 +25,7 @@
 - [ ] P1.5 Draft vendor profile from website (AI, suggestions only) — needs P0.2–P0.4
 - [x] P1.6 Client-facing provider info in portal + leak tests
 - [x] P1.7 Seed data (blood test · Swedish massage · Fort Kochi walking tour · multi-branch vendor · restaurant)
-- [~] P1.8 First real vendors — 30 real partners imported from `data/partners/` (16 from the researchers, 14 verified on 20 Nov); Nivedith to review
+- [~] P1.8 First real vendors — 50 real partners in `data/partners/` (16 from the researchers, 14 verified on 20 Nov, 20 on 27 Nov); production builds import them; Nivedith to review
 - [x] P1.9 Vendor list filters + branch / practitioner / missing-field counts
 
 ## Phase 2 — Clients & trips (MVP)
@@ -239,6 +239,17 @@ Record every non-obvious choice: date, decision, why, alternatives rejected.
 ## Session log
 
 Append one short entry per working session: date, branch, tasks touched, test status, next step.
+
+- **2026-11-27 (50 partners)** · `feat/real-vendors-11-18` → pushed to `feat/portal-experience` (production) at
+  Vishnu's request. 20 more real partners to reach 50: 8 health (Lisie, VPS Lakeshore, Aster MIMS Calicut, Medical
+  Trust, Renai Medicity, Sreedhareeyam, Vaidyaratnam, Little Flower), 6 wellness (Spice Village, Marari Beach,
+  Eighth Bastion, Kalari Rasayana, Manaltheeram, Kumarakom Lake Resort), 6 culture (Napier Museum, Sree Chithra Art
+  Gallery, Mattancherry Palace, KDHP Tea Museum, ENS Kalari, Kerala Kathakali Centre). Facts from each place's own
+  site, a Kerala government site or keralatourism.org; Mattancherry and the Kathakali Centre (site refuses automated
+  reads) from two published sources. Provenance in `_facts.json`. No photos (download needs a go-ahead). Because the
+  production DATABASE_URL can't be pulled, `npm run build` now runs `partners:import --on-vercel-production`, which
+  imports only when `VERCEL_ENV=production` and skips everywhere else. Typecheck, 185 tests and build pass.
+  Not tried: Taj (site 403), Hill Palace, Periyar, Natanakairali, Agasthyam (sites unreachable or empty).
 
 - **2026-11-20 (real vendors)** · `feat/real-vendors-11-18` (from `feat/portal-experience`) · Nivedith's 18 Nov
   walkthrough: he wants real, internationally recognised partners to show people (accredited hospitals, CGH Earth,

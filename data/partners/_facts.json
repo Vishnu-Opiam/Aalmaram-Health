@@ -151,5 +151,167 @@
     "sources": [
       "https://www.kairali.com/ayurvedic-healing-village.aspx"
     ]
+  },
+  "lisie-hospital": {
+    "yearEstablished": 1956,
+    "accreditations": [
+      "NABH, since 2017"
+    ],
+    "sources": [
+      "https://lisiehospital.org/",
+      "https://lisiehospital.org/quality-safety/accreditation"
+    ]
+  },
+  "vps-lakeshore-hospital": {
+    "yearEstablished": 2003,
+    "accreditations": [
+      "NABH"
+    ],
+    "sources": [
+      "https://www.vpslakeshorehospital.com/",
+      "https://www.vpslakeshorehospital.com/about"
+    ]
+  },
+  "aster-mims-calicut": {
+    "sources": [
+      "https://www.asterhospitals.in/hospitals/aster-mims-calicut"
+    ]
+  },
+  "medical-trust-hospital": {
+    "yearEstablished": 1973,
+    "accreditations": [
+      "NABH, since 2011"
+    ],
+    "sources": [
+      "https://www.medicaltrusthospital.com/about-us",
+      "https://www.medicaltrusthospital.com/achievements-recognition"
+    ]
+  },
+  "renai-medicity": {
+    "accreditations": [
+      "NABH"
+    ],
+    "sources": [
+      "https://www.renaimedicity.org/",
+      "https://www.renaimedicity.org/about-us",
+      "https://www.renaimedicity.org/accessibility-location"
+    ]
+  },
+  "sreedhareeyam-ayurvedic-eye-hospital": {
+    "yearEstablished": 1999,
+    "accreditations": [
+      "NABH (AYUSH hospital)",
+      "Ayur Diamond classification, Department of Tourism, Government of Kerala",
+      "Centre of Excellence in Ayurvedic Ophthalmology, Ministry of AYUSH",
+      "ISO 9001:2015"
+    ],
+    "languages": [
+      "English",
+      "Malayalam"
+    ],
+    "sources": [
+      "https://www.sreedhareeyam.com/hospital/about-us",
+      "https://www.sreedhareeyam.com/accreditations",
+      "https://portal.nabh.co/Documents/AccreditedList/AYUSH Hospitals/AH-2012-0005_Revised.pdf"
+    ]
+  },
+  "vaidyaratnam-oushadhasala": {
+    "yearEstablished": 1941,
+    "sources": [
+      "https://vaidyaratnammooss.com/",
+      "https://vaidyaratnammooss.com/about-us",
+      "https://www.keralatourism.org/destination/vaidyaratnam-ayurveda-museum/586"
+    ]
+  },
+  "little-flower-hospital": {
+    "yearEstablished": 1936,
+    "sources": [
+      "https://www.lfhospital.org/",
+      "https://lfhospital.org/about/"
+    ]
+  },
+  "manaltheeram-ayurveda-beach-village": {
+    "accreditations": [
+      "Green Leaf classification, Department of Tourism, Government of Kerala"
+    ],
+    "sources": [
+      "https://www.manaltheeram.com/",
+      "https://www.manaltheeram.com/AboutUs",
+      "https://www.keralatourism.org/accredited-centres/view_details/MjIxNw=="
+    ]
+  },
+  "spice-village": {
+    "sources": [
+      "https://www.cghearth.com/spice-village",
+      "https://www.cghearth.com/spice-village/aboutus",
+      "https://www.keralatourism.org/ayurveda-centres/spice-village/2587"
+    ]
+  },
+  "marari-beach": {
+    "sources": [
+      "https://www.cghearth.com/Marari-Beach",
+      "https://www.cghearth.com/marari-beach/aboutus"
+    ]
+  },
+  "kumarakom-lake-resort": {
+    "sources": [
+      "https://www.kumarakomlakeresort.in/",
+      "https://www.kumarakomlakeresort.in/about-kumarakom-lake-resort.php"
+    ]
+  },
+  "kalari-rasayana": {
+    "accreditations": [
+      "NABH"
+    ],
+    "sources": [
+      "http://www.cghearthayurveda.com/kalari-rasayana/",
+      "https://www.cghearth.com/spice-village"
+    ]
+  },
+  "eighth-bastion": {
+    "sources": [
+      "https://www.cghearth.com/eighth-bastion"
+    ]
+  },
+  "napier-museum": {
+    "yearEstablished": 1857,
+    "sources": [
+      "https://www.museumandzoo.kerala.gov.in/index.php/institution/thiruvananthapuram/napier-museum"
+    ]
+  },
+  "sree-chithra-art-gallery": {
+    "yearEstablished": 1935,
+    "sources": [
+      "https://www.museumandzoo.kerala.gov.in/index.php/institution/thiruvananthapuram/sree-chithra-art-gallery",
+      "https://www.museumandzoo.kerala.gov.in/"
+    ]
+  },
+  "kdhp-tea-museum": {
+    "sources": [
+      "https://kdhptea.com/service/tea-museum/"
+    ]
+  },
+  "ens-kalari": {
+    "yearEstablished": 1954,
+    "accreditations": [
+      "Authorised by the Ernakulam District Tourism Promotion Council"
+    ],
+    "sources": [
+      "https://www.enskalari.org.in/"
+    ]
+  },
+  "mattancherry-palace": {
+    "sources": [
+      "https://www.keralatourism.org/kochi/dutch-palace-mattancherry.php",
+      "https://www.lonelyplanet.com/points-of-interest/mattancherry-palace/1033656"
+    ]
+  },
+  "kerala-kathakali-centre": {
+    "yearEstablished": 1990,
+    "sources": [
+      "https://mapsofindia.com/my-india/travel/explore-exquisite-performing-arts-at-the-kerala-kathakali-centre",
+      "https://www.lonelyplanet.com/pois/1033625",
+      "https://www.afar.com/places/kerala-kathakali-centre-kochi"
+    ]
   }
 }
